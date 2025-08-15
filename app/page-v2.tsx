@@ -98,6 +98,51 @@ function Hero() {
   );
 }
 
+/** ---------- Demo Video (embed) ---------- **/
+function DemoVideo() {
+  // เปลี่ยน URL ได้จาก ENV หรือ localStorage["cfg.heroVideo"]
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    try {
+      const fromLs = localStorage.getItem("cfg.heroVideo");
+      setUrl(fromLs || process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || "https://www.youtube.com/embed/ysz5S6PUM-U");
+    } catch {
+      setUrl(process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || "https://www.youtube.com/embed/ysz5S6PUM-U");
+    }
+  }, []);
+  if (!url) return null;
+
+  const isYouTube = /youtube\.com|youtu\.be/.test(url);
+  return (
+    <section className="relative pb-6">
+      <div className="mx-auto max-w-5xl rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-2">
+        <div className="relative w-full overflow-hidden rounded-xl" style={{ aspectRatio: "16 / 9" }}>
+          {isYouTube ? (
+            <iframe
+              src={url}
+              title="Product demo"
+              className="absolute inset-0 h-full w-full"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          ) : (
+            <video
+              className="absolute inset-0 h-full w-full"
+              controls
+              playsInline
+              preload="metadata"
+              poster="/video-poster.jpg"
+            >
+              <source src={url} />
+            </video>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- NEW: Real-photo Feature Highlights (ภาพจริง โทนมืออาชีพ) ---------- */
 const REAL_FEATURES: {
   title: string; desc: string; bullets: string[]; img: string; alt: string;
@@ -164,6 +209,7 @@ function FeatureHighlightsReal() {
               src={f.img}
               alt={f.alt}
               className="h-44 md:h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
             />
             <div className="p-4">
               <h3 className="text-white font-semibold text-lg">{f.title}</h3>
@@ -186,7 +232,6 @@ function FeatureHighlightsReal() {
 }
 
 /* ---------- Cloud / Compliance / Trusted ---------- */
-// --- in app/page.tsx ---
 function CloudSupport() {
   return (
     <section className="relative py-12 md:py-16">
@@ -197,13 +242,27 @@ function CloudSupport() {
 
       <div className="mx-auto max-w-5xl grid grid-cols-1 sm:grid-cols-3 gap-6">
         <CloudCard label="Amazon Web Services">
-          <SvgAWS />
+          <CloudLogo
+            primary="https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-ar21.svg"
+            fallback="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg"
+            alt="AWS"
+          />
         </CloudCard>
+
         <CloudCard label="Alibaba Cloud">
-          <SvgAlibaba />
+          <CloudLogo
+            primary="https://www.vectorlogo.zone/logos/alibabacloud/alibabacloud-ar21.svg"
+            fallback="https://upload.wikimedia.org/wikipedia/commons/1/1d/Alibaba_Cloud_logo.svg"
+            alt="Alibaba Cloud"
+          />
         </CloudCard>
+
         <CloudCard label="Microsoft Azure">
-          <SvgAzure />
+          <CloudLogo
+            primary="https://www.vectorlogo.zone/logos/microsoft_azure/microsoft_azure-ar21.svg"
+            fallback="https://upload.wikimedia.org/wikipedia/commons/f/fa/Microsoft_Azure.svg"
+            alt="Microsoft Azure"
+          />
         </CloudCard>
       </div>
 
@@ -223,87 +282,33 @@ function CloudCard({
 }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md grid place-items-center">
-      <div className="h-16 w-28">{children}</div>
+      <div className="h-16 w-36 grid place-items-center">{children}</div>
       <div className="mt-3 text-sm text-white/80">{label}</div>
     </div>
   );
 }
 
-/* ------- Custom SVGs (วาดเอง โทน dark-neon) ------- */
-
-function SvgAWS() {
+function CloudLogo({
+  primary,
+  fallback,
+  alt,
+}: {
+  primary: string;
+  fallback: string;
+  alt: string;
+}) {
+  const [src, setSrc] = useState(primary);
   return (
-    <svg viewBox="0 0 140 80" role="img" aria-label="AWS">
-      <defs>
-        <linearGradient id="awsG" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#FFD08A" />
-          <stop offset="1" stopColor="#FF8A00" />
-        </linearGradient>
-        <linearGradient id="awsEdge" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#fff" stopOpacity=".9" />
-          <stop offset="1" stopColor="#fff" stopOpacity=".2" />
-        </linearGradient>
-      </defs>
-
-      {/* กล่อง 3D แบบเรียบหรู */}
-      <g transform="translate(20,8)">
-        <path d="M30 0L80 10L50 28L0 18Z" fill="url(#awsG)" opacity=".9" />
-        <path d="M0 18L50 28V62L0 52Z" fill="#2b1d10" opacity=".9" />
-        <path d="M80 10V44L50 62V28Z" fill="#3a2614" opacity=".9" />
-        <path d="M30 0L80 10V44" fill="none" stroke="url(#awsEdge)" strokeWidth="1.5" />
-      </g>
-
-      {/* เส้นโค้งเหมือนยิ้ม (inspired by smile-arrow) */}
-      <path
-        d="M20 58c22 12 60 12 100 0"
-        stroke="url(#awsG)"
-        strokeWidth="3"
-        fill="none"
-        strokeLinecap="round"
-        opacity=".85"
-      />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setSrc(fallback)}
+      className="max-h-12 w-auto object-contain opacity-90"
+      loading="lazy"
+    />
   );
 }
-
-function SvgAlibaba() {
-  return (
-    <svg viewBox="0 0 140 80" role="img" aria-label="Alibaba Cloud">
-      <defs>
-        <linearGradient id="aliG" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#FF9347" />
-          <stop offset="1" stopColor="#FF5C00" />
-        </linearGradient>
-      </defs>
-      {/* วงเล็บเมฆแบบมินิมอล */}
-      <g transform="translate(15,18)" fill="none" stroke="url(#aliG)" strokeWidth="10" strokeLinecap="round">
-        <path d="M20 22c0-12 6-18 18-18h16" />
-        <path d="M90 22c0 12-6 18-18 18H56" />
-        <rect x="46" y="4" width="16" height="36" rx="8" stroke="none" fill="url(#aliG)" opacity=".25" />
-      </g>
-    </svg>
-  );
-}
-
-function SvgAzure() {
-  return (
-    <svg viewBox="0 0 140 80" role="img" aria-label="Microsoft Azure">
-      <defs>
-        <linearGradient id="azG" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#6AD0FF" />
-          <stop offset="1" stopColor="#0AA0FF" />
-        </linearGradient>
-      </defs>
-      {/* ตัว A เชิงเรขาคณิต + ปริซึม */}
-      <g transform="translate(18,10)">
-        <path d="M20 60L44 6L68 60Z" fill="url(#azG)" opacity=".9" />
-        <path d="M56 34L84 60H62Z" fill="#0b2740" opacity=".9" />
-        <path d="M44 6L56 34L62 60" fill="none" stroke="#BEE9FF" strokeOpacity=".8" />
-      </g>
-    </svg>
-  );
-}
-
 
 function Compliance() {
   const items = [
@@ -592,7 +597,7 @@ function TrustedBy({ logos }: { logos: { src: string; alt: string }[] }) {
               {useLogos.map((l, i) => (
                 <div key={i} className="flex items-center justify-center rounded-xl border border-white/10 bg-black/30 p-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={l.src} alt={l.alt || `logo-${i}`} className="max-h-10 object-contain opacity-90" />
+                  <img src={l.src} alt={l.alt || `logo-${i}`} className="max-h-10 object-contain opacity-90" loading="lazy" />
                 </div>
               ))}
             </div>
@@ -613,6 +618,77 @@ function TrustedBy({ logos }: { logos: { src: string; alt: string }[] }) {
         </div>
       </div>
     </section>
+  );
+}
+
+/** ---------- Footer ---------- */
+function Footer() {
+  return (
+    <footer className="mt-16 border-t border-white/10 bg-white/5">
+      <div className="mx-auto max-w-7xl px-4 md:px-6 py-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 text-sm">
+        <div>
+          <h4 className="text-white font-semibold">About Us</h4>
+          <p className="mt-2 text-white/70">
+            ContentFlow AI Suite — ระบบจัดการคอนเทนต์พร้อม AI สำหรับทีมธุรกิจไทย
+          </p>
+        </div>
+
+        <div>
+          <h4 className="text-white font-semibold">Company</h4>
+          <ul className="mt-2 space-y-1 text-white/80">
+            <li><a className="hover:underline" href="/about">About</a></li>
+            <li><a className="hover:underline" href="/contact">Contact</a></li>
+            <li><a className="hover:underline" href="/careers">Careers</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="text-white font-semibold">Legal</h4>
+          <ul className="mt-2 space-y-1 text-white/80">
+            <li><a className="hover:underline" href="/privacy">Privacy Policy</a></li>
+            <li><a className="hover:underline" href="/terms">Terms & Conditions</a></li>
+            <li><a className="hover:underline" href="/cookie">Cookie Policy</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="text-white font-semibold">Newsletter</h4>
+          <form className="mt-2 flex gap-2">
+            <input
+              type="email"
+              className="min-w-0 flex-1 rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-white placeholder:text-white/40"
+              placeholder="you@email.com"
+              required
+            />
+            <button className="rounded-lg px-3 py-2 bg-cyan-400/90 text-black hover:bg-cyan-300">Subscribe</button>
+          </form>
+          <div className="mt-3 text-white/70">
+            Email: <a className="hover:underline" href="mailto:hello@codediva.co.th">hello@codediva.co.th</a><br/>
+            Mobile: <a className="hover:underline" href="tel:+66999999999">+66 99 999 9999</a>
+          </div>
+
+          {/* Social */}
+          <div className="mt-3 flex items-center gap-3 text-white/70">
+            <a href="https://facebook.com" aria-label="Facebook" className="hover:text-white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.7V12h2.7V9.8c0-2.7 1.6-4.2 4-4.2 1.2 0 2.4.2 2.4.2v2.6h-1.4c-1.3 0-1.7.8-1.7 1.6V12h2.9l-.5 2.9h-2.4v7A10 10 0 0 0 22 12Z"/></svg>
+            </a>
+            <a href="https://instagram.com" aria-label="Instagram" className="hover:text-white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm5 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm6.5-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com" aria-label="LinkedIn" className="hover:text-white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0V8zm7.5 0H12v2.2h.1c.6-1.1 2.1-2.2 4.3-2.2 4.6 0 5.4 3 5.4 6.9V24h-5v-6.8c0-1.6 0-3.6-2.2-3.6-2.2 0-2.6 1.7-2.6 3.5V24h-5V8z"/></svg>
+            </a>
+            <a href="https://x.com" aria-label="X (Twitter)" className="hover:text-white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 4L12.7 15.5 22.5 26h-4.8l-6-7.5L6 26H1.5l9.5-12L1 4h4.9l5.7 7.1L17 4H22z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-white/10 py-4 text-center text-xs text-white/60">
+        © {new Date().getFullYear()} ContentFlow AI Suite. All rights reserved.
+      </div>
+    </footer>
   );
 }
 
@@ -639,6 +715,7 @@ export default function HomePage() {
       <DarkNeonBg />
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <Hero />
+        <DemoVideo />
         {/* ✅ ใช้เฉพาะไฮไลต์ฟีเจอร์เด่น (ภาพจริง โทนมืออาชีพ) */}
         <FeatureHighlightsReal />
         <CloudSupport />
@@ -646,8 +723,12 @@ export default function HomePage() {
         <Compliance />
         <PricingAndChooser couponMode={couponMode} checkoutBase={checkoutBase} />
       </div>
-      {/* ปุ่ม/แชต AI แบบ futuristic อยู่ใน AiAgent (มีเอฟเฟกต์ 3D/Particle Orb) */}
+
+      {/* ปุ่ม/แชต AI แบบ futuristic อยู่ใน AiAgent */}
       <AiAgent />
+
+      {/* Footer */}
+      <Footer />
     </main>
   );
 }

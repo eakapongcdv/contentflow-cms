@@ -1,3 +1,4 @@
+// app/page.tsx
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
@@ -22,16 +23,6 @@ const formatTHB = (n: number) =>
   n.toLocaleString("th-TH", { style: "currency", currency: "THB", maximumFractionDigits: 0 });
 const annualPrice = (monthly: number, discount: number) =>
   Math.round(monthly * 12 * (1 - discount));
-
-/** ---------- Content Images (Unsplash) ---------- **/
-const GALLERY = [
-  { src: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=1600&auto=format&fit=crop", alt: "ทีมงานกำลังวางแผนคอนเทนต์บนหน้าจอ", caption: "AI Content Editor — ทำคอนเทนต์ไวขึ้นด้วยผู้ช่วย AI" },
-  { src: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1600&auto=format&fit=crop", alt: "แดชบอร์ดกราฟสถิติการเติบโต", caption: "Analytics & Growth — ดูผลลัพธ์แบบเรียลไทม์" },
-  { src: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1600&auto=format&fit=crop", alt: "ทีมคอลแลบหลายภาษา", caption: "Localization — ไทย/อังกฤษ/จีน ในคลิกเดียว" },
-  { src: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1600&auto=format&fit=crop", alt: "เซิร์ฟเวอร์และโครงสร้างพื้นฐาน", caption: "Enterprise Cloud — โฮสต์บนคลาวด์ระดับโลก" },
-  { src: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1600&auto=format&fit=crop", alt: "นักพัฒนาทำงานกับ CI/CD", caption: "API & Integration — ต่อเชื่อม ERP/CRM ได้" },
-  { src: "https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?q=80&w=1600&auto=format&fit=crop", alt: "การประชุมด้านความปลอดภัยข้อมูล", caption: "Security & Compliance — RBAC, SLA, Review" },
-];
 
 /** ---------- Recommender ---------- **/
 function recommendPlan(input: {
@@ -58,12 +49,18 @@ function recommendPlan(input: {
 function DarkNeonBg() {
   return (
     <div aria-hidden className="fixed inset-0 -z-10 bg-[#0a0a0f] overflow-hidden">
-      <div className="pointer-events-none absolute -top-24 -left-24 h-[60vmax] w-[60vmax] rounded-full blur-3xl"
-           style={{ background: "radial-gradient(circle at 30% 30%, rgba(0,255,209,.25), transparent 40%)" }} />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 h-[60vmax] w-[60vmax] rounded-full blur-3xl"
-           style={{ background: "radial-gradient(circle at 70% 70%, rgba(255,0,171,.25), transparent 40%)" }} />
-      <div className="pointer-events-none absolute top-1/2 left-1/3 h-[50vmax] w-[50vmax] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[100px]"
-           style={{ background: "conic-gradient(from 90deg, rgba(0,199,255,.18), rgba(255,89,247,.18), rgba(0,255,209,.18))" }} />
+      <div
+        className="pointer-events-none absolute -top-24 -left-24 h-[60vmax] w-[60vmax] rounded-full blur-3xl"
+        style={{ background: "radial-gradient(circle at 30% 30%, rgba(0,255,209,.25), transparent 40%)" }}
+      />
+      <div
+        className="pointer-events-none absolute -bottom-24 -right-24 h-[60vmax] w-[60vmax] rounded-full blur-3xl"
+        style={{ background: "radial-gradient(circle at 70% 70%, rgba(255,0,171,.25), transparent 40%)" }}
+      />
+      <div
+        className="pointer-events-none absolute top-1/2 left-1/3 h-[50vmax] w-[50vmax] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[100px]"
+        style={{ background: "conic-gradient(from 90deg, rgba(0,199,255,.18), rgba(255,89,247,.18), rgba(0,255,209,.18))" }}
+      />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,.08),rgba(10,10,15,0))]" />
       <div className="absolute inset-0 tw-grid-overlay" />
     </div>
@@ -101,72 +98,260 @@ function Hero() {
   );
 }
 
-function GalleryShowcase() {
+/** ---------- Demo Video (embed) ---------- **/
+function DemoVideo() {
+  // เปลี่ยน URL ได้จาก ENV หรือ localStorage["cfg.heroVideo"]
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    try {
+      const fromLs = localStorage.getItem("cfg.heroVideo");
+      setUrl(fromLs || process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || "https://www.youtube.com/embed/34h1kn24ejE");
+    } catch {
+      setUrl(process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || "https://www.youtube.com/embed/34h1kn24ejE");
+    }
+  }, []);
+  if (!url) return null;
+
+  const isYouTube = /youtube\.com|youtu\.be/.test(url);
+  return (
+    <section className="relative pb-6">
+      <div className="mx-auto max-w-5xl rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-2">
+        <div className="relative w-full overflow-hidden rounded-xl" style={{ aspectRatio: "16 / 9" }}>
+          {isYouTube ? (
+            <iframe
+              src={url}
+              title="Product demo"
+              className="absolute inset-0 h-full w-full"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          ) : (
+            <video
+              className="absolute inset-0 h-full w-full"
+              controls
+              playsInline
+              preload="metadata"
+              poster="/video-poster.jpg"
+            >
+              <source src={url} />
+            </video>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- NEW: Real-photo Feature Highlights (ภาพจริง โทนมืออาชีพ) ---------- */
+const REAL_FEATURES: {
+  title: string; desc: string; bullets: string[]; img: string; alt: string;
+}[] = [
+  {
+    title: "AI Content Editor",
+    desc: "ผู้ช่วยร่าง ปรับโทนภาษา และแนะนำรูปภาพอัตโนมัติ",
+    bullets: ["รองรับไทย/อังกฤษ", "Template พร้อมใช้", "Grammar & Tone"],
+    img: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1600&auto=format&fit=crop",
+    alt: "ทีมเอเชียกำลังทำงานร่วมกัน",
+  },
+  {
+    title: "Localization (TH/EN/CN)",
+    desc: "คลิกเดียวได้ 3 ภาษา พร้อม meta/slug ต่อภาษา",
+    bullets: ["Human-in-the-loop", "Preview สลับภาษา", "ตรวจคำหลัก SEO"],
+    img: "https://images.unsplash.com/photo-1542744095-291d1f67b221?q=80&w=1600&auto=format&fit=crop",
+    alt: "ผู้จัดการคอนเทนต์ชาวเอเชียกำลังสรุปงาน",
+  },
+  {
+    title: "Analytics & Insights",
+    desc: "ดูคอนเทนต์ที่ทำผลงานดีที่สุดแบบเรียลไทม์",
+    bullets: ["Realtime Cards", "Export รายงาน", "Attribution เบื้องต้น"],
+    img: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1600&auto=format&fit=crop",
+    alt: "แดชบอร์ดกราฟและสถิติ",
+  },
+  {
+    title: "Workflow & Automation",
+    desc: "วางแผน-อนุมัติ-เผยแพร่ อัตโนมัติ ลดงานซ้ำ",
+    bullets: ["Kanban/Calendar", "Webhook/Jobs", "Notifications"],
+    img: "https://images.unsplash.com/photo-1552581234-26160f608093?q=80&w=1600&auto=format&fit=crop",
+    alt: "ทีมทำงานวางแผนบนไวท์บอร์ด",
+  },
+  {
+    title: "E-Commerce & Social",
+    desc: "เชื่อมต่อช็อปและโซเชียลยอดนิยม ยิงคอนเทนต์หลายช่องทาง",
+    bullets: ["Facebook/IG/TikTok", "Shopee/Lazada", "Short-form Assist"],
+    img: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1600&auto=format&fit=crop",
+    alt: "ทีมโซเชียลมีเดียชาวเอเชีย",
+  },
+  {
+    title: "Security & RBAC",
+    desc: "สิทธิ์หลายระดับ บันทึกกิจกรรม และนโยบายความปลอดภัย",
+    bullets: ["Role/Rule Based", "Audit Trails", "SLA Options"],
+    img: "https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?q=80&w=1600&auto=format&fit=crop",
+    alt: "ทีม Security กำลังประชุม",
+  },
+];
+
+function FeatureHighlightsReal() {
   return (
     <section className="relative py-12 md:py-16">
-      <SectionHeader title="ภาพประกอบการใช้งานจริง" subtitle="เพิ่มความน่าเชื่อถือ: Editor • Analytics • Localization • Infra • API • Security" />
+      <SectionHeader
+        title="ไฮไลต์ฟีเจอร์เด่น (ภาพจริง โทนมืออาชีพ)"
+        subtitle="เน้นประสบการณ์ใช้งานจริง เหมาะกับทีมในไทย"
+      />
       <div className="mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-3 gap-6">
-        {GALLERY.map((g, idx) => (
-          <div key={idx} className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-lg">
+        {REAL_FEATURES.map((f, idx) => (
+          <article
+            key={idx}
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-lg"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={g.src} alt={g.alt} className="h-56 md:h-64 w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <img
+              src={f.img}
+              alt={f.alt}
+              className="h-44 md:h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
             <div className="p-4">
-              <p className="text-white text-sm md:text-[15px]">{g.caption}</p>
+              <h3 className="text-white font-semibold text-lg">{f.title}</h3>
+              <p className="mt-1 text-white/75 text-sm">{f.desc}</p>
+              <ul className="mt-3 space-y-1.5 text-white/80 text-sm">
+                {f.bullets.map((b, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <span className="mt-1 size-1.5 rounded-full bg-emerald-400/80 shadow-[0_0_8px_rgba(52,211,153,.8)]" />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
             <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10 group-hover:ring-white/20" />
-          </div>
+          </article>
         ))}
       </div>
     </section>
   );
 }
 
-function TrustedBy({ logos }: { logos: { src: string; alt: string }[] }) {
-  const placeholders = [
-    { name: "Alibaba Cloud Partner" },
-    { name: "AWS Integration Ready" },
-    { name: "ISO/IEC 27001 Ready*" },
-    { name: "TLS 1.2+ / WAF Ready" },
-    { name: "SSO / AD / OAuth2" },
-    { name: "SOC 2 (process-ready*)" },
-  ];
-  const useLogos = logos.filter(l => !!l.src);
-
+/* ---------- Cloud / Compliance / Trusted ---------- */
+function CloudSupport() {
   return (
-    <section className="relative py-10">
-      <div className="mx-auto max-w-6xl">
-        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6">
-          <div className="text-center mb-6">
-            <div className="text-white/70 text-sm">Trusted signals & Partnerships</div>
-            <div className="mt-1 text-xl font-semibold text-white">ความน่าเชื่อถือระดับองค์กร</div>
-          </div>
+    <section className="relative py-12 md:py-16">
+      <SectionHeader
+        title="Cloud Support & Deployment"
+        subtitle="รองรับ AWS • Alibaba Cloud • Microsoft Azure รวมถึง Hybrid / Multi-Cloud"
+      />
 
-          {useLogos.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 items-center">
-              {useLogos.map((l, i) => (
-                <div key={i} className="flex items-center justify-center rounded-xl border border-white/10 bg-black/30 p-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={l.src} alt={l.alt || `logo-${i}`} className="max-h-10 object-contain opacity-90" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {placeholders.map((it, i) => (
-                <div key={i} className="flex items-center justify-between rounded-xl border border-white/10 bg-black/30 p-4">
-                  <div className="text-white/90 text-sm">{it.name}</div>
-                  <span className="text-[11px] px-2 py-1 rounded-full border border-white/10 bg-white/5 text-cyan-200">Badge</span>
-                </div>
-              ))}
-            </div>
-          )}
+      <div className="mx-auto max-w-5xl grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <CloudCard label="Amazon Web Services">
+          <CloudLogo
+            primary="https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-ar21.svg"
+            fallback="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg"
+            alt="AWS"
+          />
+        </CloudCard>
 
-          <div className="mt-3 text-center text-[12px] text-white/40">
-            *แสดงความพร้อมกระบวนการ/การผสานระบบ — การรับรองจริงขึ้นกับขอบเขตโปรเจกต์และผู้ตรวจรับรอง
-          </div>
-        </div>
+        <CloudCard label="Alibaba Cloud">
+          <CloudLogo
+            primary="https://www.vectorlogo.zone/logos/alibabacloud/alibabacloud-ar21.svg"
+            fallback="https://upload.wikimedia.org/wikipedia/commons/1/1d/Alibaba_Cloud_logo.svg"
+            alt="Alibaba Cloud"
+          />
+        </CloudCard>
+
+        <CloudCard label="Microsoft Azure">
+          <CloudLogo
+            primary="https://www.vectorlogo.zone/logos/microsoft_azure/microsoft_azure-ar21.svg"
+            fallback="https://upload.wikimedia.org/wikipedia/commons/f/fa/Microsoft_Azure.svg"
+            alt="Microsoft Azure"
+          />
+        </CloudCard>
       </div>
+
+      <p className="mt-4 text-center text-white/60 text-sm">
+        * เลือก Region/นโยบายเครือข่ายตามที่องค์กรต้องการ พร้อม CI/CD และ IaC (Terraform) ตัวอย่าง
+      </p>
     </section>
+  );
+}
+
+function CloudCard({
+  children,
+  label,
+}: {
+  children: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md grid place-items-center">
+      <div className="h-16 w-36 grid place-items-center">{children}</div>
+      <div className="mt-3 text-sm text-white/80">{label}</div>
+    </div>
+  );
+}
+
+function CloudLogo({
+  primary,
+  fallback,
+  alt,
+}: {
+  primary: string;
+  fallback: string;
+  alt: string;
+}) {
+  const [src, setSrc] = useState(primary);
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setSrc(fallback)}
+      className="max-h-12 w-auto object-contain opacity-90"
+      loading="lazy"
+    />
+  );
+}
+
+function Compliance() {
+  const items = [
+    {
+      title: "PDPA Compliance-ready",
+      desc: "แนวปฏิบัติด้านความเป็นส่วนตัว, Data Retention, Data Subject Request (DSR) พร้อมคู่มือ",
+    },
+    {
+      title: "Consent Management",
+      desc: "แบนเนอร์คุกกี้/Consent Log, บันทึกหลักฐานความยินยอม, โหมดไม่ระบุตัวตน",
+    },
+    {
+      title: "ISO/IEC 29110",
+      desc: "แนวปฏิบัติสำหรับองค์กร/ทีมขนาดเล็ก: เอกสารกระบวนการ, บันทึก และเทมเพลต",
+    },
+  ];
+  return (
+    <section className="relative py-12 md:py-16">
+      <SectionHeader title="Security & Compliance" subtitle="PDPA • Consent • ISO/IEC 29110" />
+      <div className="mx-auto max-w-6xl grid gap-6 md:grid-cols-3">
+        {items.map((it, i) => (
+          <div key={i} className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
+            <div className="mb-3 inline-flex items-center justify-center rounded-xl border border-white/10 bg-black/30 px-3 py-1.5 text-cyan-200">
+              <ShieldIcon className="mr-2 h-4 w-4" /> Compliance
+            </div>
+            <h3 className="text-lg font-semibold text-white">{it.title}</h3>
+            <p className="mt-2 text-white/70 text-sm leading-relaxed">{it.desc}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-center text-[12px] text-white/40">
+        * การรับรองอย่างเป็นทางการขึ้นกับขอบเขตโปรเจกต์ การตรวจ และนโยบายของลูกค้า
+      </p>
+    </section>
+  );
+}
+
+function ShieldIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className ?? "h-5 w-5"} aria-hidden="true">
+      <path fill="currentColor" d="M12 2l7 3v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V5l7-3z" />
+      <path fill="#09f" d="M12 9l4 2-4 6-4-6 4-2z" opacity=".2"/>
+    </svg>
   );
 }
 
@@ -386,6 +571,127 @@ function PricingAndChooser({
   );
 }
 
+/** ---------- TrustedBy (kept) ---------- */
+function TrustedBy({ logos }: { logos: { src: string; alt: string }[] }) {
+  const placeholders = [
+    { name: "Alibaba Cloud Partner" },
+    { name: "AWS Integration Ready" },
+    { name: "ISO/IEC 27001 Ready*" },
+    { name: "TLS 1.2+ / WAF Ready" },
+    { name: "SSO / AD / OAuth2" },
+    { name: "SOC 2 (process-ready*)" },
+  ];
+  const useLogos = logos.filter(l => !!l.src);
+
+  return (
+    <section className="relative py-10">
+      <div className="mx-auto max-w-6xl">
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6">
+          <div className="text-center mb-6">
+            <div className="text-white/70 text-sm">Trusted signals & Partnerships</div>
+            <div className="mt-1 text-xl font-semibold text-white">ความน่าเชื่อถือระดับองค์กร</div>
+          </div>
+
+          {useLogos.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 items-center">
+              {useLogos.map((l, i) => (
+                <div key={i} className="flex items-center justify-center rounded-xl border border-white/10 bg-black/30 p-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={l.src} alt={l.alt || `logo-${i}`} className="max-h-10 object-contain opacity-90" loading="lazy" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {placeholders.map((it, i) => (
+                <div key={i} className="flex items-center justify-between rounded-xl border border-white/10 bg-black/30 p-4">
+                  <div className="text-white/90 text-sm">{it.name}</div>
+                  <span className="text-[11px] px-2 py-1 rounded-full border border-white/10 bg-white/5 text-cyan-200">Badge</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-3 text-center text-[12px] text-white/40">
+            *แสดงความพร้อมกระบวนการ/การผสานระบบ — การรับรองจริงขึ้นกับขอบเขตโปรเจกต์และผู้ตรวจรับรอง
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** ---------- Footer ---------- */
+function Footer() {
+  return (
+    <footer className="mt-16 border-t border-white/10 bg-white/5">
+      <div className="mx-auto max-w-7xl px-4 md:px-6 py-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 text-sm">
+        <div>
+          <h4 className="text-white font-semibold">About Us</h4>
+          <p className="mt-2 text-white/70">
+            ContentFlow AI Suite — ระบบจัดการคอนเทนต์พร้อม AI สำหรับทีมธุรกิจไทย
+          </p>
+        </div>
+
+        <div>
+          <h4 className="text-white font-semibold">Company</h4>
+          <ul className="mt-2 space-y-1 text-white/80">
+            <li><a className="hover:underline" href="/about">About</a></li>
+            <li><a className="hover:underline" href="/contact">Contact</a></li>
+            <li><a className="hover:underline" href="/careers">Careers</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="text-white font-semibold">Legal</h4>
+          <ul className="mt-2 space-y-1 text-white/80">
+            <li><a className="hover:underline" href="/privacy">Privacy Policy</a></li>
+            <li><a className="hover:underline" href="/terms">Terms & Conditions</a></li>
+            <li><a className="hover:underline" href="/cookie">Cookie Policy</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="text-white font-semibold">Newsletter</h4>
+          <form className="mt-2 flex gap-2">
+            <input
+              type="email"
+              className="min-w-0 flex-1 rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-white placeholder:text-white/40"
+              placeholder="you@email.com"
+              required
+            />
+            <button className="rounded-lg px-3 py-2 bg-cyan-400/90 text-black hover:bg-cyan-300">Subscribe</button>
+          </form>
+          <div className="mt-3 text-white/70">
+            Email: <a className="hover:underline" href="mailto:hello@codediva.co.th">hello@codediva.co.th</a><br/>
+            Mobile: <a className="hover:underline" href="tel:+66999999999">+66 99 999 9999</a>
+          </div>
+
+          {/* Social */}
+          <div className="mt-3 flex items-center gap-3 text-white/70">
+            <a href="https://facebook.com" aria-label="Facebook" className="hover:text-white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.7V12h2.7V9.8c0-2.7 1.6-4.2 4-4.2 1.2 0 2.4.2 2.4.2v2.6h-1.4c-1.3 0-1.7.8-1.7 1.6V12h2.9l-.5 2.9h-2.4v7A10 10 0 0 0 22 12Z"/></svg>
+            </a>
+            <a href="https://instagram.com" aria-label="Instagram" className="hover:text-white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm5 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm6.5-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com" aria-label="LinkedIn" className="hover:text-white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0V8zm7.5 0H12v2.2h.1c.6-1.1 2.1-2.2 4.3-2.2 4.6 0 5.4 3 5.4 6.9V24h-5v-6.8c0-1.6 0-3.6-2.2-3.6-2.2 0-2.6 1.7-2.6 3.5V24h-5V8z"/></svg>
+            </a>
+            <a href="https://x.com" aria-label="X (Twitter)" className="hover:text-white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 4L12.7 15.5 22.5 26h-4.8l-6-7.5L6 26H1.5l9.5-12L1 4h4.9l5.7 7.1L17 4H22z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-white/10 py-4 text-center text-xs text-white/60">
+        © {new Date().getFullYear()} ContentFlow AI Suite. All rights reserved.
+      </div>
+    </footer>
+  );
+}
+
 /** ---------- Page ---------- **/
 export default function HomePage() {
   // โหลดค่าคอนฟิกจาก Admin (localStorage) — ใช้เมื่อฝั่ง client ready
@@ -409,11 +715,20 @@ export default function HomePage() {
       <DarkNeonBg />
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <Hero />
-        <GalleryShowcase />
+        <DemoVideo />
+        {/* ✅ ใช้เฉพาะไฮไลต์ฟีเจอร์เด่น (ภาพจริง โทนมืออาชีพ) */}
+        <FeatureHighlightsReal />
+        <CloudSupport />
         <TrustedBy logos={logos} />
+        <Compliance />
         <PricingAndChooser couponMode={couponMode} checkoutBase={checkoutBase} />
       </div>
+
+      {/* ปุ่ม/แชต AI แบบ futuristic อยู่ใน AiAgent */}
       <AiAgent />
+
+      {/* Footer */}
+      <Footer />
     </main>
   );
 }

@@ -2,18 +2,20 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
-type Role = "user" | "assistant" | "system";
-type Msg = { role: Role; content: string };
+/** โหลดอนุภาคทรงกลมแบบ 3D (ต้องมีไฟล์ ParticleOrb3D.tsx ตามที่ให้ไปก่อนหน้า) */
+// const ParticleOrb3D = dynamic(() => import("./ParticleOrb3D"), { ssr: false });
+import ParticleOrb2D from "@/app/widgets/ParticleOrb2D";
+
+type MsgRole = "system" | "user" | "assistant";
+type Msg = { role: MsgRole; content: string };
 
 export default function AiAgent() {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
-
-  const [messages, setMessages] = useState<Msg[]>(() => [
+  const [messages, setMessages] = useState<Msg[]>([
     { role: "system", content: "You are ContentFlow AI Suite assistant for Thai SMEs & Enterprises." },
     { role: "assistant", content: "สวัสดีค่ะ ฉันคือผู้ช่วย AI ถามฉันเรื่องแพ็กเกจ ฟีเจอร์ หรือเดโมได้เลยนะคะ ✨" },
   ]);
-
   const [input, setInput] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -25,11 +27,9 @@ export default function AiAgent() {
     const text = input.trim();
     if (!text) return;
 
-    // ✅ กำหนดชนิด message ชัดเจน เพื่อกันการกว้างเป็น string
-    const userMsg: Msg = { role: "user", content: text };
-    const next: Msg[] = [...messages, userMsg];
-
-    setMessages(next);      // <-- OK แล้ว (Msg[])
+    // ต่อท้ายข้อความผู้ใช้ด้วย type ที่เข้มงวด
+    const next: Msg[] = [...messages, { role: "user", content: text }];
+    setMessages(next);
     setInput("");
     setBusy(true);
 
@@ -40,22 +40,18 @@ export default function AiAgent() {
         body: JSON.stringify({ messages: next }),
       });
       if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-
-      const data: { reply?: string; error?: string } = await res.json();
-
-      // ✅ ใส่ assistant ด้วยชนิด Msg ชัดเจน
-      const assistantMsg: Msg = {
-        role: "assistant",
-        content: data.reply ?? "ขออภัย ระบบไม่สามารถตอบได้ในขณะนี้ค่ะ",
-      };
-      setMessages((m) => [...m, assistantMsg]);
+      const data: { reply?: string } = await res.json();
+      setMessages((m) => [...m, { role: "assistant", content: data.reply || "ค่ะ" }]);
     } catch (e) {
+      setMessages((m) => [
+        ...m,
+        {
+          role: "assistant",
+          content: "ขออภัย ระบบไม่สามารถตอบได้ในขณะนี้ กรุณาลองใหม่อีกครั้งค่ะ.",
+        },
+      ]);
+      // eslint-disable-next-line no-console
       console.error(e);
-      const fallback: Msg = {
-        role: "assistant",
-        content: "ขออภัย ระบบไม่สามารถตอบได้ในขณะนี้ กรุณาลองใหม่อีกครั้งค่ะ.",
-      };
-      setMessages((m) => [...m, fallback]);
     } finally {
       setBusy(false);
     }
@@ -63,25 +59,57 @@ export default function AiAgent() {
 
   return (
     <>
-      {/* Floating Button */}
+      {/* ===== Floating 3D Orb Toggle ===== */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-6 right-6 z-40 rounded-full px-4 py-3 text-sm font-medium text-black bg-emerald-300 hover:bg-emerald-200 shadow-[0_8px_30px_rgba(16,185,129,.45)]"
         aria-haspopup="dialog"
         aria-expanded={open}
+        aria-label={open ? "Close AI chat" : "Open AI chat"}
+        className="ai-agent-toggle fixed bottom-6 right-6 z-[60] grid place-items-center rounded-full p-0"
+        style={{
+          width: 60,
+          height: 60,
+          background: "transparent",
+          border: "none",
+          outline: "none",
+          boxShadow: "0 0 30px rgba(0,255,209,.35)",
+        }}
       >
-        {open ? "ปิดแชต" : "Chat with AI"}
+        {/* Aura ที่ไหลเวียนรอบ orb */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-full"
+          style={{
+            filter: "blur(18px)",
+            background:
+              "radial-gradient(circle at 50% 55%, rgba(0,255,209,.35), rgba(255,0,171,.18) 55%, rgba(0,0,0,0) 70%)",
+            animation: "aiAura 3.5s ease-in-out infinite",
+          }}
+        />
+        <div className="fixed bottom-2 right-2">
+          <ParticleOrb2D size={80} particles={1500} intensity={1.1} />
+        </div>
+        <span className="sr-only">{open ? "ปิดแชต AI" : "เปิดแชต AI"}</span>
       </button>
 
-      {/* Panel */}
+      {/* ===== Chat Panel ===== */}
       {open && (
         <div
           role="dialog"
           aria-label="AI Chat"
-          className="fixed bottom-24 right-6 z-40 w-[360px] max-h-[70vh] rounded-2xl border border-white/10 bg-[#0d0f14]/95 backdrop-blur-lg shadow-[0_0_40px_rgba(34,211,238,.25)] flex flex-col"
+          className="fixed bottom-24 right-6 z-[55] w-[360px] max-h-[72vh] rounded-2xl border border-white/10 bg-[#0d0f14]/95 backdrop-blur-lg shadow-[0_0_40px_rgba(34,211,238,.25)] flex flex-col"
         >
-          <div className="px-4 py-3 border-b border-white/10 text-sm text-white/80">
-            🤖 ContentFlow AI Agent
+          <div className="px-4 py-3 border-b border-white/10 text-sm text-white/80 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,1)]" />
+              ContentFlow AI Agent
+            </div>
+            <button
+              onClick={() => setOpen(false)}
+              className="rounded-md px-2 py-1 text-xs bg-white/10 hover:bg-white/15 text-white/80"
+            >
+              ปิด
+            </button>
           </div>
 
           <div className="flex-1 overflow-auto px-3 py-3 space-y-2 text-[13px]">
@@ -111,6 +139,7 @@ export default function AiAgent() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => (e.key === "Enter" ? send() : undefined)}
                 disabled={busy}
+                aria-label="พิมพ์ข้อความ"
               />
               <button
                 onClick={send}
@@ -126,6 +155,29 @@ export default function AiAgent() {
           </div>
         </div>
       )}
+
+      {/* บังคับ Canvas โปร่งใส + keyframes aura */}
+      <style jsx global>{`
+        .ai-agent-toggle canvas,
+        .ai-orb-canvas canvas {
+          background: transparent !important;
+          display: block;
+        }
+        @keyframes aiAura {
+          0% {
+            transform: scale(1);
+            opacity: 0.9;
+          }
+          50% {
+            transform: scale(1.08);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 0.9;
+          }
+        }
+      `}</style>
     </>
   );
 }

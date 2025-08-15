@@ -16,3 +16,7 @@ body {
     linear-gradient(90deg,transparent,transparent 23px, rgba(255,255,255,.04) 24px);
   background-size: 24px 24px;
 }
+
+.ai-orb,
+.ai-orb canvas { background: transparent !important; }
+.ai-orb { max-width:150px; max-height:150px; }
