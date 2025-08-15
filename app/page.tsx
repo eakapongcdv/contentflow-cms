@@ -85,7 +85,7 @@ function Hero() {
       <div className="mx-auto max-w-6xl text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[12px] text-white/70">
           <span className="inline-block size-1.5 rounded-full bg-emerald-400/80 shadow-[0_0_10px_rgba(52,211,153,.9)]" />
-          AI-Powered Content Suite for Thailand — Dark-Neon
+          AI-Powered Content Suite for Your Business
         </div>
         <h1 className="mt-5 text-4xl md:text-6xl font-semibold tracking-tight text-white drop-shadow-[0_0_30px_rgba(34,211,238,.25)]">
           ContentFlow <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-300 via-cyan-300 to-fuchsia-300">AI Suite</span>
@@ -105,9 +105,9 @@ function DemoVideo() {
   useEffect(() => {
     try {
       const fromLs = localStorage.getItem("cfg.heroVideo");
-      setUrl(fromLs || process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || "https://www.youtube.com/embed/ysz5S6PUM-U");
+      setUrl(fromLs || process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || "https://www.youtube.com/embed/34h1kn24ejE");
     } catch {
-      setUrl(process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || "https://www.youtube.com/embed/ysz5S6PUM-U");
+      setUrl(process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || "https://www.youtube.com/embed/34h1kn24ejE");
     }
   }, []);
   if (!url) return null;
@@ -195,7 +195,7 @@ function FeatureHighlightsReal() {
   return (
     <section className="relative py-12 md:py-16">
       <SectionHeader
-        title="ไฮไลต์ฟีเจอร์เด่น (ภาพจริง โทนมืออาชีพ)"
+        title="ไฮไลต์ฟีเจอร์เด่น"
         subtitle="เน้นประสบการณ์ใช้งานจริง เหมาะกับทีมในไทย"
       />
       <div className="mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-3 gap-6">
@@ -243,7 +243,7 @@ function CloudSupport() {
       <div className="mx-auto max-w-5xl grid grid-cols-1 sm:grid-cols-3 gap-6">
         <CloudCard label="Amazon Web Services">
           <CloudLogo
-            primary="https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-ar21.svg"
+            primary="images/aws.svg"
             fallback="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg"
             alt="AWS"
           />
@@ -251,7 +251,7 @@ function CloudSupport() {
 
         <CloudCard label="Alibaba Cloud">
           <CloudLogo
-            primary="https://www.vectorlogo.zone/logos/alibabacloud/alibabacloud-ar21.svg"
+            primary="images/alibaba.svg"
             fallback="https://upload.wikimedia.org/wikipedia/commons/1/1d/Alibaba_Cloud_logo.svg"
             alt="Alibaba Cloud"
           />
@@ -259,7 +259,7 @@ function CloudSupport() {
 
         <CloudCard label="Microsoft Azure">
           <CloudLogo
-            primary="https://www.vectorlogo.zone/logos/microsoft_azure/microsoft_azure-ar21.svg"
+            primary="images/azure.svg"
             fallback="https://upload.wikimedia.org/wikipedia/commons/f/fa/Microsoft_Azure.svg"
             alt="Microsoft Azure"
           />
@@ -456,7 +456,7 @@ function PricingAndChooser({
     <section className="relative py-12 md:py-16">
       <SectionHeader
         title="ราคาและแพ็กเกจ (THB) • เลือกแพ็กเกจให้เหมาะกับทีมของคุณ"
-        subtitle={`รอบบิล • ส่วนลดรายปี (${Math.round(annualDiscount * 100)}%) • คูปอง (${couponMode === "stack" ? "Stack กับรายปี (cap 30%)" : "แทนที่ส่วนลดรายปี"})`}
+        subtitle={`รอบบิล • ส่วนลดรายปี (${Math.round(annualDiscount * 100)}%) • คูปอง (${couponMode === "stack" ? "ลดเพิ่มสูงสุด 30%" : "แทนที่ส่วนลดรายปี"})`}
       />
 
       {/* Billing & Coupon */}
@@ -622,71 +622,102 @@ function TrustedBy({ logos }: { logos: { src: string; alt: string }[] }) {
 }
 
 /** ---------- Footer ---------- */
-function Footer() {
+function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-white/10 bg-white/5">
-      <div className="mx-auto max-w-7xl px-4 md:px-6 py-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 text-sm">
-        <div>
-          <h4 className="text-white font-semibold">About Us</h4>
-          <p className="mt-2 text-white/70">
-            ContentFlow AI Suite — ระบบจัดการคอนเทนต์พร้อม AI สำหรับทีมธุรกิจไทย
-          </p>
-        </div>
+    <footer className="mt-0">
+      <div className="mx-auto max-w-7xl px-4 md:px-6">
+        <div className="mx-auto max-w-6xl rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 md:p-8">
+          {/* Grid แนวเดียวกับ content: 4 คอลัมน์บน md+ */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Brand / Intro */}
+            <div>
+              <div className="text-lg font-semibold text-white">ContentFlow AI Suite</div>
+              <p className="mt-2 text-sm text-white/70 leading-relaxed">
+                แพลตฟอร์มจัดการคอนเทนต์พร้อม AI สำหรับธุรกิจไทย — สร้าง เผยแพร่ และวัดผลอย่างมืออาชีพ
+              </p>
+              <p className="mt-3 text-xs text-white/50">
+                รองรับ Cloud / Hybrid • PDPA & Consent • ISO/IEC 29110 (guideline)
+              </p>
+            </div>
 
-        <div>
-          <h4 className="text-white font-semibold">Company</h4>
-          <ul className="mt-2 space-y-1 text-white/80">
-            <li><a className="hover:underline" href="/about">About</a></li>
-            <li><a className="hover:underline" href="/contact">Contact</a></li>
-            <li><a className="hover:underline" href="/careers">Careers</a></li>
-          </ul>
-        </div>
+            {/* Product */}
+            <nav aria-label="Product" className="text-sm">
+              <div className="font-semibold text-white">Product</div>
+              <ul className="mt-3 space-y-2 text-white/75">
+                <li><a className="hover:text-white" href="#features">Features</a></li>
+                <li><a className="hover:text-white" href="#pricing">Pricing</a></li>
+                <li><a className="hover:text-white" href="#cloud">Cloud Support</a></li>
+                <li><a className="hover:text-white" href="#security">Security & Compliance</a></li>
+                <li><a className="hover:text-white" href="/docs">Docs & API</a></li>
+              </ul>
+            </nav>
 
-        <div>
-          <h4 className="text-white font-semibold">Legal</h4>
-          <ul className="mt-2 space-y-1 text-white/80">
-            <li><a className="hover:underline" href="/privacy">Privacy Policy</a></li>
-            <li><a className="hover:underline" href="/terms">Terms & Conditions</a></li>
-            <li><a className="hover:underline" href="/cookie">Cookie Policy</a></li>
-          </ul>
-        </div>
+            {/* Company */}
+            <nav aria-label="Company" className="text-sm">
+              <div className="font-semibold text-white">Company</div>
+              <ul className="mt-3 space-y-2 text-white/75">
+                <li><a className="hover:text-white" href="/about">About us</a></li>
+                <li><a className="hover:text-white" href="/contact">Contact us</a></li>
+                <li><a className="hover:text-white" href="/careers">Careers</a></li>
+                <li><a className="hover:text-white" href="/partners">Partners</a></li>
+              </ul>
+            </nav>
 
-        <div>
-          <h4 className="text-white font-semibold">Newsletter</h4>
-          <form className="mt-2 flex gap-2">
-            <input
-              type="email"
-              className="min-w-0 flex-1 rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-white placeholder:text-white/40"
-              placeholder="you@email.com"
-              required
-            />
-            <button className="rounded-lg px-3 py-2 bg-cyan-400/90 text-black hover:bg-cyan-300">Subscribe</button>
-          </form>
-          <div className="mt-3 text-white/70">
-            Email: <a className="hover:underline" href="mailto:hello@codediva.co.th">hello@codediva.co.th</a><br/>
-            Mobile: <a className="hover:underline" href="tel:+66999999999">+66 99 999 9999</a>
+            {/* Newsletter / Social / Contact */}
+            <div className="text-sm">
+              <div className="font-semibold text-white">Stay in the loop</div>
+              <form
+                className="mt-3 flex items-center gap-2"
+                onSubmit={(e) => { e.preventDefault(); /* TODO: wire-up */ }}
+              >
+                <input
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="อีเมลสำหรับข่าวสาร"
+                  className="flex-1 rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-white placeholder:text-white/40"
+                  aria-label="Email for newsletter"
+                  required
+                />
+                <button className="rounded-lg px-3 py-2 bg-cyan-400/90 text-black hover:bg-cyan-300">
+                  สมัคร
+                </button>
+              </form>
+
+              <div className="mt-4 text-white/75 space-y-1.5">
+                <div><span className="text-white/50">Email:</span> <a className="hover:text-white" href="mailto:support@codediva.co.th">support@codediva.co.th</a></div>
+                <div><span className="text-white/50">Mobile:</span> <a className="hover:text-white" href="tel:+66999999999">+66 99 999 9999</a></div>
+              </div>
+
+              <div className="mt-4 flex items-center gap-3">
+                <a href="https://facebook.com" aria-label="Facebook" className="text-white/70 hover:text-white">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.6V12h2.8V9.7c0-2.8 1.6-4.3 4-4.3 1.2 0 2.4.2 2.4.2v2.6h-1.3c-1.3 0-1.7.8-1.7 1.6V12h3l-.5 2.9h-2.5v7A10 10 0 0 0 22 12z"/></svg>
+                </a>
+                <a href="https://x.com" aria-label="X / Twitter" className="text-white/70 hover:text-white">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M18.9 2H21l-6.5 7.5 7.6 12.5H16l-4.7-7-5.4 7H3l7-8.7L2 2h6.1l4.3 6.4L18.9 2zM16.9 20h1.7L8.1 4H6.3l10.6 16z"/></svg>
+                </a>
+                <a href="https://www.linkedin.com" aria-label="LinkedIn" className="text-white/70 hover:text-white">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.85 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V23h-4V8zM8 8h3.8v2.1h.1C12.7 8.9 14.3 8 16.6 8 21.2 8 22 10.9 22 15.2V23h-4v-6.7c0-1.6 0-3.8-2.3-3.8S12.9 14 12.9 16.2V23h-4V8z"/></svg>
+                </a>
+                <a href="https://youtube.com" aria-label="YouTube" className="text-white/70 hover:text-white">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.4.6A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12c0 1.8.2 3.6.5 5.8a3 3 0 0 0 2.1 2.1C4.4 20.5 12 20.5 12 20.5s7.6 0 9.4-.6a3 3 0 0 0 2.1-2.1c.3-2.2.5-4 .5-5.8 0-1.8-.2-3.6-.5-5.8zM9.6 15.5V8.5l6.2 3.5-6.2 3.5z"/></svg>
+                </a>
+              </div>
+            </div>
           </div>
 
-          {/* Social */}
-          <div className="mt-3 flex items-center gap-3 text-white/70">
-            <a href="https://facebook.com" aria-label="Facebook" className="hover:text-white">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.7V12h2.7V9.8c0-2.7 1.6-4.2 4-4.2 1.2 0 2.4.2 2.4.2v2.6h-1.4c-1.3 0-1.7.8-1.7 1.6V12h2.9l-.5 2.9h-2.4v7A10 10 0 0 0 22 12Z"/></svg>
-            </a>
-            <a href="https://instagram.com" aria-label="Instagram" className="hover:text-white">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm5 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm6.5-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z"/></svg>
-            </a>
-            <a href="https://www.linkedin.com" aria-label="LinkedIn" className="hover:text-white">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0V8zm7.5 0H12v2.2h.1c.6-1.1 2.1-2.2 4.3-2.2 4.6 0 5.4 3 5.4 6.9V24h-5v-6.8c0-1.6 0-3.6-2.2-3.6-2.2 0-2.6 1.7-2.6 3.5V24h-5V8z"/></svg>
-            </a>
-            <a href="https://x.com" aria-label="X (Twitter)" className="hover:text-white">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 4L12.7 15.5 22.5 26h-4.8l-6-7.5L6 26H1.5l9.5-12L1 4h4.9l5.7 7.1L17 4H22z"/></svg>
-            </a>
+          {/* Bottom bar */}
+          <div className="mt-8 border-t border-white/10 pt-4 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-white/55">
+            <div>© {new Date().getFullYear()} Codediva Co., Ltd. All rights reserved.</div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <a className="hover:text-white" href="/policy">Privacy Policy</a>
+              <a className="hover:text-white" href="/terms">Terms & Conditions</a>
+              <a className="hover:text-white" href="/pdpa">PDPA & Consent</a>
+              <a className="hover:text-white" href="/security">Security</a>
+              <a className="hover:text-white" href="/sitemap">Sitemap</a>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className="border-t border-white/10 py-4 text-center text-xs text-white/60">
-        © {new Date().getFullYear()} ContentFlow AI Suite. All rights reserved.
       </div>
     </footer>
   );
@@ -722,13 +753,11 @@ export default function HomePage() {
         <TrustedBy logos={logos} />
         <Compliance />
         <PricingAndChooser couponMode={couponMode} checkoutBase={checkoutBase} />
+      
+        <SiteFooter />
       </div>
-
       {/* ปุ่ม/แชต AI แบบ futuristic อยู่ใน AiAgent */}
       <AiAgent />
-
-      {/* Footer */}
-      <Footer />
     </main>
   );
 }
