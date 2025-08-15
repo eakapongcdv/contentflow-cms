@@ -1,0 +1,551 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String?
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions Session[]
+  accounts Account[]
+
+  // add this line if you want to query user.groups directly:
+  groups   UserGroupMember[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
+
+  @@index([userId])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model HeroSlide {
+  id        String   @id @default(cuid())
+  title     String
+  subtitle  String?
+  imageUrl  String
+  sort      Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  title     String
+  imageUrl  String
+  sort      Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ✅ เพิ่มบรรทัดนี้: ฝั่งตรงข้ามของ ArticleCategory.category
+  articles ArticleCategory[]
+}
+
+model Feature {
+  id        String   @id @default(cuid())
+  title     String
+  subtitle  String?
+  imageUrl  String
+  sort      Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Brand {
+  id        String   @id @default(cuid())
+  name      String
+  logoUrl   String
+  sort      Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InfoCard {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  sort        Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Occupant {
+  id         String @id @default(cuid())
+  externalId String @unique
+
+  nameEn    String
+  nameTh    String
+  shortName String?
+  category  String?
+  phone     String?
+
+  venueId  String?
+  anchorId String?
+  unitId   String?
+  kioskId  String?
+
+  // ✅ arrays: ใช้ @db.Text หรือจะตัดทิ้งก็ได้
+  unitIds          String[] @db.Text
+  kioskIds         String[] @db.Text
+  promotionIds     String[] @db.Text
+  privilegeIds     String[] @db.Text
+  localCategoryIds String[] @db.Text
+  groupIds         String[] @db.Text
+  keywords         String[] @db.Text
+
+  renderPriority Int     @default(0)
+  renderType     String?
+  canReserve     Boolean @default(false)
+  isFeatured     Boolean @default(false)
+  isLandmark     Boolean @default(false)
+  websiteLink    String?
+
+  descriptionEn String?
+  descriptionTh String?
+  roomNo        String?
+  style         String?
+  hours         String?
+
+  startDate            DateTime?
+  endDate              DateTime?
+  isMaintenance        Boolean   @default(false)
+  maintenanceStartDate DateTime?
+  maintenanceEndDate   DateTime?
+
+  logoUrl          String?
+  coverImageUrl    String?
+  featuredImageUrl String?
+
+  createdAtRaw DateTime?
+  updatedAtRaw DateTime?
+  publishedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  latitude  Float?
+  longitude Float?
+
+  @@index([venueId])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([nameEn])
+  @@index([nameTh])
+  @@index([latitude, longitude])
+}
+
+model SearchLog {
+  id        String   @id @default(cuid())
+  term      String
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model ClickLog {
+  id        String  @id @default(cuid())
+  itemType  String // "occupant" | "event" | "brand" | ...
+  itemId    String // id ของโมเดลนั้น ๆ
+  term      String? // คำค้น ณ ตอนคลิก (ถ้ามี)
+  ip        String? @db.VarChar(45)
+  userAgent String?
+  referer   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([itemType, createdAt])
+  @@index([itemType, itemId, createdAt])
+}
+
+model Event {
+  id               String   @id @default(cuid())
+  externalId       String?  @unique
+  venueId          String?
+  localCategoryIds String[] @db.Text
+
+  // ชื่อ/คำอธิบาย 2 ภาษา
+  nameEn        String
+  nameTh        String?
+  descriptionEn String?
+  descriptionTh String?
+
+  // ช่วงวันจัดงาน + เวลาเปิดทำการรายวัน
+  startDate      DateTime
+  endDate        DateTime
+  dailyStartTime String? // "HH:mm:ss"
+  dailyEndTime   String? // "HH:mm:ss"
+
+  isFeatured  Boolean @default(false)
+  websiteLink String?
+
+  // รูปภาพหลัก (cover) และโลโก้/แกลเลอรี (เลือกใช้หรือต่อขยายทีหลัง)
+  coverImageUrl String?
+  coverImageW   Int?
+  coverImageH   Int?
+  coverThumbUrl String?
+  coverSmallUrl String?
+
+  logoUrl     String?
+  galleryJson Json?
+
+  // meta
+  locale    String? // "en" | "th"
+  order     Int?
+  reference String?
+  style     String?
+
+  createdAtRaw DateTime?
+  updatedAtRaw DateTime?
+  publishedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([venueId])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([nameEn])
+  @@index([nameTh])
+}
+
+model SeoMeta {
+  id                String  @id @default(cuid())
+  contentType       String // เช่น "occupant", "event", ...
+  targetId          String // อ้างอิง id ของ content (ไม่บังคับ FK เพื่อให้ยืดหยุ่น)
+  metaTitleTh       String?
+  metaTitleEn       String?
+  metaDescriptionTh String?
+  metaDescriptionEn String?
+  metaKeywordsTh    String?
+  metaKeywordsEn    String?
+  ogTitle           String?
+  ogDescription     String?
+  ogImageUrl        String?
+  canonicalUrl      String?
+  robotsNoindex     Boolean @default(false)
+  robotsNofollow    Boolean @default(false)
+  structuredData    Json? // เก็บ JSON-LD
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([contentType, targetId])
+  @@index([targetId])
+}
+
+model Promotion {
+  id               String   @id @default(cuid())
+  externalId       String?  @unique
+  websiteId        String // << เอา @default("1") ออก
+  occupantId       String?
+  featureId        String?
+  category         String?
+  venueId          String?
+  localCategoryIds String[] @db.Text
+
+  // ชื่อ/คำอธิบาย 2 ภาษา
+  nameEn        String
+  nameTh        String?
+  descriptionEn String?
+  descriptionTh String?
+
+  // ช่วงวัน + เวลาเปิดทำการรายวัน
+  startDate      DateTime
+  endDate        DateTime
+  dailyStartTime String?
+  dailyEndTime   String?
+
+  isFeatured  Boolean @default(false)
+  websiteLink String?
+
+  // รูปหลัก + อนาคตต่อยอดแกลเลอรี
+  coverImageUrl String?
+  coverImageW   Int?
+  coverImageH   Int?
+  coverThumbUrl String?
+  coverSmallUrl String?
+
+  logoUrl     String?
+  galleryJson Json?
+
+  // meta
+  locale    String?
+  order     Int?
+  reference String?
+  style     String?
+
+  createdAtRaw DateTime?
+  updatedAtRaw DateTime?
+  publishedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ✅ ฟิลด์ relation (คู่กับ Website.promotions)
+  website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  // ✅ ดัชนีที่ใช้จริง
+  @@index([websiteId])
+  @@index([venueId])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([nameEn])
+  @@index([nameTh])
+}
+
+// ── เทมเพลตยอดนิยม ─────────────────────────────────────────────
+enum WebsiteTemplate {
+  COMPANY_PROFILE // template 1
+  ECOMMERCE // template 2
+  MALL // template 3 (ห้างสรรพสินค้า)
+  NEWS_BLOGS // template 4
+  JOBS_SEARCH // template 5
+}
+
+// ── ตาราง Website (หลายประเภท / หลายโดเมน / หลายภาษา) ────────
+model Website {
+  id            String          @id @default(cuid())
+  name          String
+  template      WebsiteTemplate
+  primaryDomain String?         @unique
+  customDomains String[]        @db.Text
+  locales       String[]        @db.Text
+  defaultLocale String?
+  logoUrl       String?
+  faviconUrl    String?
+  theme         Json?
+  settings      Json?
+  isActive      Boolean         @default(true)
+  publishedAt   DateTime?
+
+  // ความสัมพันธ์เดิม
+  promotions Promotion[]
+
+  // ✅ เพิ่มบรรทัดนี้: ฝั่งตรงข้ามของ Article.website
+  articles Article[]
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  ArticleI18n   ArticleI18n[]
+  UserGroup     UserGroup[]
+  AccessControl AccessControl[]
+
+  @@index([template])
+  @@index([isActive])
+  @@index([publishedAt])
+}
+
+enum ArticleStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articles ArticleTag[]
+}
+
+model Article {
+  id        String  @id @default(cuid())
+  websiteId String
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  // (ไม่มีฟิลด์ข้อความ legacy แล้ว)
+  coverImageUrl String?
+  coverImageW   Int?
+  coverImageH   Int?
+  authorName    String?
+  readingTime   Int?
+  status        ArticleStatus @default(DRAFT)
+  publishedAt   DateTime?
+  scheduledAt   DateTime?
+
+  // meta ไม่แปล
+  reference String?
+  order     Int?    @default(0)
+
+  createdAtRaw DateTime?
+  updatedAtRaw DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // ความสัมพันธ์
+  categories ArticleCategory[]
+  tags       ArticleTag[]
+  i18n       ArticleI18n[]
+
+  // ดัชนีที่ยังมีประโยชน์
+  @@index([websiteId, status, publishedAt])
+  @@index([websiteId, createdAt])
+}
+
+model ArticleCategory {
+  articleId  String
+  categoryId String
+  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, categoryId])
+  @@index([categoryId])
+}
+
+model ArticleTag {
+  articleId String
+  tagId     String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+  @@index([tagId])
+}
+
+enum Locale3 {
+  TH
+  EN
+  CN
+}
+
+model ArticleI18n {
+  id String @id @default(cuid())
+
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  websiteId String
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  locale      Locale3
+  title       String
+  slug        String
+  subtitle    String?
+  excerpt     String?
+  contentMd   String?
+  contentHtml String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([articleId, locale]) // 1 บทความต่อ 1 locale
+  @@unique([websiteId, locale, slug]) // slug ไม่ซ้ำในเว็บเดียวกันต่อภาษา
+  @@index([websiteId, locale, title])
+}
+
+// ── Access Control (ต่อเว็บไซต์) ─────────────────────────────
+enum AclSubject {
+  USER
+  GROUP
+  ROLE
+}
+
+enum AclAction {
+  ALL // ครอบจักรวาล (ชนะเฉพาะเมื่อไม่โดน DENY ที่เฉพาะเจาะจงกว่า)
+  VIEW_MENU // แสดงหัวข้อเมนู (กลุ่ม)
+  VIEW_SUBMENU // แสดงเมนูย่อย/ลิงก์
+  VIEW_PAGE // เปิดหน้าได้
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  PUBLISH
+}
+
+enum AclEffect {
+  ALLOW
+  DENY
+}
+
+model UserGroup {
+  id        String   @id @default(cuid())
+  websiteId String?
+  website   Website? @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  name      String
+
+  members   UserGroupMember[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@unique([websiteId, name])
+}
+
+model UserGroupMember {
+  groupId String
+  userId  String
+
+  group UserGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, userId])
+  @@index([userId])
+}
+
+model AccessControl {
+  id        String  @id @default(cuid())
+  websiteId String
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  subjectType AclSubject
+  subjectId   String // userId | groupId | Role enum string เช่น "ADMIN"
+
+  resource String // ตัวอย่าง: "menu:events-promotions", "menu:events-promotions:/admin/promotions", "res:promotions", "api:/admin/promotions", "*" (wildcard)
+  action   AclAction
+  effect   AclEffect @default(ALLOW)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([websiteId, subjectType, subjectId])
+  @@index([websiteId, resource, action])
+}

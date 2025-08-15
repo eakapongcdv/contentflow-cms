@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { min-height: 100%; }
+body {
+  @apply antialiased bg-[#0a0a0f] text-white;
+  font-family: var(--font-noto), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* grid overlay (ถ้าต้องใช้) */
+.tw-grid-overlay{
+  background:
+    linear-gradient(transparent,transparent 23px, rgba(255,255,255,.04) 24px),
+    linear-gradient(90deg,transparent,transparent 23px, rgba(255,255,255,.04) 24px);
+  background-size: 24px 24px;
+}
