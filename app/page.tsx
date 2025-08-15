@@ -105,9 +105,9 @@ function DemoVideo() {
   useEffect(() => {
     try {
       const fromLs = localStorage.getItem("cfg.heroVideo");
-      setUrl(fromLs || process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || "https://www.youtube.com/embed/34h1kn24ejE");
+      setUrl(fromLs || process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || "https://www.youtube.com/embed/ysz5S6PUM-U");
     } catch {
-      setUrl(process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || "https://www.youtube.com/embed/34h1kn24ejE");
+      setUrl(process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || "https://www.youtube.com/embed/ysz5S6PUM-U");
     }
   }, []);
   if (!url) return null;
