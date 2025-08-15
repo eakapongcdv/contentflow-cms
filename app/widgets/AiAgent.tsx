@@ -86,7 +86,7 @@ export default function AiAgent() {
             animation: "aiAura 3.5s ease-in-out infinite",
           }}
         />
-        <div className="fixed bottom-2 right-2">
+        <div className="fixed bottom-4 right-4">
           <ParticleOrb2D size={80} particles={1500} intensity={1.1} />
         </div>
         <span className="sr-only">{open ? "ปิดแชต AI" : "เปิดแชต AI"}</span>
