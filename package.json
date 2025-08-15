@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 4000",
-    "build": "next build",
+    "build-local": "rm -rf .next && next build",
+    "build": "pnpm prisma generate && rm -rf .next && pnpm next build",
     "start": "next start",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
