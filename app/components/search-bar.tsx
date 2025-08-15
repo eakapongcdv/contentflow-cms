@@ -4,20 +4,34 @@ import { useRef, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import VoiceSearchModal from "@/app/components/voice-search-modal";
 
-export default function SearchBar() {
+type Lang = "TH" | "EN" | "CN";
+
+type SearchBarProps = {
+  /** ค่าเริ่มต้นของคำค้น (เช่น ส่งมาจาก server) */
+  defaultQuery?: string;
+  /** ค่าเริ่มต้นของภาษา (ถ้าไม่ส่ง จะอ่านจาก URL lang) */
+  defaultLang?: Lang;
+};
+
+export default function SearchBar({ defaultQuery, defaultLang }: SearchBarProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [voiceOpen, setVoiceOpen] = useState(false);
 
-  // read q & lang from current URL
+  // อ่าน q/lang ปัจจุบันจาก URL (ฝั่ง client)
   const sp = useSearchParams();
   const qFromUrl = sp.get("q") ?? "";
-  const langFromUrl = (sp.get("lang") ?? "TH").toUpperCase() as "TH" | "EN" | "CN";
+  const langFromUrl = (sp.get("lang") ?? "TH").toUpperCase() as Lang;
 
-  // keep input value in sync when URL changes (e.g., back/forward nav)
+  // ใช้ค่าที่มากับ props ก่อน ถ้าไม่มีก็ใช้ของ URL
+  const effectiveQ = (defaultQuery ?? qFromUrl) as string;
+  const effectiveLang = (defaultLang ?? langFromUrl) as Lang;
+
+  // sync ค่า input หาก URL หรือ prop defaultQuery เปลี่ยน
   useEffect(() => {
-    if (inputRef.current) inputRef.current.value = qFromUrl;
-  }, [qFromUrl]);
+    if (inputRef.current) inputRef.current.value = effectiveQ;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qFromUrl, defaultQuery]);
 
   const handleVoiceResult = (text: string) => {
     if (inputRef.current) inputRef.current.value = text;
@@ -31,7 +45,7 @@ export default function SearchBar() {
           {/* Lang flag selector (TH/EN/CN) */}
           <select
             name="lang"
-            defaultValue={langFromUrl}
+            defaultValue={effectiveLang}
             className="px-3 rounded-xl border border-gray-300 bg-white text-sm text-gray-700"
             title="ภาษาสำหรับการค้นหา"
             aria-label="เลือกภาษา"
@@ -41,12 +55,12 @@ export default function SearchBar() {
             <option value="CN">CN</option>
           </select>
 
-          {/* Search input (auto-filled from URL) */}
+          {/* Search input */}
           <input
             ref={inputRef}
             type="text"
             name="q"
-            defaultValue={qFromUrl}
+            defaultValue={effectiveQ}
             placeholder="พิมพ์หรือพูดสิ่งที่อยากหา…"
             className="flex-1 inp text-base md:text-lg"
             autoComplete="off"
@@ -75,6 +89,7 @@ export default function SearchBar() {
         open={voiceOpen}
         onClose={() => setVoiceOpen(false)}
         onResult={handleVoiceResult}
+        lang={effectiveLang}  /* ✅ ส่ง prop ที่จำเป็นให้โมดัล */
       />
     </>
   );

@@ -33,7 +33,7 @@ export function FormActions({
         <Button
           type="button"
           variant="outlineZspell"
-          iconLeft={Trash2}
+          leftIcon={<Trash2 className="h-4 w-4" />}
           onClick={onDelete}
         >
           {deleteText}
@@ -47,7 +47,7 @@ export function FormActions({
           <Button
             type="button"
             variant="ghost"
-            iconLeft={ArrowLeft}
+            leftIcon={<ArrowLeft className="h-4 w-4" />}
             onClick={() => router.back()}
           >
             {backText}
@@ -57,7 +57,7 @@ export function FormActions({
           type={onSave ? "button" : "submit"}
           onClick={onSave}
           variant="zspell"
-          iconLeft={Save}
+          leftIcon={<Save className="h-4 w-4" />}
           loading={!!saving}
         >
           {mode === "edit" ? saveTextEdit : saveTextCreate}

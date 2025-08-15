@@ -25,7 +25,15 @@ import { FormActions } from "@/app/components/ui/form-actions";
 import { MediaPickerCard } from "@/app/components/ui/media-picker-card";
 
 // TinyMCE editor (client-only)
-const Editor = dynamic(async () => (await import("@tinymce/tinymce-react")).Editor, { ssr: false });
+const TinyMCEClient = dynamic(
+  () => import("../../TinyMCEClient"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-xl border admin-card h-[300px] animate-pulse" />
+    ),
+  }
+);
 
 type PromotionFormProps = {
   mode: "create" | "edit";
@@ -240,8 +248,6 @@ export default function PromotionForm({ mode, id, initial, initialSeo }: Promoti
     nameTh: "",
     descriptionEn: "",
     descriptionTh: "",
-    startDate: "",
-    endDate: "",
     dailyStartTime: "",
     dailyEndTime: "",
     coverImageUrl: null,
@@ -472,7 +478,7 @@ export default function PromotionForm({ mode, id, initial, initialSeo }: Promoti
             <Button
               type="button"
               variant="zspell"
-              iconLeft={Sparkles}
+              leftIcon={<Sparkles className="h-4 w-4" />} 
               onClick={onAIGenerate}
               loading={loadingAI}
               title="AI Content Generation"
@@ -494,7 +500,7 @@ export default function PromotionForm({ mode, id, initial, initialSeo }: Promoti
             <div className="sm:col-span-2">
               <span className="text-sm">Description (TH)</span>
               <div className="rounded-xl border">
-                <Editor
+                <TinyMCEClient
                   apiKey={tinymceApiKey}
                   value={form.descriptionTh || ""}
                   init={{
@@ -514,7 +520,7 @@ export default function PromotionForm({ mode, id, initial, initialSeo }: Promoti
             <div className="sm:col-span-2">
               <span className="text-sm">Description (EN)</span>
               <div className="rounded-xl border">
-                <Editor
+                <TinyMCEClient
                   apiKey={tinymceApiKey}
                   value={form.descriptionEn || ""}
                   init={{
@@ -652,7 +658,9 @@ export default function PromotionForm({ mode, id, initial, initialSeo }: Promoti
               <Button variant="outlineZspell" onClick={onRegenerateJsonLd}>
                 Regenerate
               </Button>
-              <Button variant="outlineZspell" onClick={onPreviewDraft} iconLeft={Eye}>
+              <Button variant="outlineZspell" 
+                onClick={onPreviewDraft} 
+                leftIcon={<Eye className="h-4 w-4" />}>
                 OG Preview (Draft)
               </Button>
             </div>
@@ -667,7 +675,7 @@ export default function PromotionForm({ mode, id, initial, initialSeo }: Promoti
                   key={t.id}
                   type="button"
                   variant={active ? "zspell" : "outlineZspell"}
-                  iconLeft={Icon}
+                  leftIcon={<Icon className="h-4 w-4" />}
                   onClick={() => {
                     setActiveJsonLdType(t.id as JsonLdType);
                     const obj = genJsonLd(t.id as JsonLdType, form, seo);

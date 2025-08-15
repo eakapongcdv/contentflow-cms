@@ -108,7 +108,7 @@ export function AiPromptPanel({
         <Button
           type="button"
           variant="zspell"
-          iconLeft={Sparkles}
+          leftIcon={<Sparkles className="h-4 w-4" />}
           onClick={onGenerate}
           loading={loading}
           title="AI Content Generation"

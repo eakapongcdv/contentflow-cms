@@ -1,123 +1,119 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Search, X } from "lucide-react";
+import * as React from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-type Props = {
+export type Props = {
   q: string;
-  venue: string;            // venue-1 | venue-2
-  categories?: string[];    // รายการหมวดหมู่ (distinct)
-  category?: string;        // cat ที่เลือกอยู่
+  per: number;                                // ✅ เพิ่มให้ตรงกับ page.tsx
+  venue: "venue-1" | "venue-2";
+  categories: string[];
+  category?: string;
 };
 
 export default function Filters({
   q,
+  per,
   venue,
-  categories = [],
-  category = "",
+  categories,
+  category,
 }: Props) {
   const router = useRouter();
+  const pathname = usePathname();
+  const sp = useSearchParams();
 
-  const [localQ, setLocalQ] = useState(q);
-  const [localCat, setLocalCat] = useState(category || "");
+  // state สำหรับช่องค้นหา (ให้พิมพ์แล้วค่อยอัปเดต URL)
+  const [kw, setKw] = React.useState(q);
 
-  useEffect(() => setLocalQ(q), [q]);
-  useEffect(() => setLocalCat(category || ""), [category]);
+  React.useEffect(() => {
+    setKw(q);
+  }, [q]);
 
-  // ทำความสะอาด categories (กัน null/ซ้ำ)
-  const catOptions = useMemo(
-    () =>
-      Array.from(new Set(categories.filter(Boolean) as string[])).sort((a, b) =>
-        a.localeCompare(b)
-      ),
-    [categories]
-  );
+  function buildQuery(next: Partial<{ q: string; per: number; venue: string; cat: string; page: number }>) {
+    const u = new URLSearchParams(sp.toString());
+    // keep current values as baseline
+    u.set("venue", next.venue ?? venue);
+    u.set("per", String(next.per ?? per));
+    u.set("page", String(next.page ?? 1));       // เปลี่ยน filter ใด ๆ → กลับไปหน้า 1
 
-  // helper: สร้าง URL ใหม่ (ย้ายไปหน้า 1 ทุกครั้งที่เปลี่ยน filter)
-  const toUrl = useMemo(
-    () => (params: { q?: string; cat?: string; page?: number | string }) => {
-      const sp = new URLSearchParams();
-      sp.set("venue", venue);
-      sp.set("page", String(params.page ?? 1));
-      const query = (params.q ?? localQ).trim();
-      const cat = params.cat ?? localCat;
-      if (query) sp.set("q", query);
-      if (cat) sp.set("cat", cat);
-      return `/admin/occupants?${sp.toString()}`;
-    },
-    [venue, localQ, localCat]
-  );
+    // q
+    if (typeof next.q === "string") {
+      if (next.q) u.set("q", next.q);
+      else u.delete("q");
+    } else if (q) {
+      u.set("q", q);
+    }
 
-  const submit = (e?: React.FormEvent) => {
-    e?.preventDefault?.();
-    router.push(toUrl({ page: 1 }));
-  };
+    // category
+    const catVal = next.cat ?? category ?? "";
+    if (catVal) u.set("cat", catVal);
+    else u.delete("cat");
 
-  // เปลี่ยนหมวดแล้วนำทางทันที
-  const onChangeCat = (val: string) => {
-    setLocalCat(val);
-    router.push(toUrl({ cat: val, page: 1 }));
-  };
+    return `${pathname}?${u.toString()}`;
+  }
 
-  // เคลียร์เฉพาะข้อความค้นหา (คง category เดิม)
-  const clearSearch = () => {
-    setLocalQ("");
-    router.push(toUrl({ q: "", page: 1 }));
-  };
+  function apply(next: Partial<{ q: string; per: number; venue: string; cat: string }>) {
+    router.replace(buildQuery(next));
+  }
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    apply({ q: kw });
+  }
 
   return (
-    <form onSubmit={submit} className="w-full">
-      {/* ใช้ flex + items-stretch ให้สูงเท่ากันทั้งหมด
-          - flex-wrap สำหรับจอเล็ก, ไม่ล้น
-          - sm:flex-nowrap บังคับแถวเดียวตั้งแต่จอ >= sm */}
-      <div className="flex flex-wrap sm:flex-nowrap items-stretch gap-2 w-full min-w-0">
-        {/* Category */}
-        <label className="sr-only" htmlFor="filter-cat">Category</label>
+    <form onSubmit={onSubmit} className="grid gap-3 md:grid-cols-3">
+      {/* Category */}
+      <label className="grid gap-1">
+        <span className="text-sm admin-subtle">หมวดหมู่</span>
         <select
-          id="filter-cat"
-          className="inp h-11 rounded-xl sm:basis-56 md:basis-64 flex-shrink-0"
-          value={localCat}
-          onChange={(e) => onChangeCat(e.target.value)}
+          className="admin-select"
+          value={category ?? ""}
+          onChange={(e) => apply({ cat: e.target.value || "" })}
         >
-          <option value="">ทั้งหมด</option>
-          {catOptions.map((c) => (
-            <option key={c} value={c}>{c}</option>
+          <option value="">ทุกหมวดหมู่</option>
+          {categories.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
           ))}
         </select>
+      </label>
 
-        {/* Search */}
-        <label className="sr-only" htmlFor="filter-q">Search</label>
+      {/* Keyword */}
+      <label className="grid gap-1">
+        <span className="text-sm admin-subtle">ค้นหา</span>
         <input
-          id="filter-q"
-          className="inp h-11 rounded-xl flex-1 min-w-0"
-          placeholder="ค้นหาชื่อ, unit, kiosk…"
-          value={localQ}
-          onChange={(e) => setLocalQ(e.target.value)}
+          className="admin-input"
+          value={kw}
+          placeholder="ชื่อร้าน, หมวดหมู่, Unit, Kiosk..."
+          onChange={(e) => setKw(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") submit();
+            if (e.key === "Enter") onSubmit(e as any);
           }}
         />
+      </label>
 
-        {/* Clear button (ไอคอน) */}
-        <button
-          type="button"
-          onClick={clearSearch}
-          className="btn btn-outline-zpell h-11 w-11 p-0 grid place-items-center rounded-xl flex-shrink-0"
-          title="ล้างคำค้น"
-          aria-label="ล้างคำค้น"
+      {/* Per page */}
+      <label className="grid gap-1">
+        <span className="text-sm admin-subtle">ต่อหน้า</span>
+        <select
+          className="admin-select"
+          value={per}
+          onChange={(e) => apply({ per: Number(e.target.value) || per })}
         >
-          <X className="h-4 w-4" />
-        </button>
+          {[10, 20, 30, 50, 100, 200].map((n) => (
+            <option key={n} value={n}>
+              {n} / หน้า
+            </option>
+          ))}
+        </select>
+      </label>
 
-        {/* Search button (ไอคอน) */}
-        <button
-          type="submit"
-          className="btn btn-zpell h-11 w-11 p-0 grid place-items-center rounded-xl flex-shrink-0"
-          title="ค้นหา"
-          aria-label="ค้นหา"
-        >
-          <Search className="h-4 w-4" />
+      {/* ปุ่มค้นหา (optional; กด Enter ก็ได้) */}
+      <div className="md:col-span-3">
+        <button type="submit" className="admin-btn">
+          ค้นหา
         </button>
       </div>
     </form>

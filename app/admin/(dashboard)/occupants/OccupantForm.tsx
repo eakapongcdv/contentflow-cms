@@ -6,11 +6,16 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 
 /* TinyMCE only on client */
-const Editor = dynamic(
-  () => import("@tinymce/tinymce-react").then((m) => m.Editor),
-  { ssr: false }
+const TinyMCEClient = dynamic(
+  () => import("../TinyMCEClient"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-xl border admin-card h-[300px] animate-pulse" />
+    ),
+  }
 );
-
+/* =
 /* ===================== Types ===================== */
 type OccupantFormProps = {
   mode: "create" | "edit";
@@ -234,7 +239,7 @@ function RichText({
         {icon && <span className="text-gray-500">{icon}</span>}
         {label}
       </span>
-      <Editor
+      <TinyMCEClient
         apiKey={apiKey}
         value={value}
         init={{

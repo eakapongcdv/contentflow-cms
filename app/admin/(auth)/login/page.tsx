@@ -1,15 +1,52 @@
 "use client";
 
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 
 // ปรับให้ตรงกับ provider id ใน NextAuth ของคุณ
 const GOOGLE_PROVIDER_ID = "google";
 const MS_PROVIDER_ID = "azure-ad"; // ถ้าใช้ B2C หรือชื่ออื่น ให้เปลี่ยนเป็น "azure-ad-b2c" หรือ id ที่ตั้งไว้
 
 export default function LoginPage() {
+  // ✅ ครอบด้วย Suspense เพื่อรองรับ useSearchParams ใน Client Component
+  return (
+    <Suspense fallback={<LoginFallback />}>
+      <LoginPageInner />
+    </Suspense>
+  );
+}
+
+function LoginFallback() {
+  return (
+    <main className="min-h-[calc(100vh-56px)] flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md">
+        <div className="admin-card p-8 animate-pulse">
+          <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-white/10" />
+          <div className="h-6 w-40 mx-auto bg-white/10 rounded mb-2" />
+          <div className="h-4 w-56 mx-auto bg-white/10 rounded" />
+          <div className="mt-6 space-y-2">
+            <div className="h-9 w-full bg-white/10 rounded" />
+            <div className="h-9 w-full bg-white/10 rounded" />
+          </div>
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-white/15" />
+            <span className="text-xs text-white/50">หรือ</span>
+            <div className="h-px flex-1 bg-white/15" />
+          </div>
+          <div className="space-y-2">
+            <div className="h-9 w-full bg-white/10 rounded" />
+            <div className="h-9 w-full bg-white/10 rounded" />
+            <div className="h-9 w-full bg-white/10 rounded" />
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+function LoginPageInner() {
   const qs = useSearchParams();
 
   // ถ้ามี callbackUrl จะพากลับหน้านั้น ไม่งั้นไปหน้า overview
@@ -82,7 +119,7 @@ export default function LoginPage() {
   function sso(provider: string) {
     if (loading || loadingSso) return;
     setLoadingSso(provider);
-    // สำหรับ OAuth/SSO ให้ให้ next-auth redirect เอง
+    // สำหรับ OAuth/SSO ให้ next-auth redirect เอง
     signIn(provider, { callbackUrl }).finally(() => {
       // ปกติจะ redirect ออกทันที โค้ดนี้เผื่อกรณี popup ถูกบล็อค/เกิด error
       setLoadingSso(null);

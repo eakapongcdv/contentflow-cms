@@ -1,5 +1,5 @@
 // app/admin/(dashboard)/layout.tsx
-import AdminNav from "./admin-nav";
+import AdminNav from "@/app/components/admin-nav";
 import { cookies } from "next/headers";
 import { prisma } from "@/app/lib/prisma";
 import { WebsiteProvider } from "./website-provider";

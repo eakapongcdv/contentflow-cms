@@ -14,8 +14,15 @@ import { AiPromptPanel } from "@/app/components/ui/ai-prompt-panel";
 import { slugify } from "@/app/components/ui/utils";
 
 // TinyMCE editor (client-only)
-const Editor = dynamic(async () => (await import("@tinymce/tinymce-react")).Editor, { ssr: false });
-
+const TinyMCEClient = dynamic(
+  () => import("../../TinyMCEClient"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-xl border admin-card h-[300px] animate-pulse" />
+    ),
+  }
+);
 /* ====================== Types ====================== */
 type Lang = "th" | "en" | "cn";
 
@@ -529,7 +536,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
               <div className="sm:col-span-2">
                 <span className="text-sm">Content (Markdown / WYSIWYG)</span>
                 <div className="rounded-xl border">
-                  <Editor
+                  <TinyMCEClient
                     apiKey={tinymceApiKey}
                     value={form.i18n[lang].contentMd || ""}
                     init={{
@@ -694,7 +701,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
               >
                 Regenerate
               </Button>
-              <Button variant="outlineZspell" onClick={onPreviewDraft} iconLeft={Eye}>
+              <Button variant="outlineZspell" onClick={onPreviewDraft} leftIcon={<Eye className="h-4 w-4" aria-hidden />}>
                 OG Preview (Draft)
               </Button>
             </div>

@@ -6,11 +6,17 @@ import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import type { Event } from "@prisma/client";
 
-/* TinyMCE client-only */
-const Editor = dynamic(
-  () => import("@tinymce/tinymce-react").then((m) => m.Editor),
-  { ssr: false }
+// TinyMCE editor (client-only)
+const TinyMCEClient = dynamic(
+  () => import("../../TinyMCEClient"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-xl border admin-card h-[300px] animate-pulse" />
+    ),
+  }
 );
+/* =
 
 /* ================= Helpers ================= */
 function toDatetimeLocalString(d: Date) {
@@ -131,7 +137,7 @@ function RichText({
         {icon && <span className="text-gray-500">{icon}</span>}
         {label}
       </span>
-      <Editor
+      <TinyMCEClient
         apiKey={apiKey}
         value={value}
         init={{
