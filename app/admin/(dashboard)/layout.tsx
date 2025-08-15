@@ -4,46 +4,37 @@ import { cookies } from "next/headers";
 import { prisma } from "@/app/lib/prisma";
 import { WebsiteProvider } from "./website-provider";
 
-// ⬇️ RBAC: ดึงเซสชัน + คำนวณสิทธิ์ของผู้ใช้บนเว็บไซต์ปัจจุบัน
 import { getServerSession } from "next-auth";
-// ปรับ path นี้ให้ตรงกับโปรเจกต์ของคุณ หากไฟล์ auth-options อยู่ตำแหน่งอื่น
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth-options";
 import { getEffectiveRulesForUser } from "@/app/lib/perm";
 
+import TopBar from "./TopBar";
+import ThemeApplier from "./ThemeApplier";
+
 export default async function AdminDashboardLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  // อ่าน websiteId จากคุกกี้
-  const websiteId = cookies().get("websiteId")?.value || null;
+}: { children: React.ReactNode }) {
+  const ck = cookies();
+  const websiteId = ck.get("websiteId")?.value || null;
+  const locale = (ck.get("locale")?.value || "th") as "th" | "en" | "cn";
 
-  // ดึงชื่อ/ข้อมูลเว็บไซต์จาก DB (ถ้ามี websiteId)
+  // เว็บไซต์ (สำหรับ RBAC server-side เท่านั้น)
   const website = websiteId
-    ? await prisma.website.findUnique({
-        where: { id: websiteId },
-        select: { id: true, name: true },
-      })
+    ? await prisma.website.findUnique({ where: { id: websiteId }, select: { id: true, name: true } })
     : null;
 
-  const websiteName = website?.name ?? null;
-
-  // RBAC: หา user + rules ที่มีผลสำหรับเว็บไซต์นี้
   const session = await getServerSession(authOptions).catch(() => null);
+  const userId = session?.user?.id as string | undefined;
 
-  let rules:
-    | Array<{ resource: string; action: string; effect: "ALLOW" | "DENY" }>
-    | [] = [];
+  let rules: Array<{ resource: string; action: string; effect: "ALLOW" | "DENY" }> = [];
+  let userRole: string | null = null;
 
-  if (session?.user?.id && website?.id) {
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id as string },
-      select: { role: true },
-    });
-
+  if (userId && website?.id) {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+    userRole = user?.role ?? null;
     if (user) {
       rules = await getEffectiveRulesForUser({
-        userId: session.user.id as string,
+        userId,
         userRole: user.role,
         websiteId: website.id,
       });
@@ -52,19 +43,29 @@ export default async function AdminDashboardLayout({
 
   return (
     <WebsiteProvider>
-      <div className="container-narrow section min-h-full">
-        <div className="grid md:grid-cols-[220px_1fr] gap-6">
-          {/* Left nav (ส่ง website + rules ให้เมนูกรองตามสิทธิ์) */}
-          <aside className="card p-2 self-start md:sticky md:top-6 h-max">
+      {/* ตั้งธีมตามเว็บไซต์ฝั่ง client */}
+      <ThemeApplier />
+
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <TopBar
+          userName={(session?.user?.name as string) || null}
+          userEmail={(session?.user?.email as string) || null}
+          userImage={(session?.user?.image as string) || null}
+          userRole={userRole}
+          locale={locale}
+        />
+
+        <div className="grid gap-6 md:grid-cols-[260px_1fr]">
+          <aside className="admin-card admin-sidenav p-3 h-max md:sticky md:top-6 self-start" role="navigation" aria-label="Admin navigation">
             <AdminNav
               websiteId={website?.id || ""}
-              websiteName={websiteName || undefined}
+              websiteName={website?.name || undefined}
               initialRules={rules}
             />
           </aside>
 
-          {/* Main */}
-          <main className="min-h-full">
+          {/* คอนเทนต์สว่าง + ตัวอักษรเข้ม */}
+          <main id="main" className="admin-content min-h-[60vh] space-y-6">
             {children}
           </main>
         </div>

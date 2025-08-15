@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function PreviewLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="th" className={dbx.variable}>
-      <body className="min-h-[100svh] bg-[var(--zp-bg)] text-gray-800">
+      <body className="min-h-[100svh] bg-[var(--zp-bg)]">
         {children}
       </body>
     </html>

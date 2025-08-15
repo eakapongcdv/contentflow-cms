@@ -157,7 +157,7 @@ function GroupHeader({
         "transition-all duration-200 border border-transparent",
         open
           ? "bg-emerald-50/70 text-emerald-900 ring-1 ring-emerald-100"
-          : "hover:bg-gray-50 text-gray-800",
+          : "hover:bg-gray-50",
       ].join(" ")}
     >
       <Icon className="h-[18px] w-[18px] text-zpell" />

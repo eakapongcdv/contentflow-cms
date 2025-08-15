@@ -52,7 +52,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   secondary:
     "bg-white text-gray-900 border-gray-300 hover:bg-gray-50 active:bg-gray-100",
   outline:
-    "bg-transparent text-gray-800 border-gray-300 hover:bg-gray-50 active:bg-gray-100",
+    "bg-transparent border-gray-300 hover:bg-gray-50 active:bg-gray-100",
   ghost:
     "bg-transparent text-gray-700 border-transparent hover:bg-gray-100 active:bg-gray-200",
   danger:

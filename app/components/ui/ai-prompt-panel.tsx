@@ -76,7 +76,7 @@ export function AiPromptPanel({
             <button
               key={s.label}
               type="button"
-              className="chip bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
+              className="chip bg-gray-100 hover:bg-gray-200 transition-colors"
               onClick={() => onChange(s.prompt)}
               title="เติมตัวอย่าง Prompt"
             >
