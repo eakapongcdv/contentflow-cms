@@ -2,65 +2,98 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import LanguageSwitcher from "./LanguageSwitcher";
+import React, { useEffect, useMemo, useState } from "react";
 
-const NAV = [
-  { href: "/#features", label: { th: "ฟีเจอร์", en: "Features", zh: "功能" } },
-  { href: "/#pricing",  label: { th: "ราคา",   en: "Pricing",  zh: "定价" } },
-  { href: "/#cloud",    label: { th: "คลาวด์", en: "Cloud",    zh: "云" } },
-  { href: "/#security", label: { th: "ความปลอดภัย", en: "Security", zh: "安全" } },
-  { href: "/docs",      label: { th: "เอกสาร", en: "Docs",     zh: "文档" } },
-  { href: "/about",     label: { th: "เกี่ยวกับ", en: "About",  zh: "关于" } },
-  { href: "/careers",   label: { th: "ร่วมงาน", en: "Careers", zh: "招聘" } },
-];
+type Lang = "TH" | "EN" | "CN";
 
-function currentLocale(pathname: string) {
-  const seg = pathname.split("?")[0].split("/").filter(Boolean)[0];
-  return ["th", "en", "zh"].includes(seg) ? (seg as "th"|"en"|"zh") : "th";
-}
+const T = {
+  TH: {
+    brand: "ContentFlow",
+    brandSub: "AI Suite",
+    features: "ฟีเจอร์",
+    pricing: "ราคา",
+    cloud: "คลาวด์",
+    security: "ความปลอดภัย",
+    docs: "เอกสาร",
+    about: "เกี่ยวกับ",
+    careers: "ร่วมงาน",
+    signin: "เข้าสู่ระบบ",
+    demo: "ขอเดโม",
+  },
+  EN: {
+    brand: "ContentFlow",
+    brandSub: "AI Suite",
+    features: "Features",
+    pricing: "Pricing",
+    cloud: "Cloud",
+    security: "Security",
+    docs: "Docs",
+    about: "About",
+    careers: "Careers",
+    signin: "Sign in",
+    demo: "Get demo",
+  },
+  CN: {
+    brand: "ContentFlow",
+    brandSub: "AI 套件",
+    features: "功能",
+    pricing: "价格",
+    cloud: "云端",
+    security: "安全",
+    docs: "文档",
+    about: "关于我们",
+    careers: "加入我们",
+    signin: "登录",
+    demo: "申请演示",
+  },
+} as const;
 
-export default function SiteHeader() {
-  const pathname = usePathname() || "/";
-  const locale = currentLocale(pathname);
-  const [activeHash, setActiveHash] = useState<string>("");
+const prefixFor = (lang: Lang) => (lang === "TH" ? "" : `/${lang.toLowerCase()}`);
 
-  // scroll-spy (ไฮไลต์เมนูเมื่อเลื่อน)
+export default function SiteHeader({ lang }: { lang: Lang }) {
+  const pathname = usePathname();
+  const [hash, setHash] = useState("");
+
   useEffect(() => {
-    const ids = ["features", "pricing", "cloud", "security"];
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActiveHash("#" + (visible.target as HTMLElement).id);
-      },
-      { rootMargin: "-40% 0px -55% 0px", threshold: [0, 0.2, 0.5, 1] }
-    );
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) obs.observe(el);
-    });
-    return () => obs.disconnect();
+    const update = () => setHash(typeof window !== "undefined" ? window.location.hash : "");
+    update();
+    window.addEventListener("hashchange", update);
+    return () => window.removeEventListener("hashchange", update);
   }, []);
 
-  const isActive = (href: string) => {
-    if (href.startsWith("/#")) return activeHash === href.replace("/", "");
-    return pathname === href || pathname.startsWith(href + "/");
-  };
+  const P = prefixFor(lang);
+  const L = T[lang];
+
+  const NAV = useMemo(
+    () => [
+      { href: `${P}/#features`, label: L.features, kind: "hash" as const, hash: "#features" },
+      { href: `${P}/#pricing`, label: L.pricing, kind: "hash" as const, hash: "#pricing" },
+      { href: `${P}/#cloud`, label: L.cloud, kind: "hash" as const, hash: "#cloud" },
+      { href: `${P}/#security`, label: L.security, kind: "hash" as const, hash: "#security" },
+      { href: `${P}/docs`, label: L.docs, kind: "page" as const },
+      { href: `${P}/about`, label: L.about, kind: "page" as const },
+      { href: `${P}/careers`, label: L.careers, kind: "page" as const },
+    ],
+    [P, L]
+  );
+
+  const isActive = (item: { href: string; kind: "hash" | "page"; hash?: string }) =>
+    item.kind === "hash" ? hash === (item.hash ?? "") : pathname === item.href;
 
   return (
     <header className="sticky top-0 z-50">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
-          <div className="flex items-center justify-between px-4" style={{ height: "var(--nav-h)" }}>
+          <div className="flex items-center justify-between px-4 py-2.5">
             {/* Brand */}
-            <Link href="/" className="flex items-center gap-2">
-              {/* ใช้โลโก้ไฟล์จริง */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="ContentFlow AI Suite" className="h-6 w-6 rounded-md" />
+            <Link href={P || "/"} className="flex items-center gap-2">
+              {/* ใช้โลโก้ไฟล์จริง ถ้ามีที่ /public/logo.png */}
+              <div className="h-6 w-6 overflow-hidden rounded-lg bg-emerald-400/80 shadow-[0_0_18px_rgba(16,185,129,.7)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo.png" alt="ContentFlow" className="h-6 w-6 object-cover" />
+              </div>
               <span className="font-semibold tracking-tight text-white">
-                ContentFlow <span className="text-white/70">AI Suite</span>
+                {L.brand} <span className="text-white/70">{L.brandSub}</span>
               </span>
             </Link>
 
@@ -71,36 +104,37 @@ export default function SiteHeader() {
                   key={n.href}
                   href={n.href}
                   className={
-                    "text-sm px-2 py-1 rounded-md transition-colors " +
-                    (isActive(n.href) ? "text-white bg-white/10" : "text-white/70 hover:text-white")
+                    "text-sm px-2 py-1 rounded-md " +
+                    (isActive(n) ? "text-white bg-white/10" : "text-white/70 hover:text-white")
                   }
                 >
-                  {n.label[locale]}
+                  {n.label}
                 </Link>
               ))}
             </nav>
 
             {/* Actions */}
             <div className="flex items-center gap-2">
-              {/* ปุ่มเปลี่ยนภาษา (ปุ่มเดียว + overlay) */}
-              <LanguageSwitcher placement="bottom-end" />
-
               <Link
-                href="/admin/login"
+                href={`${P}/admin/login`}
                 className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:text-white"
               >
-                {/* lock icon */}
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden><path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 1 1 6 0v3H9z"/></svg>
-                <span>{locale === "th" ? "เข้าสู่ระบบ" : locale === "zh" ? "登录" : "Sign in"}</span>
+                {/* icon: user */}
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
+                  <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" />
+                </svg>
+                {L.signin}
               </Link>
-
               <a
                 href="mailto:sales@codediva.co.th?subject=Request%20a%20demo%20(ContentFlow%20AI%20Suite)"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-cyan-400/90 px-3 py-1.5 text-sm font-medium text-black hover:bg-cyan-300"
               >
-                {/* sparkles icon */}
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden><path d="M12 2l1.8 4.6L18 8.4l-4.2 1.8L12 15l-1.8-4.8L6 8.4l4.2-1.8L12 2zm7 10l1.2 3 3 1.2-3 1.2L19 20l-1.2-3-3-1.2 3-1.2L19 12zM4 12l.9 2.2L7 15l-2.1.8L4 18l-.9-2.2L1 15l2.1-.8L4 12z"/></svg>
-                <span>{locale === "th" ? "ขอเดโม" : locale === "zh" ? "申请演示" : "Get demo"}</span>
+                {/* icon: mail */}
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
+                  <path d="M2 6h20v12H2z" opacity=".3" />
+                  <path d="M2 6l10 7L22 6" />
+                </svg>
+                {L.demo}
               </a>
             </div>
           </div>
