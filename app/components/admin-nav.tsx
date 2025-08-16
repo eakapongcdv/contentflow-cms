@@ -82,6 +82,9 @@ const NAV: Array<{
   },
 ];
 
+// Flatten items for compact (shrink) menu on mobile/tablet
+const NAV_ITEMS = NAV.flatMap(g => g.items);
+
 // Fallback star icon (inline) to avoid extra import weight
 function StarIcon(props: any) {
   return (
@@ -125,22 +128,21 @@ export default function AdminNav({ websiteId: _websiteId, websiteName: _websiteN
         <div className="text-xs md:text-sm text-white/70 truncate max-w-[60%]">{pathname}</div>
       </div>
 
-      {/* Inline menu on tablet (md to lg-1) */}
-      <div className="hidden md:block lg:hidden mt-2 rounded-xl border border-white/10 bg-[linear-gradient(180deg,rgba(2,6,23,0.9),rgba(2,6,23,0.6))] px-2 py-2 overflow-x-auto">
-        <div className="flex items-center gap-3 whitespace-nowrap min-w-0">
-          {NAV.map((group) => (
-            <div key={group.label} className="flex items-center gap-2 pr-3 mr-1 border-r border-white/10 last:border-r-0">
-              <span className="text-[11px] uppercase tracking-wider text-white/60">
-                {group.label}
-              </span>
-              <div className="flex items-center gap-1">
-                {group.items.map((it) => (
-                  <AdminLink key={it.href} href={it.href} active={!!active.get(it.href)} icon={it.icon} size="sm">
-                    {it.label}
-                  </AdminLink>
-                ))}
-              </div>
-            </div>
+      {/* Compact shrink menu (mobile & tablet) */}
+      <div className="mt-2 lg:hidden rounded-xl border border-white/10 bg-[linear-gradient(180deg,rgba(2,6,23,0.9),rgba(2,6,23,0.6))] px-2 py-2 overflow-x-auto">
+        <div className="flex items-center gap-1.5 whitespace-nowrap min-w-0">
+          {NAV_ITEMS.map((it) => (
+            <AdminLink
+              key={it.href}
+              href={it.href}
+              active={!!active.get(it.href)}
+              icon={it.icon}
+              size="xs"
+              iconOnly
+              title={it.label}
+            >
+              {it.label}
+            </AdminLink>
           ))}
         </div>
       </div>
@@ -208,8 +210,8 @@ function NavGroups({ active, onNavigate }: { active: Map<string, boolean>; onNav
   );
 }
 
-function AdminLink({ href, active, icon: Icon, children, onClick, size = "md" }: { href: string; active?: boolean; icon?: React.ComponentType<any>; children: React.ReactNode; onClick?: () => void; size?: "sm" | "md"; }) {
-  const padding = size === "sm" ? "px-2 py-1.5 text-[13px]" : "px-2.5 py-2 text-sm";
+function AdminLink({ href, active, icon: Icon, children, onClick, size = "md", iconOnly = false, title }: { href: string; active?: boolean; icon?: React.ComponentType<any>; children: React.ReactNode; onClick?: () => void; size?: "xs" | "sm" | "md"; iconOnly?: boolean; title?: string; }) {
+  const padding = size === "xs" ? "p-2" : size === "sm" ? "px-2 py-1.5 text-[13px]" : "px-2.5 py-2 text-sm";
   const className = [
     "flex items-center gap-2 rounded-md transition-colors border",
     padding,
@@ -218,9 +220,9 @@ function AdminLink({ href, active, icon: Icon, children, onClick, size = "md" }:
       : "border-white/10 text-white/80 hover:text-white hover:bg-white/10",
   ].join(" ");
   return (
-    <Link href={href} onClick={onClick} className={className}>
+    <Link href={href} onClick={onClick} className={className} aria-label={title || (typeof children === 'string' ? children : undefined)} title={title}>
       {Icon ? <Icon className={active ? "h-4 w-4 text-cyan-300" : "h-4 w-4 text-white/80"} /> : null}
-      <span>{children}</span>
+      {iconOnly ? <span className="sr-only">{children}</span> : <span>{children}</span>}
     </Link>
   );
 }
