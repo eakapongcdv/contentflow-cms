@@ -151,7 +151,7 @@ export default async function ArticlesPage({
           </ButtonGroup>
         </div>
 
-        <div className="card p-4 border-red-200 bg-red-50">
+        <div className="admin-card p-4 border border-red-500/30 bg-red-500/10 text-red-300">
           <div className="text-sm font-semibold text-red-700">
             Failed to load articles: {result.error}
           </div>
@@ -173,7 +173,7 @@ export default async function ArticlesPage({
   const pageList = buildPageList(data.page, totalPages, 2);
 
   return (
-    <div className="grid gap-4">
+    <div className="admin-content grid gap-4">
       {/* header */}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Articles</h1>
@@ -192,21 +192,21 @@ export default async function ArticlesPage({
       </div>
 
       {/* advanced search */}
-      <form action="/admin/articles" className="card p-3 grid gap-2">
+      <form action="/admin/articles" className="admin-card p-3 grid gap-2">
         <div className="grid md:grid-cols-4 gap-2">
           <label className="grid gap-1">
-            <span className="text-xs text-gray-600">Search (title / keyword)</span>
-            <input name="q" defaultValue={q} placeholder="e.g. grand opening" className="inp" />
+            <span className="text-xs text-white/60">Search (title / keyword)</span>
+            <input name="q" defaultValue={q} placeholder="e.g. grand opening" className="admin-input" />
           </label>
 
           <label className="grid gap-1">
-            <span className="text-xs text-gray-600">Slug</span>
-            <input name="slug" defaultValue={slug} placeholder="slug contains…" className="inp" />
+            <span className="text-xs text-white/60">Slug</span>
+            <input name="slug" defaultValue={slug} placeholder="slug contains…" className="admin-input" />
           </label>
 
           <label className="grid gap-1">
-            <span className="text-xs text-gray-600">Status</span>
-            <select name="status" defaultValue={status} className="inp">
+            <span className="text-xs text-white/60">Status</span>
+            <select name="status" defaultValue={status} className="admin-input">
               <option value="">All</option>
               <option value="DRAFT">DRAFT</option>
               <option value="SCHEDULED">SCHEDULED</option>
@@ -216,8 +216,8 @@ export default async function ArticlesPage({
           </label>
 
           <label className="grid gap-1">
-            <span className="text-xs text-gray-600">Category</span>
-            <select name="categoryId" defaultValue={categoryId} className="inp">
+            <span className="text-xs text-white/60">Category</span>
+            <select name="categoryId" defaultValue={categoryId} className="admin-input">
               <option value="">All</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -239,9 +239,9 @@ export default async function ArticlesPage({
       </form>
 
       {/* table */}
-      <div className="overflow-x-auto rounded-xl border bg-white">
-        <table className="min-w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600">
+      <div className="overflow-x-auto rounded-xl border border-white/10 bg-white/5">
+        <table className="admin-table min-w-full text-sm text-white/90">
+          <thead className="bg-white/10 text-white/70">
             <tr>
               <th className="px-3 py-2 text-left font-medium w-[68px]">Image</th>{/* ⬅️ รูป */}
               <th className="px-3 py-2 text-left font-medium">Title</th>
@@ -257,13 +257,13 @@ export default async function ArticlesPage({
           <tbody>
             {data.items.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-3 py-4 text-gray-500">
+                <td colSpan={9} className="px-3 py-4 text-white/60">
                   No articles
                 </td>
               </tr>
             ) : (
               data.items.map((a) => (
-                <tr key={a.id} className="border-t hover:bg-gray-50">
+                <tr key={a.id} className="border-t border-white/10 hover:bg-white/5">
                   {/* thumb */}
                   <td className="px-3 py-2">
                     <Thumb
@@ -275,7 +275,7 @@ export default async function ArticlesPage({
                   </td>
 
                   <td className="px-3 py-2">{a.title || "—"}</td>
-                  <td className="px-3 py-2 text-gray-600">{a.slug || "—"}</td>
+                  <td className="px-3 py-2 text-white/60">{a.slug || "—"}</td>
                   <td className="px-3 py-2">
                     <span
                       className={`chip ${
@@ -311,13 +311,13 @@ export default async function ArticlesPage({
 
       {/* footer: results + pagination + page size */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="text-xs text-gray-600">
+        <div className="text-xs text-white/60">
           Showing {(data.page - 1) * data.take + 1}–
           {Math.min(data.page * data.take, data.total)} of {data.total}
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-600">Page size</span>
+          <span className="text-xs text-white/60">Page size</span>
           <PageSizeSelect
             value={data.take}
             q={q}
@@ -352,7 +352,7 @@ export default async function ArticlesPage({
 
           {pageList.map((p, i) =>
             p === "…" ? (
-              <span key={`gap-${i}`} className="inline-grid place-items-center h-9 w-9 text-gray-500 select-none">
+              <span key={`gap-${i}`} className="inline-grid place-items-center h-9 w-9 text-white/50 select-none">
                 …
               </span>
             ) : (

@@ -454,24 +454,34 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
           onSave();
         }}
       >
-        {/* AI PROMPT PANEL */}
-        <AiPromptPanel
-          value={aiPrompt}
-          onChange={setAiPrompt}
-          onClear={() => setAiPrompt("")}
-          onGenerate={onAIGenerate}
-          loading={loadingAI}
-          samples={SAMPLE_PROMPTS}
-          derivedPrompt={derivedPrompt}
-          onUseDerived={() => setAiPrompt(derivedPrompt)}
-        />
+        {/* AI PROMPT PANEL (dark mode card) */}
+        <section className="admin-card p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold">AI Generation</h3>
+              <p className="text-sm text-white/60">ให้ AI สร้างบทความหลายภาษา + SEO และ JSON-LD</p>
+            </div>
+          </div>
+          <div className="mt-3">
+            <AiPromptPanel
+              value={aiPrompt}
+              onChange={setAiPrompt}
+              onClear={() => setAiPrompt("")}
+              onGenerate={onAIGenerate}
+              loading={loadingAI}
+              samples={SAMPLE_PROMPTS}
+              derivedPrompt={derivedPrompt}
+              onUseDerived={() => setAiPrompt(derivedPrompt)}
+            />
+          </div>
+        </section>
 
         {/* BASIC INFO (slug/status) */}
-        <section className="card p-4 mt-3">
+        <section className="admin-card p-4 mt-3">
           <div className="flex items-start justify-between gap-3">
             <div>
               <h3 className="text-lg font-semibold">Basic</h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-white/60">
                 กำหนด slug, status และเนื้อหา 3 ภาษา (TH/EN/CN)
               </p>
             </div>
@@ -481,7 +491,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
             <label className="grid gap-1">
               <span className="text-sm">Slug</span>
               <input
-                className="inp"
+                className="admin-input"
                 value={form.slug}
                 onChange={(e) => update("slug", e.target.value)}
                 placeholder="auto-generated from title if left blank"
@@ -490,7 +500,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
             <label className="grid gap-1">
               <span className="text-sm">Status</span>
               <select
-                className="inp"
+                className="admin-input"
                 value={form.status}
                 onChange={(e) => update("status", e.target.value as any)}
               >
@@ -504,13 +514,13 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
 
         {/* I18N (TH/EN/CN) */}
         {(["th", "en", "cn"] as Lang[]).map((lang) => (
-          <section key={lang} className="card p-4">
+          <section key={lang} className="admin-card p-4">
             <h3 className="text-lg font-semibold uppercase">{lang}</h3>
             <div className="grid sm:grid-cols-2 gap-3 mt-3">
               <label className="grid gap-1">
                 <span className="text-sm">Title</span>
                 <input
-                  className="inp"
+                  className="admin-input"
                   value={form.i18n[lang].title}
                   onChange={(e) => updateI18n(lang, "title", e.target.value)}
                 />
@@ -518,7 +528,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
               <label className="grid gap-1">
                 <span className="text-sm">Subtitle</span>
                 <input
-                  className="inp"
+                  className="admin-input"
                   value={form.i18n[lang].subtitle || ""}
                   onChange={(e) => updateI18n(lang, "subtitle", e.target.value)}
                 />
@@ -527,7 +537,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
               <label className="grid gap-1 sm:col-span-2">
                 <span className="text-sm">Excerpt</span>
                 <input
-                  className="inp"
+                  className="admin-input"
                   value={form.i18n[lang].excerpt || ""}
                   onChange={(e) => updateI18n(lang, "excerpt", e.target.value)}
                 />
@@ -535,7 +545,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
 
               <div className="sm:col-span-2">
                 <span className="text-sm">Content (Markdown / WYSIWYG)</span>
-                <div className="rounded-xl border">
+                <div className="rounded-xl border border-white/10 bg-white/5">
                   <TinyMCEClient
                     apiKey={tinymceApiKey}
                     value={form.i18n[lang].contentMd || ""}
@@ -558,7 +568,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
         ))}
 
         {/* MEDIA */}
-        <section className="card p-4">
+        <section className="admin-card p-4">
           <h3 className="text-lg font-semibold">Media</h3>
           <div className="grid md:grid-cols-3 gap-3 mt-3">
             <MediaPickerCard
@@ -570,7 +580,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
               <label className="grid gap-1">
                 <span className="text-sm">Author</span>
                 <input
-                  className="inp"
+                  className="admin-input"
                   value={form.authorName || ""}
                   onChange={(e) => update("authorName", e.target.value)}
                 />
@@ -578,7 +588,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
               <label className="grid gap-1">
                 <span className="text-sm">Reading Time (min)</span>
                 <input
-                  className="inp"
+                  className="admin-input"
                   type="number"
                   min={1}
                   value={form.readingTime ?? ""}
@@ -591,7 +601,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
                 <span className="text-sm">Published At</span>
                 <input
                   type="datetime-local"
-                  className="inp"
+                  className="admin-input"
                   value={form.publishedAt || ""}
                   onChange={(e) => update("publishedAt", e.target.value || null)}
                 />
@@ -600,7 +610,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
                 <span className="text-sm">Scheduled At</span>
                 <input
                   type="datetime-local"
-                  className="inp"
+                  className="admin-input"
                   value={form.scheduledAt || ""}
                   onChange={(e) => update("scheduledAt", e.target.value || null)}
                 />
@@ -610,41 +620,41 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
         </section>
 
         {/* SEO */}
-        <section className="card p-4">
+        <section className="admin-card p-4">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <Code2 className="h-5 w-5 text-zpell" /> SEO Meta
           </h3>
           <div className="grid sm:grid-cols-2 gap-3 mt-3">
             <label className="grid gap-1">
               <span className="text-sm">Meta Title (TH)</span>
-              <input className="inp" value={seo.metaTitleTh || ""} onChange={(e) => updateSeo("metaTitleTh", e.target.value)} />
+              <input className="admin-input" value={seo.metaTitleTh || ""} onChange={(e) => updateSeo("metaTitleTh", e.target.value)} />
             </label>
             <label className="grid gap-1">
               <span className="text-sm">Meta Title (EN)</span>
-              <input className="inp" value={seo.metaTitleEn || ""} onChange={(e) => updateSeo("metaTitleEn", e.target.value)} />
+              <input className="admin-input" value={seo.metaTitleEn || ""} onChange={(e) => updateSeo("metaTitleEn", e.target.value)} />
             </label>
 
             <label className="grid gap-1">
               <span className="text-sm">Meta Description (TH)</span>
-              <textarea className="inp" rows={3} value={seo.metaDescriptionTh || ""} onChange={(e) => updateSeo("metaDescriptionTh", e.target.value)} />
+              <textarea className="admin-input" rows={3} value={seo.metaDescriptionTh || ""} onChange={(e) => updateSeo("metaDescriptionTh", e.target.value)} />
             </label>
             <label className="grid gap-1">
               <span className="text-sm">Meta Description (EN)</span>
-              <textarea className="inp" rows={3} value={seo.metaDescriptionEn || ""} onChange={(e) => updateSeo("metaDescriptionEn", e.target.value)} />
+              <textarea className="admin-input" rows={3} value={seo.metaDescriptionEn || ""} onChange={(e) => updateSeo("metaDescriptionEn", e.target.value)} />
             </label>
 
             <label className="grid gap-1">
               <span className="text-sm">Meta Keywords (TH, comma)</span>
-              <input className="inp" value={seo.metaKeywordsTh || ""} onChange={(e) => updateSeo("metaKeywordsTh", e.target.value)} />
+              <input className="admin-input" value={seo.metaKeywordsTh || ""} onChange={(e) => updateSeo("metaKeywordsTh", e.target.value)} />
             </label>
             <label className="grid gap-1">
               <span className="text-sm">Meta Keywords (EN, comma)</span>
-              <input className="inp" value={seo.metaKeywordsEn || ""} onChange={(e) => updateSeo("metaKeywordsEn", e.target.value)} />
+              <input className="admin-input" value={seo.metaKeywordsEn || ""} onChange={(e) => updateSeo("metaKeywordsEn", e.target.value)} />
             </label>
 
             <label className="grid gap-1 sm:col-span-2">
               <span className="text-sm">Canonical URL</span>
-              <input className="inp" value={seo.canonicalUrl || ""} onChange={(e) => updateSeo("canonicalUrl", e.target.value)} placeholder="https://your-domain.com/articles/..." />
+              <input className="admin-input" value={seo.canonicalUrl || ""} onChange={(e) => updateSeo("canonicalUrl", e.target.value)} placeholder="https://your-domain.com/articles/..." />
             </label>
 
             <div className="flex items-center gap-4 sm:col-span-2">
@@ -661,13 +671,13 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
         </section>
 
         {/* JSON-LD + Preview */}
-        <section className="card p-4">
+        <section className="admin-card p-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               <Code2 className="h-5 w-5 text-zpell" /> Structured Data (JSON-LD)
             </h3>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded-full">
+              <span className="inline-flex items-center text-xs text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded-full border border-emerald-400/20">
                 <HelpCircle className="h-3.5 w-3.5 mr-1" />
                 Type: <b className="ml-1">Article</b>
               </span>
@@ -709,7 +719,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
 
           <div className="mt-3">
             <textarea
-              className="inp font-mono text-[12.5px] leading-5"
+              className="admin-input font-mono text-[12.5px] leading-5"
               rows={14}
               value={structuredText}
               onChange={(e) => updateSeo("structuredData", e.target.value)}
@@ -720,7 +730,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
           {/* Google Search Result Preview */}
           <div className="mt-4">
             <h4 className="text-base font-semibold mb-2">Google Search Result Preview</h4>
-            <div className="rounded-xl bg-white px-4 py-3 border">
+            <div className="admin-card px-4 py-3">
               <div className="text-[18px] leading-snug">
                 <a
                   href={preview.gUrl}
@@ -736,18 +746,18 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
                 {preview.gDisplayUrl}
               </div>
               <div className="mt-1 grid grid-cols-[1fr_auto] gap-3">
-                <div className="text-[16px] text-gray-700">{preview.desc}</div>
+                <div className="text-[16px] text-white/80">{preview.desc}</div>
                 {preview.image ? (
-                  <div className="w-[92px] h-[92px] overflow-hidden rounded-md border">
+                  <div className="w-[92px] h-[92px] overflow-hidden rounded-md border border-white/10 bg-white/5">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={preview.image} alt="" className="w-full h-full object-cover bg-gray-100" />
+                    <img src={preview.image} alt="" className="w-full h-full object-cover bg-white/10" />
                   </div>
                 ) : (
                   <div className="w-[92px] h-[92px]" />
                 )}
               </div>
             </div>
-            <p className="mt-2 text-xs text-gray-500">* แสดงผลตาม JSON-LD ปัจจุบันแบบเรียลไทม์</p>
+            <p className="mt-2 text-xs text-white/60">* แสดงผลตาม JSON-LD ปัจจุบันแบบเรียลไทม์</p>
           </div>
         </section>
 

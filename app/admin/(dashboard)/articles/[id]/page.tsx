@@ -111,7 +111,7 @@ export default async function EditArticlePage({ params }: { params: { id: string
 
   if ("error" in result) {
     return (
-      <div className="grid gap-4">
+      <div className="admin-content grid gap-4">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold">Edit Article</h1>
           <Link href="/admin/articles" className="btn btn-outline-zpell">
@@ -119,12 +119,12 @@ export default async function EditArticlePage({ params }: { params: { id: string
           </Link>
         </div>
 
-        <div className="card p-4 border-red-200 bg-red-50">
-          <div className="text-sm font-semibold text-red-700">
+        <div className="admin-card p-4 border border-red-500/30 bg-red-500/10 text-red-300">
+          <div className="text-sm font-semibold text-red-300">
             Failed to load: {result.error}
           </div>
           {result.detail ? (
-            <pre className="mt-2 text-xs text-red-800 whitespace-pre-wrap">{result.detail}</pre>
+            <pre className="mt-2 text-xs text-red-200 whitespace-pre-wrap">{result.detail}</pre>
           ) : null}
         </div>
       </div>
@@ -134,7 +134,7 @@ export default async function EditArticlePage({ params }: { params: { id: string
   const { initial, initialSeo } = result.data!;
 
   return (
-    <div className="grid gap-4">
+    <div className="admin-content grid gap-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Edit Article</h1>
         <Link href="/admin/articles" className="btn btn-outline-zpell">

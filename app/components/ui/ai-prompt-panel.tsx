@@ -35,14 +35,14 @@ export function AiPromptPanel({
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-2xl border bg-gradient-to-br from-emerald-50/70 via-white to-white",
+        "relative overflow-hidden rounded-2xl border bg-gradient-to-br from-gray-900 via-gray-950 to-black text-gray-100",
         "shadow-card p-4",
         className
       )}
     >
       {/* header */}
       <div className="flex items-start gap-3">
-        <div className="grid place-items-center rounded-xl bg-emerald-600 text-white h-10 w-10 shadow">
+        <div className="grid place-items-center rounded-xl bg-emerald-500/20 text-emerald-400 h-10 w-10 shadow">
           <Bot className="h-5 w-5" />
         </div>
         <div className="flex-1">
@@ -52,7 +52,7 @@ export function AiPromptPanel({
               <Sparkles className="h-3.5 w-3.5" /> AI
             </span>
           </div>
-          <p className="text-sm text-gray-600 mt-0.5">{subtitle}</p>
+          <p className="text-sm text-gray-400 mt-0.5">{subtitle}</p>
         </div>
       </div>
 
@@ -62,7 +62,7 @@ export function AiPromptPanel({
           {derivedPrompt && (
             <button
               type="button"
-              className="chip bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors"
+              className="chip bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/40 transition-colors"
               onClick={() => {
                 if (onUseDerived) onUseDerived();
                 else onChange(derivedPrompt);
@@ -76,7 +76,7 @@ export function AiPromptPanel({
             <button
               key={s.label}
               type="button"
-              className="chip bg-gray-100 hover:bg-gray-200 transition-colors"
+              className="chip bg-gray-700/50 hover:bg-gray-600 text-gray-200 transition-colors"
               onClick={() => onChange(s.prompt)}
               title="เติมตัวอย่าง Prompt"
             >
@@ -88,9 +88,9 @@ export function AiPromptPanel({
 
       {/* textarea */}
       <div className="mt-3">
-        <label className="text-sm font-medium">Prompt</label>
+        <label className="text-sm font-medium text-gray-300">Prompt</label>
         <textarea
-          className="inp mt-1 font-[450]"
+          className="inp mt-1 font-[450] bg-gray-900 border border-gray-700 text-gray-100 placeholder-gray-500"
           rows={4}
           placeholder='เช่น: "เขียนบทความหัวข้อ ... โทนเป็นกันเอง มีหัวข้อย่อย bullet, เนื้อหาครอบคลุม keyword เหล่านี้ ... สร้าง TH/EN/CN และ SEO ให้ครบ"'
           value={value}
@@ -101,7 +101,12 @@ export function AiPromptPanel({
       {/* actions */}
       <div className="mt-3 flex items-center justify-end gap-2">
         {onClear && (
-          <Button variant="outlineZspell" onClick={onClear} disabled={loading}>
+          <Button
+            variant="outlineZspell"
+            onClick={onClear}
+            disabled={loading}
+            className="bg-gray-800 text-gray-300 hover:bg-gray-700"
+          >
             Clear
           </Button>
         )}
@@ -112,6 +117,7 @@ export function AiPromptPanel({
           onClick={onGenerate}
           loading={loading}
           title="AI Content Generation"
+          className="bg-emerald-600 hover:bg-emerald-500 text-white"
         >
           {loading ? "Generating…" : "Generate with AI"}
         </Button>
@@ -120,7 +126,7 @@ export function AiPromptPanel({
       {/* bg sparkle */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-emerald-200/30 blur-3xl"
+        className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl"
       />
     </section>
   );
