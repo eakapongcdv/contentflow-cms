@@ -173,7 +173,7 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
   }
 
   return (
-    <div className="admin-content space-y-8">
+    <div className="space-y-8">
       <div className="flex items-baseline justify-between">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <p className="text-sm text-white/60">Updated {format(data.now, "yyyy-MM-dd HH:mm")}</p>

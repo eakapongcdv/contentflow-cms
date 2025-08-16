@@ -30,8 +30,7 @@ export const authOptions: NextAuthOptions = {
         const email = credentials?.email?.trim().toLowerCase();
         const password = credentials?.password ?? "";
 
-        console.log("[Auth] Attempt login:", { email, hasPassword: !!password });
-
+       
         try {
           if (!email || !password) {
             console.warn("[Auth] Missing email or password");
@@ -53,14 +52,12 @@ export const authOptions: NextAuthOptions = {
           }
 
           const ok = await bcrypt.compare(password, user.passwordHash);
-          console.log("[Auth] Compare bcrypt:", { ok, inputLen: password.length, hashLen: user.passwordHash.length });
-
+          
           if (!ok) {
             console.warn("[Auth] Invalid password for:", email);
             return null;
           }
 
-          console.log("[Auth] SUCCESS login:", email);
           return { id: String(user.id), email: user.email, name: user.name, role: user.role, image: user.image } as any;
         } catch (err) {
           // ✅ ดัก Prisma/Runtime error ที่อาจทำให้ 401 แบบเงียบ ๆ
@@ -91,7 +88,6 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         (token as any).id = (user as any).id ?? token.sub;
         (token as any).role = (user as any).role ?? (token as any).role ?? "USER";
-        console.log("[Auth] jwt set:", { id: (token as any).id, role: (token as any).role });
       }
       return token;
     },
@@ -99,7 +95,6 @@ export const authOptions: NextAuthOptions = {
       if (session?.user) {
         (session.user as any).id = (token as any).id;
         (session.user as any).role = (token as any).role ?? "USER";
-        console.log("[Auth] session:", { email: session.user.email, id: (token as any).id, role: (token as any).role });
       }
       return session;
     },

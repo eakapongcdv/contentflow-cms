@@ -203,13 +203,13 @@ export default function CalendarClient({
   }, [events, currentRange.start, currentRange.end]);
 
   /* -------------------- UI -------------------- */
-  return (
-    <div className="grid gap-4">
+return (
+    <>
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2 bg-white/80 rounded-2xl p-2 border">
+      <div className="admin-card p-2 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
         {/* Today */}
         <button
-          className="h-9 w-9 grid place-items-center rounded-xl border hover:bg-red-50 text-red-600 border-red-200"
+          className="h-9 w-9 grid place-items-center rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-white/80"
           onClick={goToday}
           title="Today"
           aria-label="Today"
@@ -218,17 +218,26 @@ export default function CalendarClient({
         </button>
 
         {/* Prev / Next */}
-        <div className="inline-flex rounded-xl overflow-hidden border border-red-200">
+        <div className="inline-flex rounded-xl overflow-hidden border border-white/15 bg-white/5">
           <button
-            className="h-9 w-9 grid place-items-center hover:bg-red-50 text-red-600"
+            className="h-9 w-9 grid place-items-center hover:bg-white/10 text-white/80"
             onClick={goPrev}
             title="Previous"
             aria-label="Previous"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
+          {/* Date input */}
+          <input
+            type="date"
+            value={baseIso.slice(0, 10)}
+            onChange={(e) => pushState(view, new Date(e.target.value))}
+            className="admin-input h-9 px-3 text-sm"
+            aria-label="Pick date"
+          />
+
           <button
-            className="h-9 w-9 grid place-items-center hover:bg-red-50 text-red-600"
+            className="h-9 w-9 grid place-items-center hover:bg-white/10 text-white/80"
             onClick={goNext}
             title="Next"
             aria-label="Next"
@@ -237,15 +246,7 @@ export default function CalendarClient({
           </button>
         </div>
 
-        {/* Date input */}
-        <input
-          type="date"
-          value={baseIso.slice(0, 10)}
-          onChange={(e) => pushState(view, new Date(e.target.value))}
-          className="h-9 rounded-xl border border-red-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
-          aria-label="Pick date"
-        />
-
+       
         {/* view modes */}
         <div className="ml-auto flex items-center gap-1">
           <IconToggle
@@ -302,15 +303,15 @@ export default function CalendarClient({
       {/* UNDER CALENDAR */}
       {/* Events in range (hide on day view) */}
       {view !== "day" && (
-        <section className="rounded-2xl border bg-white/80 p-4">
-          <h4 className="font-semibold text-red-700 mb-2">Events in range</h4>
+        <section className="admin-card p-4">
+          <h4 className="font-semibold text-white mb-2">Events in range</h4>
           {rangeEvents.length === 0 ? (
-            <div className="text-sm text-gray-500">—</div>
+            <div className="text-sm text-white/60">—</div>
           ) : (
             <ul className="grid gap-2">
               {rangeEvents.map((e) => (
-                <li key={e.id} className="rounded-xl border border-red-200/60 p-2 flex items-start gap-3">
-                  <div className="h-11 w-11 rounded-md bg-gray-100 overflow-hidden grid place-items-center shrink-0">
+                <li key={e.id} className="h-20 rounded-xl border border-white/10 p-2 flex items-center gap-3 hover:bg-white/5">
+                  <div className="h-full w-28 rounded-md bg-white/10 border border-white/10 overflow-hidden shrink-0">
                     {e.coverThumbUrl || e.logoUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -319,22 +320,22 @@ export default function CalendarClient({
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <CalendarDays className="h-4 w-4 text-gray-400" />
+                      <CalendarDays className="h-5 w-5 text-white/40 m-2" />
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium truncate">{e.nameTh || e.nameEn}</div>
-                    <div className="text-[16px] text-gray-500">
+                    <div className="text-[15px] font-semibold truncate">{e.nameTh || e.nameEn}</div>
+                    <div className="text-xs text-white/60">
                       {new Date(e.startDate).toLocaleDateString()} –{" "}
                       {new Date(e.endDate).toLocaleDateString()}
                     </div>
-                    <div className="text-[16px] text-gray-500">
+                    <div className="text-xs text-white/60">
                       {e.dailyStartTime || "—"} – {e.dailyEndTime || "—"}
                     </div>
                   </div>
                   <Link
                     href={`/admin/events/${e.id}`}
-                    className="h-8 w-8 grid place-items-center rounded-lg border border-red-200 hover:bg-red-50 text-red-600"
+                    className="h-8 w-8 grid place-items-center rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-white/80"
                     title="Edit"
                     aria-label="Edit event"
                   >
@@ -348,31 +349,41 @@ export default function CalendarClient({
       )}
 
       {/* วันหยุดไทย */}
-      <section className="rounded-2xl border bg-white/80 p-4">
-        <h4 className="font-semibold text-red-700 mb-2">วันหยุดไทย</h4>
+      <section className="admin-card p-4">
+        <h4 className="font-semibold text-white mb-2">วันหยุดไทย</h4>
         <div className="grid gap-2">
           {Array.from(holidayMap.entries()).length === 0 ? (
-            <div className="text-sm text-gray-500">—</div>
+            <div className="text-sm text-white/60">—</div>
           ) : (
-            Array.from(holidayMap.entries())
-              .sort(([a], [b]) => (a < b ? -1 : 1))
-              .map(([d, arr]) => (
-                <div key={d} className="text-sm">
-                  <div className="text-[16px] text-gray-500 mb-1">{d}</div>
-                  <ul className="grid gap-1">
-                    {arr.map((h, i) => (
-                      <li key={`${h.title}-${i}`} className="flex items-start gap-2">
-                        <span className="inline-block mt-1 h-1.5 w-1.5 rounded-full bg-red-500" />
-                        <span className="leading-tight">{h.title}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))
+            <ul className="grid gap-2">
+              {Array.from(holidayMap.entries())
+                .sort(([a], [b]) => (a < b ? -1 : 1))
+                .flatMap(([d, arr]) =>
+                  arr.map((h, i) => (
+                    <li key={`${d}-${i}`} className="h-20 rounded-xl border border-white/10 p-2 flex items-center gap-3 hover:bg-white/5">
+                      <div className="h-full w-28 rounded-md bg-white/10 border border-white/10 overflow-hidden shrink-0 grid place-items-center">
+                        <div className="text-center leading-tight">
+                          <div className="text-xl font-semibold">{new Date(d).getDate()}</div>
+                          <div className="text-[10px] text-white/60">
+                            {new Date(d).toLocaleString(undefined, { month: "short" })}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[15px] font-semibold truncate">{h.title}</div>
+                        <div className="text-xs text-white/60">{d}</div>
+                      </div>
+                      <span className="h-8 px-2 inline-grid place-items-center rounded-lg border border-white/15 bg-white/5 text-white/70 text-[11px]">
+                        Holiday
+                      </span>
+                    </li>
+                  ))
+                )}
+            </ul>
           )}
         </div>
       </section>
-    </div>
+    </>
   );
 }
 
@@ -398,8 +409,8 @@ function IconToggle({
       title={title}
       className={
         active
-          ? "h-9 w-9 grid place-items-center rounded-xl border border-red-500 bg-red-50 text-red-700"
-          : "h-9 w-9 grid place-items-center rounded-xl border border-red-200 hover:bg-red-50 text-red-600"
+          ? "h-9 w-9 grid place-items-center rounded-xl border border-white/30 bg-white/10 text-white"
+          : "h-9 w-9 grid place-items-center rounded-xl border border-white/15 hover:bg-white/10 text-white/80"
       }
     >
       {children}
@@ -426,12 +437,12 @@ function DayView({
   const isToday = isSameDay(base, today);
 
   return (
-    <div className="rounded-2xl border bg-white/80 p-4">
+    <div className="admin-card p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-semibold">{base.toLocaleDateString()}</h3>
         <span
-          className={`inline-grid place-items-center h-8 w-8 rounded-full text-sm ${
-            isToday ? "border-2 border-red-500 text-red-700" : "border border-gray-300 text-gray-700"
+          className={`flex items-center justify-center h-8 w-8 md:h-9 md:w-9 aspect-square rounded-full shrink-0 text-[13px] md:text-sm ${
+            isToday ? "border-2 border-emerald-400 text-white" : "border border-white/30 text-white/80"
           }`}
           title={isToday ? "Today" : ""}
         >
@@ -441,7 +452,7 @@ function DayView({
 
       <div className="grid gap-2">
         {holidays.length > 0 && (
-          <div className="rounded-xl border border-red-200/70 bg-red-50/50 p-2 text-sm text-red-700">
+          <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-2 text-sm text-emerald-200">
             {holidays.map((h, i) => (
               <div key={`${h.title}-${i}`}>• {h.title}</div>
             ))}
@@ -449,14 +460,14 @@ function DayView({
         )}
 
         {list.length === 0 ? (
-          <div className="text-sm text-gray-500">No events.</div>
+          <div className="text-sm text-white/60">No events.</div>
         ) : (
           list.map((e) => (
             <div
               key={e.id}
-              className="rounded-xl border border-red-200/60 p-3 flex items-start gap-3 hover:bg-red-50/30"
+              className="h-20 rounded-xl border border-white/10 p-2 flex items-center gap-3 hover:bg-white/5"
             >
-              <div className="h-11 w-11 rounded-md bg-gray-100 overflow-hidden grid place-items-center shrink-0">
+              <div className="h-full w-28 rounded-md bg-white/10 border border-white/10 overflow-hidden shrink-0">
                 {e.coverThumbUrl || e.logoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -465,22 +476,22 @@ function DayView({
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <CalendarDays className="h-4 w-4 text-gray-400" />
+                  <CalendarDays className="h-5 w-5 text-white/40 m-2" />
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="font-medium truncate">{e.nameTh || e.nameEn}</div>
-                <div className="text-[16px] text-gray-500">
+                <div className="text-[15px] font-semibold truncate">{e.nameTh || e.nameEn}</div>
+                <div className="text-xs text-white/60">
                   {e.dailyStartTime || "—"} – {e.dailyEndTime || "—"}
                 </div>
-                <div className="text-[16px] text-gray-500">
+                <div className="text-xs text-white/60">
                   {new Date(e.startDate).toLocaleDateString()} –{" "}
                   {new Date(e.endDate).toLocaleDateString()}
                 </div>
               </div>
               <Link
                 href={`/admin/events/${e.id}`}
-                className="h-8 w-8 grid place-items-center rounded-lg border border-red-200 hover:bg-red-50 text-red-600"
+                className="h-8 w-8 grid place-items-center rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-white/80"
                 title="Edit"
                 aria-label="Edit event"
               >
@@ -519,8 +530,8 @@ function WeekView({
   }, [events, days]);
 
   return (
-    <div className="rounded-2xl border bg-white/80">
-      <div className="grid grid-cols-7 gap-px bg-red-200/60 p-2">
+    <div className="admin-card">
+      <div className="grid grid-cols-7 gap-px bg-white/10 p-2">
         {days.map((d) => {
           const k = keyOf(d);
           const list = eventsByDay.get(k) || [];
@@ -528,17 +539,17 @@ function WeekView({
           const isToday = isSameDay(d, today);
 
           return (
-            <div key={k} className="bg-white h-44 rounded p-2 flex flex-col">
+            <div key={k} className="bg-white/5 h-44 rounded p-2 flex flex-col border border-white/15">
               <div className="flex items-center justify-between">
                 <span
-                  className={`inline-grid place-items-center h-7 w-7 rounded-full text-sm ${
-                    isToday ? "border-2 border-red-500 text-red-700" : "border border-gray-300 text-gray-700"
+                  className={`flex items-center justify-center h-8 w-8 md:h-9 md:w-9 aspect-square rounded-full shrink-0 text-[13px] md:text-sm ${
+                    isToday ? "border-2 border-emerald-400 text-white" : "border border-white/30 text-white/80"
                   }`}
                 >
                   {d.getDate()}
                 </span>
                 {!!holidays.length && (
-                  <span className="text-[11px] text-red-600 truncate ml-2" title={holidays[0].title}>
+                  <span className="text-[11px] text-emerald-300 truncate ml-2" title={holidays[0].title}>
                     {holidays[0].title}
                   </span>
                 )}
@@ -549,14 +560,14 @@ function WeekView({
                   <Link
                     key={e.id + k}
                     href={`/admin/events/${e.id}`}
-                    className="px-2 py-0.5 rounded-md bg-red-50 text-red-700 text-[16px] truncate hover:bg-red-100"
+                    className="px-2 py-0.5 rounded-md bg-white/10 text-white/90 text-[13px] font-medium truncate hover:bg-white/15"
                     title={e.nameTh || e.nameEn}
                   >
                     {e.nameTh || e.nameEn}
                   </Link>
                 ))}
                 {list.length > 4 && (
-                  <div className="text-[16px] text-gray-500">+{list.length - 4} more</div>
+                  <div className="text-xs text-white/70">+{list.length - 4} more</div>
                 )}
               </div>
             </div>
@@ -607,34 +618,37 @@ function MonthView({
   }, [events, sMonth, eMonth]);
 
   return (
-    <div className="rounded-2xl border bg-white/80 overflow-hidden">
-      <div className="grid grid-cols-7 text-[11px] text-gray-500 px-4 pt-3">
+    <div className="admin-card overflow-hidden">
+      <div className="grid grid-cols-7 text-xs text-white/70 px-4 pt-3">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
           <div key={d} className="text-center pb-2">
             {d}
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-px bg-red-200/60 p-2">
+      <div className="grid grid-cols-7 gap-px bg-white/10 p-2">
         {cells.map((d, idx) => {
-          if (!d) return <div key={idx} className="bg-white h-28 rounded" />;
+          if (!d)
+            return (
+              <div key={idx} className="bg-white/5 h-28 rounded border border-white/15" />
+            );
           const k = fmtISODate(d);
           const list = eventsByDay.get(k) || [];
           const holidays = holidayMap.get(k) || [];
           const isToday = isSameDay(d, today);
 
           return (
-            <div key={k} className="bg-white h-28 rounded p-2 flex flex-col">
+            <div key={k} className="bg-white/5 h-28 rounded p-2 flex flex-col border border-white/15">
               <div className="flex items-center justify-between">
                 <span
-                  className={`inline-grid place-items-center h-7 w-7 rounded-full text-sm ${
-                    isToday ? "border-2 border-red-500 text-red-700" : "border border-gray-300 text-gray-700"
+                  className={`flex items-center justify-center h-8 w-8 md:h-9 md:w-9 aspect-square rounded-full shrink-0 text-[13px] md:text-sm ${
+                    isToday ? "border-2 border-emerald-400 text-white" : "border border-white/30 text-white/80"
                   }`}
                 >
                   {d.getDate()}
                 </span>
                 {!!holidays.length && (
-                  <span className="text-[11px] text-red-600 truncate ml-2" title={holidays[0].title}>
+                  <span className="text-[11px] text-emerald-300 truncate ml-2" title={holidays[0].title}>
                     {holidays[0].title}
                   </span>
                 )}
@@ -645,14 +659,14 @@ function MonthView({
                   <Link
                     key={e.id + k}
                     href={`/admin/events/${e.id}`}
-                    className="px-2 py-0.5 rounded-md bg-red-50 text-red-700 text-[16px] truncate hover:bg-red-100"
+                    className="px-2 py-0.5 rounded-md bg-white/10 text-white/90 text-[13px] font-medium truncate hover:bg-white/15"
                     title={e.nameTh || e.nameEn}
                   >
                     {e.nameTh || e.nameEn}
                   </Link>
                 ))}
                 {list.length > 3 && (
-                  <div className="text-[16px] text-gray-500">+{list.length - 3} more</div>
+                  <div className="text-xs text-white/70">+{list.length - 3} more</div>
                 )}
               </div>
             </div>
@@ -678,7 +692,7 @@ function YearView({
   return (
     <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
       {months.map((m) => (
-        <div key={`${m.getFullYear()}-${m.getMonth()}`} className="rounded-2xl border bg-white/80">
+        <div key={`${m.getFullYear()}-${m.getMonth()}`} className="admin-card">
           <div className="px-4 py-2 border-b text-sm font-medium">
             {m.toLocaleString(undefined, { month: "long", year: "numeric" })}
           </div>

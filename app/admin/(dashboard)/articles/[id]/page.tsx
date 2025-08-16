@@ -111,7 +111,7 @@ export default async function EditArticlePage({ params }: { params: { id: string
 
   if ("error" in result) {
     return (
-      <div className="admin-content grid gap-4">
+      <div className="grid gap-4">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold">Edit Article</h1>
           <Link href="/admin/articles" className="btn btn-outline-zpell">
@@ -134,7 +134,7 @@ export default async function EditArticlePage({ params }: { params: { id: string
   const { initial, initialSeo } = result.data!;
 
   return (
-    <div className="admin-content grid gap-4">
+    <div className="grid gap-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Edit Article</h1>
         <Link href="/admin/articles" className="btn btn-outline-zpell">

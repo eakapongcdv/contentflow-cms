@@ -2,6 +2,15 @@
 import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 import CalendarClient from "./CalendarClient";
+import { Button, IconButton } from "@/app/components/ui/button";
+import {
+  Plus,
+  RefreshCw,
+  Search as SearchIcon,
+  PencilLine,
+} from "lucide-react";
+import { Thumb } from "@/app/components/ui/thumb";
+import { PaginationFooter } from "@/app/components/ui/pagination";
 
 /* -------- date utils (SSR) -------- */
 function stripTime(d: Date) {
@@ -96,23 +105,21 @@ export default async function AdminEventsPage({
   }));
 
   return (
-    <main className="section">
-      <div className="container-narrow grid gap-4">
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="text-xl font-semibold">Events</h1>
-          <Link href="/admin/events/new" className="btn btn-zpell">
-            + New Event
-          </Link>
-        </div>
-
-        <div className="card p-4">
-          <CalendarClient
-            initialView={view}
-            initialDate={baseDate.toISOString()}
-            initialEvents={eventsPlain}
-          />
-        </div>
+    <div className="grid gap-4">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-xl font-semibold">Events</h1>
+        <Link href={`/admin/events/new`} title="New article">
+          <IconButton variant="zspell" aria-label="New">
+            <Plus className="h-4 w-4" />
+          </IconButton>
+        </Link>
       </div>
-    </main>
+
+        <CalendarClient
+          initialView={view}
+          initialDate={baseDate.toISOString()}
+          initialEvents={eventsPlain}
+        />
+    </div>
   );
 }

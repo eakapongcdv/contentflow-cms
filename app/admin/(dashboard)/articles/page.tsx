@@ -3,18 +3,14 @@ import Link from "next/link";
 import { headers, cookies } from "next/headers";
 import { Button, IconButton } from "@/app/components/ui/button";
 import { ButtonGroup } from "@/app/components/ui/button-group";
-import PageSizeSelect from "@/app/components/ui/page-size-select";
 import {
   Plus,
   RefreshCw,
   Search as SearchIcon,
   PencilLine,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
 } from "lucide-react";
 import { Thumb } from "@/app/components/ui/thumb";
+import { PaginationFooter } from "@/app/components/ui/pagination";
 
 /* ---------- helpers ---------- */
 function abs(path: string) {
@@ -29,20 +25,7 @@ function fmt(dt?: string | null) {
   if (isNaN(+d)) return "—";
   return d.toLocaleString();
 }
-function buildPageList(current: number, total: number, span = 2): (number | "…")[] {
-  const pages = new Set<number>([1, total]);
-  for (let p = current - span; p <= current + span; p++) {
-    if (p >= 1 && p <= total) pages.add(p);
-  }
-  const sorted = Array.from(pages).sort((a, b) => a - b);
-  const out: (number | "…")[] = [];
-  for (let i = 0; i < sorted.length; i++) {
-    out.push(sorted[i]);
-    const next = sorted[i + 1];
-    if (next && next - sorted[i] > 1) out.push("…");
-  }
-  return out;
-}
+
 const safeAlt = (s?: string) => (s && s.trim() ? s : "article image");
 
 /* ---------- data loaders ---------- */
@@ -170,10 +153,9 @@ export default async function ArticlesPage({
 
   const data = result.data!;
   const totalPages = Math.max(1, Math.ceil(data.total / data.take));
-  const pageList = buildPageList(data.page, totalPages, 2);
 
   return (
-    <div className="admin-content grid gap-4">
+    <div className="grid gap-4">
       {/* header */}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Articles</h1>
@@ -310,86 +292,14 @@ export default async function ArticlesPage({
       </div>
 
       {/* footer: results + pagination + page size */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="text-xs text-white/60">
-          Showing {(data.page - 1) * data.take + 1}–
-          {Math.min(data.page * data.take, data.total)} of {data.total}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-white/60">Page size</span>
-          <PageSizeSelect
-            value={data.take}
-            q={q}
-            slug={slug}
-            status={status}
-            categoryId={categoryId}
-            page={data.page}
-          />
-        </div>
-
-        <div className="flex items-center gap-1">
-          <Link href={makeHref(1)} aria-disabled={data.page === 1}>
-            <IconButton
-              variant="outlineZspell"
-              aria-label="First"
-              disabled={data.page === 1}
-              className="rounded-full h-9 w-9 p-0"
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </IconButton>
-          </Link>
-          <Link href={makeHref(Math.max(1, data.page - 1))} aria-disabled={data.page === 1}>
-            <IconButton
-              variant="outlineZspell"
-              aria-label="Prev"
-              disabled={data.page === 1}
-              className="rounded-full h-9 w-9 p-0"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </IconButton>
-          </Link>
-
-          {pageList.map((p, i) =>
-            p === "…" ? (
-              <span key={`gap-${i}`} className="inline-grid place-items-center h-9 w-9 text-white/50 select-none">
-                …
-              </span>
-            ) : (
-              <Link key={p} href={makeHref(p)}>
-                <Button
-                  variant={p === data.page ? "zspell" : "outlineZspell"}
-                  size="sm"
-                  className="rounded-full h-9 w-9 px-0"
-                >
-                  {p}
-                </Button>
-              </Link>
-            )
-          )}
-
-          <Link href={makeHref(Math.min(totalPages, data.page + 1))} aria-disabled={data.page >= totalPages}>
-            <IconButton
-              variant="outlineZspell"
-              aria-label="Next"
-              disabled={data.page >= totalPages}
-              className="rounded-full h-9 w-9 p-0"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </IconButton>
-          </Link>
-          <Link href={makeHref(totalPages)} aria-disabled={data.page >= totalPages}>
-            <IconButton
-              variant="outlineZspell"
-              aria-label="Last"
-              disabled={data.page >= totalPages}
-              className="rounded-full h-9 w-9 p-0"
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </IconButton>
-          </Link>
-        </div>
-      </div>
+      <PaginationFooter
+        page={data.page}
+        totalPages={totalPages}
+        totalItems={data.total}
+        take={data.take}
+        makeHref={makeHref}
+        pageSizeParams={{ q, slug, status, categoryId }}
+      />
     </div>
   );
 }

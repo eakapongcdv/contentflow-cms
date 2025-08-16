@@ -37,17 +37,16 @@ export default function TopBar({
   }
 
   return (
-    <div className="admin-card px-4 py-3 md:px-5 md:py-4 mb-6">
+    <div className="admin-card px-3 py-2 md:px-4 md:py-2 mb-3">
       <div className="flex items-center justify-between gap-3">
         {/* Left: website chooser + welcome */}
         <div className="min-w-0">
-          <div className="admin-subtle text-sm">Current website</div>
 
           {/* Website selector (ดึงจาก WebsiteProvider) */}
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <select
               aria-label="Select website"
-              className="admin-select cursor-pointer min-w-[220px]"
+              className="admin-select text-sm cursor-pointer min-w-[180px]"
               disabled={loading || (websites?.length ?? 0) === 0}
               value={websiteId || ""}
               onChange={(e) => setWebsiteId(e.target.value)}
@@ -63,37 +62,40 @@ export default function TopBar({
                 </option>
               ))}
             </select>
-
-            <span className="admin-badge neon text-xs">Dashboard</span>
-          </div>
-
-          {/* Welcome */}
-          <div className="text-[13px] admin-muted mt-1">
-            Welcome, <span className="text-white/90">{displayName}</span>
-            {userRole ? <span className="admin-subtle"> — {userRole}</span> : null}
           </div>
         </div>
 
         {/* Right: language + profile */}
         <div className="flex items-center gap-3">
-          {/* Language switcher */}
-          <select
-            aria-label="Language"
-            className="admin-select cursor-pointer"
-            defaultValue={locale}
-            onChange={(e) => setLang(e.target.value as "th" | "en" | "cn")}
-          >
-            <option value="th">ไทย (TH)</option>
-            <option value="en">English (EN)</option>
-            <option value="cn">中文 (CN)</option>
-          </select>
+          {/* Language switcher (compact segmented) */}
+          <div className="inline-flex items-center rounded-lg border border-white/15 bg-white/5 overflow-hidden h-8">
+            {([
+              { id: "th", label: "TH" },
+              { id: "en", label: "EN" },
+              { id: "cn", label: "CN" },
+            ] as const).map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => setLang(opt.id)}
+                className={`px-2.5 text-xs transition-colors ${
+                  locale === opt.id
+                    ? "bg-white/15 text-white"
+                    : "text-white/70 hover:bg-white/10"
+                }`}
+                aria-pressed={locale === opt.id}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
 
           {/* Profile menu */}
-          <div className="relative">
+          <div className="relative z-[1100]">
             <button
               type="button"
               onClick={() => setOpen((s) => !s)}
-              className="flex items-center gap-2 bg-white/10 hover:bg-white/15 px-2.5 py-1.5 rounded-xl"
+              className="flex items-center gap-2 bg-white/10 hover:bg-white/15 px-2 py-1 rounded-xl"
               aria-haspopup="menu"
               aria-expanded={open}
             >
@@ -112,11 +114,17 @@ export default function TopBar({
                 <path fill="currentColor" d="M5.5 7.5L10 12l4.5-4.5" />
               </svg>
             </button>
-
+            {open && (
+              <div
+                className="fixed inset-0 z-[1150]"
+                onClick={() => setOpen(false)}
+                aria-hidden
+              />
+            )}
             {open && (
               <div
                 role="menu"
-                className="absolute right-0 mt-2 w-56 rounded-xl border border-white/10 bg-[#0b0f14]/95 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,.4)] overflow-hidden z-10"
+                className="absolute right-0 mt-2 w-56 rounded-xl border border-white/10 bg-[#0b0f14]/95 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,.4)] overflow-hidden z-[2000] pointer-events-auto"
               >
                 <div className="px-3 py-2 text-xs admin-subtle">
                   Signed in as
