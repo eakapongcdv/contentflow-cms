@@ -30,7 +30,7 @@ export default function PageSizeSelect({
     if (categoryId) sp.set("categoryId", categoryId);
     sp.set("take", String(take));
     sp.set("page", "1"); // reset to first page on page-size change
-    window.location.assign(`/admin/articles?${sp.toString()}`);
+    window.location.assign(`?${sp.toString()}`);
   };
 
   return (

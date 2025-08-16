@@ -169,7 +169,7 @@ export default async function ArticlesPage({
       </div>
 
       {/* advanced search */}
-      <form action="/admin/articles" className="admin-card p-3 grid gap-2">
+      <form action="/admin/articles" className="admin-card p-3 grid gap-3">
         <div className="grid md:grid-cols-4 gap-2">
           <label className="grid gap-1">
             <span className="text-xs text-white/60">Search (title / keyword)</span>
