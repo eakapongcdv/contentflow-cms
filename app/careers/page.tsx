@@ -3,9 +3,6 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import SiteHeader from "../components/SiteHeader";
-import SiteFooter from "../components/SiteFooter";
-import AiAgent from "../widgets/AiAgent";
 
 /** ---------- BG ---------- **/
 function DarkNeonBg() {
@@ -147,7 +144,6 @@ export default function CareersPage() {
   return (
     <main className="relative min-h-screen text-white">
       <DarkNeonBg />
-      <SiteHeader />
 
       {/* Hero */}
       <section className="mx-auto max-w-7xl px-4 md:px-6 pt-8 md:pt-12">
@@ -297,9 +293,6 @@ export default function CareersPage() {
           </div>
         )}
       </section>
-
-      <SiteFooter />
-      <AiAgent />
     </main>
   );
 }

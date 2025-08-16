@@ -2,7 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
+:root { --nav-h: 56px; color-scheme: dark; }
+@media (min-width: 768px){
+  :root { --nav-h: 64px; }               /* md+ */
+}
+
 html, body { min-height: 100%; }
 body {
   @apply antialiased bg-[#0a0a0f] text-white;
@@ -20,3 +24,4 @@ body {
 .ai-orb,
 .ai-orb canvas { background: transparent !important; }
 .ai-orb { max-width:150px; max-height:150px; }
+

@@ -1,6 +1,6 @@
 // app/careers/[id]/page.tsx
 import { notFound } from "next/navigation";
-import AiAgent from "../../widgets/AiAgent";
+import AiAgent from "../../components/widgets/AiAgent";
 import { getJobById, jobIds, defaultApplyEmail } from "../_data";
 import SiteHeader from "../../components/SiteHeader";
 import SiteFooter from "../../components/SiteFooter";

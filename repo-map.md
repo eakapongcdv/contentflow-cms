@@ -1,6 +1,6 @@
 # Repo Map
 
-Generated: 2025-08-15T14:32:36+07:00
+Generated: 2025-08-16T09:59:42+07:00
 
 ## Tree (top 3 levels)
 ```
@@ -10,25 +10,47 @@ middleware.ts
 tailwind.config.js
 .DS_Store
 app
+  contact
+    page.tsx
   fonts.ts
   .DS_Store
+  security
+    page.tsx
+  terms
+    page.tsx
   admin
     .DS_Store
+    globals-v1.css
     layout.tsx
     preview
+    aurora-parallax.tsx
     (auth)
     (dashboard)
     globals.css
+    AdminDarkNeonBg.tsx
+  sitemap
+    page.tsx
+  about
+    page.tsx
+  docs
+    page.tsx
   cms.config.ts
   occupants
     [id]
+  careers
+    [id]
+    page.tsx
+    _data.ts
   components
+    SiteFooter.tsx
     ui
     pagination.tsx
     language-flag.tsx
+    SiteHeader.tsx
     geo-sort-button.tsx
     highlight.tsx
     admin-nav.tsx
+    PageShell.tsx
     search-bar.tsx
     search-page-client.tsx
     logout-button.tsx
@@ -37,9 +59,13 @@ app
     icons.tsx
     BackgroundLayer.tsx
     voice-search-modal.tsx
+    ClientLangLayout.tsx
+    LanguageSwitcher.tsx
     search-results-with-map.tsx
+    widgets
+  partners
+    page.tsx
   layout.tsx
-  page-v1.tsx
   lib
     prisma.ts
     perm-client.ts
@@ -58,8 +84,11 @@ app
     dbx
   page.tsx
   globals.css
-  widgets
-    AiAgent.tsx
+  policy
+    page.tsx
+  pdpa
+    page.tsx
+vercel.json
 next.config.js
 prisma
   .DS_Store
@@ -80,11 +109,16 @@ next-env.d.ts
 README.md
 public
   .DS_Store
+  logo_.png
   images
+    aws.svg
     background_image.png
+    azure.svg
+    alibaba.svg
     futurepark.jpg
     logo.svg
   basic.ics
+  logo.png
 .gitignore
 package-lock.json
 package.json

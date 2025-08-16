@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 /** โหลดอนุภาคทรงกลมแบบ 3D (ต้องมีไฟล์ ParticleOrb3D.tsx ตามที่ให้ไปก่อนหน้า) */
 // const ParticleOrb3D = dynamic(() => import("./ParticleOrb3D"), { ssr: false });
-import ParticleOrb2D from "@/app/widgets/ParticleOrb2D";
+import ParticleOrb2D from "@/app/components/widgets/ParticleOrb2D";
 
 type MsgRole = "system" | "user" | "assistant";
 type Msg = { role: MsgRole; content: string };
