@@ -1,4 +1,3 @@
-// app/admin/(dashboard)/settings/ui/WebsiteThemeForm.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -197,7 +196,7 @@ export default function WebsiteThemeForm() {
     <div className="grid gap-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold">
+        <h3 className="text-base font-semibold text-white">
           Website Config (brand & background)
           {siteName ? (
             <>
@@ -224,20 +223,20 @@ export default function WebsiteThemeForm() {
       </div>
 
       {err ? (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{err}</div>
+        <div className="rounded-md border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">{err}</div>
       ) : null}
 
       {/* MODE: FORM */}
       {mode === "form" ? (
         <div className="grid gap-4">
           {/* Brand */}
-          <section className="card p-4">
-            <h4 className="font-medium mb-3">Brand</h4>
+          <section className="admin-card p-4">
+            <h4 className="font-medium mb-3 text-white">Brand</h4>
             <div className="grid sm:grid-cols-2 gap-3">
               <label className="grid gap-1">
                 <span className="text-sm">Logo Src (path under /public)</span>
                 <input
-                  className="inp"
+                  className="admin-input"
                   value={tpl.brand.logoSrc}
                   onChange={(e) => setTpl((s) => ({ ...s, brand: { ...s.brand, logoSrc: e.target.value } }))}
                   placeholder="/images/logo.svg"
@@ -246,7 +245,7 @@ export default function WebsiteThemeForm() {
               <label className="grid gap-1">
                 <span className="text-sm">Logo Alt</span>
                 <input
-                  className="inp"
+                  className="admin-input"
                   value={tpl.brand.alt}
                   onChange={(e) => setTpl((s) => ({ ...s, brand: { ...s.brand, alt: e.target.value } }))}
                   placeholder="Content management system v1.0"
@@ -256,13 +255,13 @@ export default function WebsiteThemeForm() {
           </section>
 
           {/* Background */}
-          <section className="card p-4">
-            <h4 className="font-medium mb-3">Background</h4>
+          <section className="admin-card p-4">
+            <h4 className="font-medium mb-3 text-white">Background</h4>
             <div className="grid sm:grid-cols-2 gap-3">
               <label className="grid gap-1">
                 <span className="text-sm">Gradient (CSS)</span>
                 <input
-                  className="inp font-mono"
+                  className="admin-input font-mono"
                   value={tpl.background.gradient}
                   onChange={(e) => setTpl((s) => ({ ...s, background: { ...s.background, gradient: e.target.value } }))}
                   placeholder='linear-gradient(#fff,#f0fff9)'
@@ -271,7 +270,7 @@ export default function WebsiteThemeForm() {
               <label className="grid gap-1">
                 <span className="text-sm">Image Src (path under /public)</span>
                 <input
-                  className="inp"
+                  className="admin-input"
                   value={tpl.background.imageSrc}
                   onChange={(e) => setTpl((s) => ({ ...s, background: { ...s.background, imageSrc: e.target.value } }))}
                   placeholder="/images/background_image.png"
@@ -285,7 +284,7 @@ export default function WebsiteThemeForm() {
                   step="0.05"
                   min={0}
                   max={1}
-                  className="inp"
+                  className="admin-input"
                   value={tpl.background.imageOpacity ?? 1}
                   onChange={(e) =>
                     setTpl((s) => ({
@@ -299,7 +298,7 @@ export default function WebsiteThemeForm() {
               <label className="grid gap-1">
                 <span className="text-sm">Image Blend Mode</span>
                 <select
-                  className="inp"
+                  className="admin-input"
                   value={(tpl.background.imageBlendMode as string) || ""}
                   onChange={(e) =>
                     setTpl((s) => ({
@@ -326,7 +325,7 @@ export default function WebsiteThemeForm() {
               <label className="grid gap-1">
                 <span className="text-sm">Attachment</span>
                 <select
-                  className="inp"
+                  className="admin-input"
                   value={tpl.background.attachment ?? "fixed"}
                   onChange={(e) =>
                     setTpl((s) => ({ ...s, background: { ...s.background, attachment: e.target.value as any } }))
@@ -341,7 +340,7 @@ export default function WebsiteThemeForm() {
               <label className="grid gap-1">
                 <span className="text-sm">Position</span>
                 <input
-                  className="inp"
+                  className="admin-input"
                   value={tpl.background.position ?? "center"}
                   onChange={(e) => setTpl((s) => ({ ...s, background: { ...s.background, position: e.target.value } }))}
                   placeholder="center"
@@ -350,8 +349,8 @@ export default function WebsiteThemeForm() {
             </div>
 
             <div className="mt-4">
-              <div className="text-xs text-gray-500 mb-1">Preview</div>
-              <div className="w-full border overflow-hidden" style={bgPreviewStyle} />
+              <div className="text-xs text-white/60 mb-1">Preview</div>
+              <div className="w-full border border-white/10 overflow-hidden" style={bgPreviewStyle} />
             </div>
           </section>
         </div>
@@ -361,15 +360,15 @@ export default function WebsiteThemeForm() {
       {mode === "json" ? (
         <div className="grid gap-3">
           <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 text-sm">
+            <div className="inline-flex items-center gap-2 text-sm text-white/80">
               <Code2 className="h-4 w-4 text-zpell" />
               <span>Text View (JSON)</span>
               {jsonError ? (
-                <span className="inline-flex items-center gap-1 text-red-700">
+                <span className="inline-flex items-center gap-1 text-red-300">
                   <AlertTriangle className="h-4 w-4" /> {jsonError}
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-emerald-700">
+                <span className="inline-flex items-center gap-1 text-emerald-300">
                   <CheckCircle2 className="h-4 w-4" /> Valid
                 </span>
               )}
@@ -388,7 +387,7 @@ export default function WebsiteThemeForm() {
           </div>
 
           <textarea
-            className="inp font-mono text-[12.5px] leading-5"
+            className="admin-input font-mono text-[12.5px] leading-5 min-h-[280px]"
             rows={18}
             spellCheck={false}
             value={jsonText}
@@ -409,7 +408,7 @@ export default function WebsiteThemeForm() {
   }
 }`}
           />
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-white/60">
             * วาง/แก้ไขค่าได้โดยตรงในรูปแบบ JSON แล้วกด <b>Save Changes</b> หรือสลับกลับไป <b>Form View</b>.
           </p>
         </div>

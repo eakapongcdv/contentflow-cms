@@ -17,7 +17,7 @@ export default async function SettingsPage() {
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Settings</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-white">Settings</h1>
         <ButtonGroup>
           <Link href={`/admin/settings?${query}`}>
             <Button variant="outlineZspell" aria-label="Refresh" title="Refresh" leftIcon={<RefreshCw className="h-4 w-4" />}>
@@ -28,21 +28,23 @@ export default async function SettingsPage() {
       </div>
 
       {/* Website selector */}
-      <section className="card p-4">
-        <h2 className="text-base font-semibold mb-2">Current Website</h2>
-        <p className="text-sm text-gray-600 mb-3">
-          เลือกเว็บไซต์ที่ต้องการบริหาร ระบบจะบันทึกลงคุกกี้ <code>websiteId</code> และรีเฟรชหน้า
+      <section className="admin-card p-4">
+        <h2 className="text-base font-semibold mb-2 text-white">Current Website</h2>
+        <p className="text-sm text-white/60 mb-3">
+          เลือกเว็บไซต์ที่ต้องการบริหาร ระบบจะบันทึกลงคุกกี้ <code className="px-1.5 py-0.5 rounded bg-white/10 text-white/80">websiteId</code> และรีเฟรชหน้า
         </p>
         <WebsiteSwitcher initialWebsiteId={currentId} />
       </section>
 
       {/* Website Config (brand/background) */}
-      <section className="card p-4">
+      <section className="admin-card p-4">
+        <h2 className="text-base font-semibold mb-3 text-white">Theme</h2>
         <WebsiteThemeForm />
       </section>
 
       {/* NEW: Stylesheet Template (tokens / CSS) */}
-      <section className="card p-4">
+      <section className="admin-card p-4">
+        <h2 className="text-base font-semibold mb-3 text-white">Stylesheet</h2>
         <WebsiteStylesForm />
       </section>
     </div>

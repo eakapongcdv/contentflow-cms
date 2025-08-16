@@ -1,4 +1,3 @@
-// app/admin/(dashboard)/settings/ui/WebsiteStylesForm.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -195,7 +194,7 @@ export default function WebsiteStylesForm() {
     <div className="grid gap-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold">
+        <h3 className="text-base font-semibold text-white">
           Stylesheet Template {siteName ? <> — <span className="font-normal">{siteName}</span></> : null}
         </h3>
         <ButtonGroup>
@@ -216,13 +215,13 @@ export default function WebsiteStylesForm() {
       </div>
 
       {err ? (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{err}</div>
+        <div className="rounded-md border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">{err}</div>
       ) : null}
 
       {/* MODE SWITCH */}
-      <div className="card p-3 flex items-center justify-between">
+      <div className="admin-card p-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-700">Mode:</span>
+          <span className="text-sm text-white/70">Mode:</span>
           <ButtonGroup>
             <Button
               variant={style.mode === "tokens" ? "zspell" : "outlineZspell"}
@@ -243,9 +242,9 @@ export default function WebsiteStylesForm() {
 
         {/* Presets */}
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-700">Preset:</span>
+          <span className="text-sm text-white/70">Preset:</span>
           <select
-            className="inp w-56"
+            className="admin-input w-56"
             value={style.templateName}
             onChange={(e) => applyPreset(e.target.value)}
           >
@@ -260,8 +259,8 @@ export default function WebsiteStylesForm() {
 
       {/* FORM MODE (TOKENS) */}
       {style.mode === "tokens" ? (
-        <section className="card p-4 grid gap-4">
-          <h4 className="font-medium">Theme Tokens</h4>
+        <section className="admin-card p-4 grid gap-4">
+          <h4 className="font-medium text-white">Theme Tokens</h4>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
             {(
               [
@@ -277,11 +276,11 @@ export default function WebsiteStylesForm() {
               ] as const
             ).map(([key, label]) => (
               <div key={key} className="grid gap-1">
-                <span className="text-sm">{label}</span>
+                <span className="text-sm text-white/80">{label}</span>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
-                    className="h-10 w-14 rounded-md border"
+                    className="h-10 w-14 rounded-md border border-white/15 bg-white/5"
                     value={(style.tokens as any)[key]}
                     onChange={(e) =>
                       setStyle((s) => ({ ...s, tokens: { ...s.tokens, [key]: e.target.value } }))
@@ -289,7 +288,7 @@ export default function WebsiteStylesForm() {
                     aria-label={`${label} color`}
                   />
                   <input
-                    className="inp"
+                    className="admin-input"
                     value={(style.tokens as any)[key]}
                     onChange={(e) =>
                       setStyle((s) => ({ ...s, tokens: { ...s.tokens, [key]: e.target.value } }))
@@ -304,16 +303,16 @@ export default function WebsiteStylesForm() {
 
       {/* CSS MODE (TEXTAREA) */}
       {style.mode === "css" ? (
-        <section className="card p-4 grid gap-3">
-          <div className="flex items-center gap-2 text-sm">
+        <section className="admin-card p-4 grid gap-3">
+          <div className="flex items-center gap-2 text-sm text-white/80">
             <Code2 className="h-4 w-4 text-zpell" />
             <span>Custom CSS</span>
-            <span className="inline-flex items-center gap-1 text-emerald-700 ml-2">
+            <span className="inline-flex items-center gap-1 text-emerald-300 ml-2">
               <CheckCircle2 className="h-4 w-4" /> Variables only is fine — full CSS also supported.
             </span>
           </div>
           <textarea
-            className="inp font-mono text-[12.5px] leading-5"
+            className="admin-input font-mono text-[12.5px] leading-5 min-h-[280px]"
             rows={18}
             spellCheck={false}
             value={style.rawCss}
@@ -325,12 +324,12 @@ export default function WebsiteStylesForm() {
 
       {/* LIVE PREVIEW */}
       {showPreview ? (
-        <section className="card p-4">
+        <section className="admin-card p-4">
           <style dangerouslySetInnerHTML={{ __html: effectiveCss }} />
-          <div className="text-xs text-gray-500 mb-3">Live Preview</div>
+          <div className="text-xs text-white/60 mb-3">Live Preview</div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-2xl border p-4" style={{ background: "var(--zp-surface)" }}>
+            <div className="rounded-2xl border border-white/10 p-4" style={{ background: "var(--zp-surface)" }}>
               <h5 className="font-semibold text-[15px]" style={{ color: "var(--zp-navy)" }}>
                 Card Title
               </h5>
@@ -347,12 +346,12 @@ export default function WebsiteStylesForm() {
               </div>
             </div>
 
-            <div className="rounded-2xl border p-4" style={{ background: "var(--zp-bg)" }}>
+            <div className="rounded-2xl border border-white/10 p-4" style={{ background: "var(--zp-bg)" }}>
               <div className="chip chip-emerald">chip-emerald</div>{" "}
               <div className="chip chip-sky">chip-sky</div>{" "}
               <div className="chip chip-gray">chip-gray</div>
               <div className="mt-3">
-                <input className="inp" placeholder="Input…" />
+                <input className="admin-input" placeholder="Input…" />
               </div>
             </div>
           </div>

@@ -64,9 +64,9 @@ export default function WebsiteSwitcher({ initialWebsiteId }: { initialWebsiteId
       }}
     >
       <label className="grid gap-1">
-        <span className="text-sm">Website</span>
+        <span className="text-sm text-white/70">Website</span>
         <select
-          className="inp"
+          className="admin-input"
           value={value}
           onChange={(e) => setValue(e.target.value)}
         >
