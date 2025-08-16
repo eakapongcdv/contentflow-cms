@@ -107,22 +107,23 @@ export default async function PromotionsListPage({
       </div>
 
       {/* Search */}
-      <form className="flex gap-2">
-        <input
-          name="q"
-          defaultValue={q}
-          placeholder="Search name/description/category…"
-          className="admin-input"
-        />
-        <input type="hidden" name="tab" value={activeTab.id} />
-        <input type="hidden" name="per" value={per} />
-        <div className="flex justify-end">
-          <Button type="submit" variant="outlineZspell" leftIcon={<SearchIcon className="h-4 w-4" />}>
-            Search
-          </Button>
-        </div>
-      </form>
-
+      <div className="admin-card p-2">
+        <form className="flex gap-2">
+          <input
+            name="q"
+            defaultValue={q}
+            placeholder="Search name/description/category…"
+            className="admin-input"
+          />
+          <input type="hidden" name="tab" value={activeTab.id} />
+          <input type="hidden" name="per" value={per} />
+          <div className="flex justify-end">
+            <Button type="submit" variant="outlineZspell" leftIcon={<SearchIcon className="h-4 w-4" />}>
+              Search
+            </Button>
+          </div>
+        </form>
+      </div>
       {/* Table */}
       <div className="admin-card overflow-hidden">
         <table className="admin-table w-full text-sm text-white/90">

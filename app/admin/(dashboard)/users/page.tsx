@@ -3,14 +3,8 @@ import Link from "next/link";
 import { headers, cookies } from "next/headers";
 import { Button, IconButton } from "@/app/components/ui/button";
 import { ButtonGroup } from "@/app/components/ui/button-group";
-import {
-  Plus,
-  RefreshCw,
-  Search as SearchIcon,
-  PencilLine,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Plus, RefreshCw, Search as SearchIcon, PencilLine } from "lucide-react";
+import { PaginationFooter } from "@/app/components/ui/pagination";
 
 function abs(path: string) {
   const h = headers();
@@ -134,6 +128,8 @@ export default async function UsersPage({
           className="admin-input bg-white/5 border-white/15 text-white/90 placeholder-white/40"
           aria-label="Search users"
         />
+        <input type="hidden" name="page" value="1" />
+        <input type="hidden" name="take" value={String(data.take)} />
         <Button type="submit" variant="outlineZspell" leftIcon={<SearchIcon className="h-4 w-4" />}>
           Search
         </Button>
@@ -182,26 +178,22 @@ export default async function UsersPage({
         </table>
       </div>
 
-      {/* pager */}
-      <div className="flex items-center justify-end gap-2">
-        {data.page > 1 && (
-          <Link
-            href={`/admin/users?${new URLSearchParams({ q, page: String(data.page - 1) }).toString()}`}
-          >
-            <Button variant="outlineZspell" leftIcon={<ChevronLeft className="h-4 w-4" />}>
-              Prev
-            </Button>
-          </Link>
-        )}
-        {data.page * data.take < data.total && (
-          <Link
-            href={`/admin/users?${new URLSearchParams({ q, page: String(data.page + 1) }).toString()}`}
-          >
-            <Button variant="outlineZspell" rightIcon={<ChevronRight className="h-4 w-4" />}>
-              Next
-            </Button>
-          </Link>
-        )}
+      {/* Pagination */}
+      <div className="admin-card p-3">
+        <PaginationFooter
+          page={data.page}
+          totalPages={Math.max(1, Math.ceil(data.total / data.take))}
+          totalItems={data.total}
+          take={data.take}
+          makeHref={(p) => {
+            const params = new URLSearchParams();
+            if (q) params.set("q", q);
+            params.set("page", String(p));
+            params.set("take", String(data.take));
+            return `/admin/users?${params.toString()}`;
+          }}
+          pageSizeParams={{ q }}
+        />
       </div>
     </div>
   );
