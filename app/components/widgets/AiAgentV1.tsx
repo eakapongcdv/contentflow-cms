@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
 import ParticleOrb2D from "@/app/components/widgets/ParticleOrb2D";
 
 // ---- Conversation mode (Speech Synthesis / Recognition) types ----
@@ -33,8 +32,8 @@ type AgentResponse = {
 
 /** ---------------- Storage Keys ---------------- */
 const STORAGE_PREFIX = "cf.aiagent.v1";
-function historyKey(lang: "th" | "en" | "zh", admin: boolean) {
-  return `${STORAGE_PREFIX}.history.${admin ? "admin." : ""}${lang}`;
+function historyKey(lang: "th" | "en" | "zh") {
+  return `${STORAGE_PREFIX}.history.${lang}`;
 }
 const HIGHLIGHT_KEY = `${STORAGE_PREFIX}.highlightTarget`;
 const MAX_HISTORY = 50;
@@ -43,49 +42,14 @@ const OPEN_KEY = `${STORAGE_PREFIX}.open`;
 const TTS_KEY = `${STORAGE_PREFIX}.ttsOn`;
 const STT_HINT_KEY = `${STORAGE_PREFIX}.sttSupported`;
 
-function initialMessages(lang: "th" | "en" | "zh", admin: boolean): Msg[] {
-  const sys =
-    admin
-      ? "You are ContentFlow AI Suite CMS admin assistant. Be practical, security‑aware, reference /admin paths, and give step-by-step guidance."
-      : "You are ContentFlow AI Suite assistant for Thai SMEs & Enterprises. Help with features, pricing and deployment.";
+function initialMessages(lang: "th" | "en" | "zh"): Msg[] {
   return [
-    { role: "system", content: sys },
-    { role: "assistant", content: greeting(lang, admin) },
+    { role: "system", content: "You are ContentFlow AI Suite assistant for Thai SMEs & Enterprises." },
+    { role: "assistant", content: greeting(lang) },
   ];
 }
 
-function ideaPrompts(lang: "th" | "en" | "zh", admin: boolean): string[] {
-  if (admin) {
-    switch (lang) {
-      case "en":
-        return [
-          "How do I invite a teammate and set roles?",
-          "Draft → Review → Publish workflow",
-          "How to connect Facebook or Shopee?",
-          "Where to manage PDPA/consent banner?",
-          "Configure PromptPay or Stripe payments",
-          "Backup & restore content",
-        ];
-      case "zh":
-        return [
-          "如何邀请同事并设置角色？",
-          "草稿 → 审核 → 发布 流程",
-          "如何连接 Facebook 或 Shopee？",
-          "在哪设置 PDPA/同意横幅？",
-          "如何配置 PromptPay 或 Stripe 支付？",
-          "内容备份与恢复",
-        ];
-      default:
-        return [
-          "เชิญสมาชิกทีมและกำหนดสิทธิ์ยังไง?",
-          "เวิร์กโฟลว์ Draft → Review → Publish",
-          "ต่อ Facebook หรือ Shopee ทำอย่างไร",
-          "ตั้งค่าแบนเนอร์ PDPA/Consent ที่ไหน",
-          "ตั้งค่า PromptPay หรือ Stripe",
-          "สำรอง/กู้คืนคอนเทนต์",
-        ];
-    }
-  }
+function ideaPrompts(lang: "th" | "en" | "zh"): string[] {
   switch (lang) {
     case "en":
       return [
@@ -130,17 +94,7 @@ function langPrefix(lang: "th" | "en" | "zh") {
   return `/${lang}`;
 }
 
-function greeting(lang: "th" | "en" | "zh", admin: boolean) {
-  if (admin) {
-    switch (lang) {
-      case "en":
-        return "Hi! I’m your CMS Admin Assistant. Ask me anything about roles, workflow, integrations, or settings. 🔧";
-      case "zh":
-        return "你好！我是 CMS 管理助手。关于角色、流程、集成或设置都可以问我。🔧";
-      default:
-        return "สวัสดี! ฉันคือผู้ช่วยสำหรับผู้ดูแล CMS ถามได้เรื่องสิทธิ์ เวิร์กโฟลว์ อินทิเกรชัน หรือการตั้งค่า 🔧";
-    }
-  }
+function greeting(lang: "th" | "en" | "zh") {
   switch (lang) {
     case "en":
       return "Hi! I’m your ContentFlow AI assistant. Ask me about features, pricing, or a live demo. ✨";
@@ -151,7 +105,7 @@ function greeting(lang: "th" | "en" | "zh", admin: boolean) {
   }
 }
 
-function defaultChipsPublic(lang: "th" | "en" | "zh"): Chip[] {
+function defaultChips(lang: "th" | "en" | "zh"): Chip[] {
   switch (lang) {
     case "en":
       return [
@@ -173,38 +127,6 @@ function defaultChipsPublic(lang: "th" | "en" | "zh"): Chip[] {
         { label: "ราคา", href: "#pricing" },
         { label: "คลาวด์", href: "#cloud" },
         { label: "ความปลอดภัย", href: "#security" },
-      ];
-  }
-}
-
-function defaultChipsAdmin(lang: "th" | "en" | "zh"): Chip[] {
-  switch (lang) {
-    case "en":
-      return [
-        { label: "Dashboard", href: "/admin" },
-        { label: "Content", href: "/admin/content" },
-        { label: "Workflow", href: "/admin/workflow" },
-        { label: "Users & Roles", href: "/admin/users" },
-        { label: "Integrations", href: "/admin/integrations" },
-        { label: "Settings", href: "/admin/settings" },
-      ];
-    case "zh":
-      return [
-        { label: "仪表盘", href: "/admin" },
-        { label: "内容管理", href: "/admin/content" },
-        { label: "流程", href: "/admin/workflow" },
-        { label: "用户与角色", href: "/admin/users" },
-        { label: "集成", href: "/admin/integrations" },
-        { label: "设置", href: "/admin/settings" },
-      ];
-    default:
-      return [
-        { label: "แดชบอร์ด", href: "/admin" },
-        { label: "คอนเทนต์", href: "/admin/content" },
-        { label: "เวิร์กโฟลว์", href: "/admin/workflow" },
-        { label: "ผู้ใช้ & สิทธิ์", href: "/admin/users" },
-        { label: "การเชื่อมต่อ", href: "/admin/integrations" },
-        { label: "ตั้งค่า", href: "/admin/settings" },
       ];
   }
 }
@@ -289,28 +211,8 @@ function navigateSmart(href: string, lang: "th" | "en" | "zh") {
 }
 
 /** Heuristic chips when API not returning chips */
-function suggestChipsByContent(content: string, lang: "th" | "en" | "zh", admin: boolean): Chip[] {
+function suggestChipsByContent(content: string, lang: "th" | "en" | "zh"): Chip[] {
   const text = content.toLowerCase();
-
-  if (admin) {
-    const L = {
-      dashboard: lang === "en" ? "Dashboard" : lang === "zh" ? "仪表盘" : "แดชบอร์ด",
-      content: lang === "en" ? "Content" : lang === "zh" ? "内容管理" : "คอนเทนต์",
-      users: lang === "en" ? "Users & Roles" : lang === "zh" ? "用户与角色" : "ผู้ใช้ & สิทธิ์",
-      integrations: lang === "en" ? "Integrations" : lang === "zh" ? "集成" : "การเชื่อมต่อ",
-      settings: lang === "en" ? "Settings" : lang === "zh" ? "设置" : "ตั้งค่า",
-      workflow: lang === "en" ? "Workflow" : lang === "zh" ? "流程" : "เวิร์กโฟลว์",
-    };
-    const out: Chip[] = [];
-    if (/(dashboard|แดชบอร์ด|仪表)/i.test(text)) out.push({ href: "/admin", label: L.dashboard });
-    if (/(content|post|คอนเทนต์|内容)/i.test(text)) out.push({ href: "/admin/content", label: L.content });
-    if (/(role|acl|user|สิทธิ์|ผู้ใช้|角色|用户)/i.test(text)) out.push({ href: "/admin/users", label: L.users });
-    if (/(integrations?|เชื่อมต่อ|集成)/i.test(text)) out.push({ href: "/admin/integrations", label: L.integrations });
-    if (/(workflow|approval|เวิร์กโฟลว์|流程)/i.test(text)) out.push({ href: "/admin/workflow", label: L.workflow });
-    if (/(settings?|ตั้งค่า|配置)/i.test(text)) out.push({ href: "/admin/settings", label: L.settings });
-    const seen = new Set<string>();
-    return out.filter((c) => (seen.has(c.href) ? false : (seen.add(c.href), true)));
-  }
 
   const L = {
     features: lang === "en" ? "Feature Highlights" : lang === "zh" ? "功能亮点" : "ฟีเจอร์เด่น",
@@ -340,24 +242,8 @@ function suggestChipsByContent(content: string, lang: "th" | "en" | "zh", admin:
 }
 
 /** Normalize arbitrary link array from API -> chips with localized labels */
-function normalizeApiLinks(links: string[] | undefined, lang: "th" | "en" | "zh", admin: boolean): Chip[] {
+function normalizeApiLinks(links: string[] | undefined, lang: "th" | "en" | "zh"): Chip[] {
   if (!links || links.length === 0) return [];
-  if (admin) {
-    const L = {
-      learn: lang === "en" ? "Open" : lang === "zh" ? "打开" : "เปิดดู",
-      users: lang === "en" ? "Users & Roles" : lang === "zh" ? "用户与角色" : "ผู้ใช้ & สิทธิ์",
-      content: lang === "en" ? "Content" : lang === "zh" ? "内容管理" : "คอนเทนต์",
-      settings: lang === "en" ? "Settings" : lang === "zh" ? "设置" : "ตั้งค่า",
-    };
-    return links.map((href) => {
-      const lower = href.toLowerCase();
-      let label = L.learn;
-      if (lower.includes("/admin/users")) label = L.users;
-      else if (lower.includes("/admin/content")) label = L.content;
-      else if (lower.includes("/admin/settings")) label = L.settings;
-      return { href, label };
-    });
-  }
   const L = {
     features: lang === "en" ? "Feature Highlights" : lang === "zh" ? "功能亮点" : "ฟีเจอร์เด่น",
     pricing: lang === "en" ? "Pricing" : lang === "zh" ? "价格" : "ราคา",
@@ -532,12 +418,6 @@ function getSpeechRecognition(): any | null {
 /** ---------------- Component ---------------- */
 export default function AiAgent() {
   const lang = getDocLang();
-  const pathname = usePathname();
-  const isAdmin = useMemo(
-    () => /^\/(?:(?:th|en|zh)\/)?admin(?:\/|$)/i.test(pathname || ""),
-    [pathname]
-  );
-
   // TTS toggle (persist)
   const [ttsOn, setTtsOn] = useState<boolean>(() => {
     try { return (localStorage.getItem(TTS_KEY) ?? "1") !== "0"; } catch { return true; }
@@ -546,7 +426,7 @@ export default function AiAgent() {
     try { localStorage.setItem(TTS_KEY, ttsOn ? "1" : "0"); } catch {}
   }, [ttsOn]);
 
-  // Ensure speech stops when TTS is turned off or panel closed
+  // Ensure speech stops when TTS is turned off from any path
   useEffect(() => {
     if (!ttsOn && typeof window !== "undefined" && "speechSynthesis" in window) {
       try { window.speechSynthesis.cancel(); } catch {}
@@ -576,9 +456,7 @@ export default function AiAgent() {
   const [busy, setBusy] = useState(false);
 
   /** default quick chips (always visible) */
-  const [chips, setChips] = useState<Chip[]>(
-    () => (isAdmin ? defaultChipsAdmin(lang) : defaultChipsPublic(lang))
-  );
+  const [chips, setChips] = useState<Chip[]>(() => defaultChips(lang));
 
   /** dynamic chips suggested per assistant reply */
   const [replyChips, setReplyChips] = useState<Chip[]>([]);
@@ -587,7 +465,7 @@ export default function AiAgent() {
   const [messages, setMessages] = useState<Msg[]>(() => {
     if (typeof window !== "undefined") {
       try {
-        const raw = localStorage.getItem(historyKey(lang, isAdmin));
+        const raw = localStorage.getItem(historyKey(lang));
         if (raw) {
           const arr = JSON.parse(raw) as Msg[];
           if (Array.isArray(arr) && arr.length > 0) return arr;
@@ -596,7 +474,7 @@ export default function AiAgent() {
         /* ignore */
       }
     }
-    return initialMessages(lang, isAdmin);
+    return initialMessages(lang);
   });
 
   const [input, setInput] = useState("");
@@ -607,15 +485,6 @@ export default function AiAgent() {
       localStorage.setItem(OPEN_KEY, open ? "1" : "0");
     } catch {
       /* ignore */
-    }
-  }, [open]);
-
-  // Stop listening & speaking when panel closes
-  useEffect(() => {
-    if (!open) {
-      try { recRef.current?.stop?.(); } catch {}
-      try { window.speechSynthesis?.cancel?.(); } catch {}
-      setListening(false);
     }
   }, [open]);
 
@@ -630,11 +499,11 @@ export default function AiAgent() {
       // keep last N messages to avoid bloating
       const trimmed =
         messages.length > MAX_HISTORY ? messages.slice(messages.length - MAX_HISTORY) : messages;
-      localStorage.setItem(historyKey(lang, isAdmin), JSON.stringify(trimmed));
+      localStorage.setItem(historyKey(lang), JSON.stringify(trimmed));
     } catch {
       /* ignore */
     }
-  }, [messages, lang, isAdmin]);
+  }, [messages, lang]);
 
   // Auto read assistant reply when finished
   const lastSpokenIndex = useRef<number>(-1);
@@ -648,7 +517,6 @@ export default function AiAgent() {
       lastSpokenIndex.current = idx;
     }
   }, [messages, busy, lang, ttsOn]);
-
   function startListening() {
     const SR = getSpeechRecognition();
     if (!SR || listening) return;
@@ -697,7 +565,7 @@ export default function AiAgent() {
     const onSeed = (ev: Event) => {
       const detail = (ev as CustomEvent<SeedPayload>).detail || {};
       if (detail.lang) {
-        setChips(isAdmin ? defaultChipsAdmin(detail.lang) : defaultChipsPublic(detail.lang));
+        setChips(defaultChips(detail.lang));
       }
       if (detail.chips && Array.isArray(detail.chips) && detail.chips.length > 0) {
         setChips(detail.chips);
@@ -712,7 +580,7 @@ export default function AiAgent() {
     };
     window.addEventListener("cf:aiagent:seed" as any, onSeed as any);
     return () => window.removeEventListener("cf:aiagent:seed" as any, onSeed as any);
-  }, [isAdmin]);
+  }, []);
 
   /** On mount after navigation: if we stashed a hash to highlight, try it */
   useEffect(() => {
@@ -751,18 +619,15 @@ export default function AiAgent() {
     setBusy(true);
 
     try {
-      const kb = isAdmin ? "admin" : "public";
-      const res = await fetch(`/api/ai-agent?kb=${kb}`, {
+      const res = await fetch("/api/ai-agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next, kb, lang, path: pathname }),
+        body: JSON.stringify({ messages: next }),
       });
       if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
 
       const data: AgentResponse = await res.json();
-      const reply =
-        data.reply ||
-        (lang === "en" ? "Okay." : lang === "zh" ? "好的。" : "ค่ะ");
+      const reply = data.reply || (lang === "en" ? "Okay." : lang === "zh" ? "好的。" : "ค่ะ");
 
       setMessages((m) => [...m, { role: "assistant", content: reply }]);
 
@@ -771,10 +636,10 @@ export default function AiAgent() {
       if (Array.isArray(data.chips) && data.chips.length > 0) {
         suggested = data.chips;
       } else if (Array.isArray(data.links) && data.links.length > 0) {
-        suggested = normalizeApiLinks(data.links, lang, isAdmin);
+        suggested = normalizeApiLinks(data.links, lang);
       } else {
         // 2) Otherwise, infer from reply content
-        suggested = suggestChipsByContent(reply, lang, isAdmin);
+        suggested = suggestChipsByContent(reply, lang);
       }
       setReplyChips(sanitizeChips(suggested, lang).slice(0, 6)); // cap to 6 chips and sanitize
     } catch (e) {
@@ -803,18 +668,8 @@ export default function AiAgent() {
     navigateSmart(href, lang);
   }
 
-  /** placeholder text by lang (and admin mode) */
+  /** placeholder text by lang */
   const placeholder = useMemo(() => {
-    if (isAdmin) {
-      switch (lang) {
-        case "en":
-          return "e.g. Invite a teammate and set roles";
-        case "zh":
-          return "例如：邀请同事并设置角色";
-        default:
-          return "เช่น เชิญสมาชิกทีมและกำหนดสิทธิ์";
-      }
-    }
     switch (lang) {
       case "en":
         return "Ask e.g. Recommend a plan for 10 people";
@@ -823,37 +678,27 @@ export default function AiAgent() {
       default:
         return "พิมพ์คำถาม เช่น แนะนำแพ็กเกจสำหรับทีม 10 คน";
     }
-  }, [lang, isAdmin]);
+  }, [lang]);
 
-  const closeLabel = useMemo(
-    () => (lang === "en" ? "Close" : lang === "zh" ? "关闭" : "ปิด"),
-    [lang]
-  );
-  const sendLabel = useMemo(
-    () => (lang === "en" ? "Send" : lang === "zh" ? "发送" : "ส่ง"),
-    [lang]
-  );
-  const suggestedLabel = useMemo(
-    () => (lang === "en" ? "Suggested" : lang === "zh" ? "推荐" : "แนะนำเพิ่มเติม"),
-    [lang]
-  );
+  const closeLabel = lang === "en" ? "Close" : lang === "zh" ? "关闭" : "ปิด";
+  const sendLabel = lang === "en" ? "Send" : lang === "zh" ? "发送" : "ส่ง";
+  const suggestedLabel = lang === "en" ? "Suggested" : lang === "zh" ? "推荐" : "แนะนำเพิ่มเติม";
 
   // Localized labels for Thinking/Listening
-  const thinkingLabel = useMemo(
-    () => (lang === "en" ? "Thinking…" : lang === "zh" ? "正在思考…" : "กำลังคิด…"),
-    [lang]
-  );
-  const listeningLabel = useMemo(
-    () => (lang === "en" ? "Listening…" : lang === "zh" ? "正在聆听…" : "กำลังฟัง…"),
-    [lang]
-  );
+  const thinkingLabel = useMemo(() => (
+    lang === "en" ? "Thinking…" : lang === "zh" ? "正在思考…" : "กำลังคิด…"
+  ), [lang]);
+
+  const listeningLabel = useMemo(() => (
+    lang === "en" ? "Listening…" : lang === "zh" ? "正在聆听…" : "กำลังฟัง…"
+  ), [lang]);
 
   function clearLog() {
-    const base = initialMessages(lang, isAdmin);
+    const base = initialMessages(lang);
     setMessages(base);
     setReplyChips([]);
     try {
-      localStorage.setItem(historyKey(lang, isAdmin), JSON.stringify(base));
+      localStorage.setItem(historyKey(lang), JSON.stringify(base));
     } catch {
       /* ignore */
     }
@@ -909,12 +754,12 @@ export default function AiAgent() {
         <div
           role="dialog"
           aria-label="AI Chat"
-          className="fixed bottom-24 right-6 z-[55] w-[560px] max-h-[72vh] rounded-2xl border border-white/10 bg-[#0d0f14]/95 backdrop-blur-lg shadow-[0_0_40px_rgba(34,211,238,.25)] flex flex-col"
+          className="fixed bottom-24 right-6 z-[55] w-[480px] max-h-[72vh] rounded-2xl border border-white/10 bg-[#0d0f14]/95 backdrop-blur-lg shadow-[0_0_40px_rgba(34,211,238,.25)] flex flex-col"
         >
           <div className="px-4 py-3 border-b border-white/10 text-sm text-white/80 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,1)]" />
-              {isAdmin ? "CMS Admin Assistant" : "ContentFlow AI Agent"}
+              ContentFlow AI Agent
             </div>
             <div className="flex items-center gap-1.5">
               {/* TTS toggle */}
@@ -1039,7 +884,7 @@ export default function AiAgent() {
                   {lang === "en" ? "Try asking" : lang === "zh" ? "可以试着问" : "ลองถามดู"}
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {ideaPrompts(lang, isAdmin).map((q, i) => (
+                  {ideaPrompts(lang).map((q, i) => (
                     <button
                       key={`idea-${i}`}
                       onClick={() => send(q)}
