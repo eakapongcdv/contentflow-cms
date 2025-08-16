@@ -3,7 +3,6 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
-import AiAgent from "./components/widgets/AiAgent";
 
 /** ---------- Types ---------- **/
 type BillingCycle = "monthly" | "annual";
@@ -829,26 +828,6 @@ export default function HomePage() {
     } catch {}
   }, []);
 
-  // Seed chat assistant with page-specific shortcut chips (no-op if AiAgent doesn't listen)
-  useEffect(() => {
-    const chips = getQuickChips(lang);
-    const chipMsg = chipsToMarkup(chips);
-    const greeting = (
-      lang === "TH"
-        ? `เลือกดูส่วนที่สนใจได้เลย → ${chipMsg}`
-        : lang === "EN"
-        ? `Quick jump to a section → ${chipMsg}`
-        : `快速跳转到版块 → ${chipMsg}`
-    );
-
-    // Dispatch a custom event; AiAgent can subscribe to 'cf:aiagent:seed'
-    try {
-      window.dispatchEvent(new CustomEvent("cf:aiagent:seed", {
-        detail: { chips, initialMessage: greeting },
-      }));
-    } catch {}
-  }, [lang]);
-
   return (
     <main className="relative min-h-screen text-white">
       <DarkNeonBg />
@@ -860,7 +839,6 @@ export default function HomePage() {
         <Compliance lang={lang} />
         <PricingAndChooser couponMode={couponMode} checkoutBase={checkoutBase} lang={lang} />
       </div>
-      <AiAgent />
     </main>
   );
 }
