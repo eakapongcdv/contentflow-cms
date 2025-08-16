@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { Menu, X, LayoutDashboard, Newspaper, Tags, FolderTree, CalendarDays, Megaphone, Building2, Landmark, Image as ImageIcon, Info, Globe2, Users, UserCog, KeySquare, ShieldCheck, Search, MousePointerSquare, Settings } from "lucide-react";
+import { Menu, X, LayoutDashboard, Newspaper, Tags, FolderTree, CalendarDays, Megaphone, Building2, Landmark, Image as ImageIcon, Info, Globe2, Users, UserCog, KeySquare, ShieldCheck, Search, MousePointer , Settings } from "lucide-react";
 
 /**
  * AdminNav — responsive admin navigation for routes under /admin/*
@@ -15,6 +15,12 @@ import { Menu, X, LayoutDashboard, Newspaper, Tags, FolderTree, CalendarDays, Me
  * - Minimal dependencies (Tailwind + lucide-react)
  * - Keyboard accessible (Tab / Esc)
  */
+
+export type AdminNavProps = {
+  websiteId: string;
+  websiteName?: string;
+  initialRules: Array<{ resource: string; action: string; effect: "ALLOW" | "DENY" }>;
+};
 
 /**
  * Define your admin menu structure here.
@@ -65,7 +71,7 @@ const NAV: Array<{
     label: "Analytics",
     items: [
       { href: "/admin/search-logs", label: "Search Logs", icon: Search },
-      { href: "/admin/click-logs", label: "Click Logs", icon: MousePointerSquare },
+      { href: "/admin/click-logs", label: "Click Logs", icon: MousePointer },
     ],
   },
   {
@@ -95,7 +101,7 @@ function useActiveMap(pathname: string) {
   }, [pathname]);
 }
 
-export default function AdminNav() {
+export default function AdminNav({ websiteId: _websiteId, websiteName: _websiteName, initialRules: _initialRules }: AdminNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const active = useActiveMap(pathname || "/admin");
