@@ -309,6 +309,21 @@ const TXT = {
   },
 };
 
+/** ---------- Chat Assistant Shortcuts (chips) ---------- **/
+function getQuickChips(lang: Lang) {
+  return [
+    { href: "#features", label: { TH: "ฟีเจอร์เด่น", EN: "Features", CN: "功能亮点" }[lang] },
+    { href: "#pricing",  label: { TH: "ราคา/แพ็กเกจ", EN: "Pricing", CN: "价格方案" }[lang] },
+    { href: "#cloud",    label: { TH: "คลาวด์", EN: "Cloud", CN: "云部署" }[lang] },
+    { href: "#security", label: { TH: "ความปลอดภัย", EN: "Security", CN: "安全合规" }[lang] },
+  ];
+}
+
+function chipsToMarkup(chips: { href: string; label: string }[]) {
+  // AiAgent renders [[#anchor|label]] as interactive chips
+  return chips.map((c) => `[[${c.href}|${c.label}]]`).join(" ");
+}
+
 /** ---------- Recommender ---------- **/
 function recommendPlan(input: {
   teamSize: number; postsPerMonth: number; needIntegrations: boolean; needCompliance: boolean; budgetPerMonth: number;
@@ -813,6 +828,26 @@ export default function HomePage() {
       if (Array.isArray(lg)) setLogos(lg);
     } catch {}
   }, []);
+
+  // Seed chat assistant with page-specific shortcut chips (no-op if AiAgent doesn't listen)
+  useEffect(() => {
+    const chips = getQuickChips(lang);
+    const chipMsg = chipsToMarkup(chips);
+    const greeting = (
+      lang === "TH"
+        ? `เลือกดูส่วนที่สนใจได้เลย → ${chipMsg}`
+        : lang === "EN"
+        ? `Quick jump to a section → ${chipMsg}`
+        : `快速跳转到版块 → ${chipMsg}`
+    );
+
+    // Dispatch a custom event; AiAgent can subscribe to 'cf:aiagent:seed'
+    try {
+      window.dispatchEvent(new CustomEvent("cf:aiagent:seed", {
+        detail: { chips, initialMessage: greeting },
+      }));
+    } catch {}
+  }, [lang]);
 
   return (
     <main className="relative min-h-screen text-white">
