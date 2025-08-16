@@ -46,7 +46,7 @@ export default async function AdminDashboardLayout({
       {/* ตั้งธีมตามเว็บไซต์ฝั่ง client */}
       <ThemeApplier />
 
-      <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mx-auto px-4 py-8">
         <TopBar
           userName={(session?.user?.name as string) || null}
           userEmail={(session?.user?.email as string) || null}
