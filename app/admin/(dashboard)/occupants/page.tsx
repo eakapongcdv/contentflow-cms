@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 import Filters from "./Filters";
 import { Pencil } from "lucide-react";
+import { PaginationFooter } from "@/app/components/ui/pagination";
 
 const TABS = [
   {
@@ -92,8 +93,8 @@ export default async function OccupantsListPage({
     [
       "inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm transition-colors",
       id === activeVenue
-        ? "bg-zpell text-white border-zpell"
-        : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50",
+        ? "bg-white/10 text-white border-emerald-400/30 ring-1 ring-emerald-400/20"
+        : "bg-white/5 text-white/80 border-white/15 hover:bg-white/10",
     ].join(" ");
 
   const buildQuery = (params: {
@@ -130,82 +131,14 @@ export default async function OccupantsListPage({
       ...(selectedCat ? { cat: selectedCat } : {}),
     }).toString();
 
-  const pageNumbers = (() => {
-    const maxButtons = 7;
-    if (pageCount <= maxButtons) return Array.from({ length: pageCount }, (_, i) => i + 1);
-    const set = new Set<number>([1, page, pageCount]);
-    for (const d of [1, 2]) {
-      if (page - d >= 1) set.add(page - d);
-      if (page + d <= pageCount) set.add(page + d);
-    }
-    const arr = Array.from(set).sort((a, b) => a - b);
-    while (arr.length < maxButtons) {
-      const L = arr[0] - 1;
-      const R = arr[arr.length - 1] + 1;
-      if (L >= 1) arr.unshift(L);
-      if (arr.length >= maxButtons) break;
-      if (R <= pageCount) arr.push(R);
-      if (L < 1 && R > pageCount) break;
-    }
-    return arr;
-  })();
-
-  const Pager = () => (
-    <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div className="text-xs text-gray-600">
-        แสดง {total ? `${start + 1}–${end} / ${total}` : "0 / 0"} รายการ
-      </div>
-
-      <div className="flex items-center gap-1">
-        <Link
-          href={buildQuery({ page: Math.max(1, page - 1) })}
-          className={`px-3 py-1 rounded-md border ${
-            page === 1 ? "pointer-events-none opacity-50" : "hover:bg-gray-50"
-          }`}
-        >
-          ← Prev
-        </Link>
-
-        {pageNumbers.map((n, idx) => {
-          const prev = idx > 0 ? pageNumbers[idx - 1] : undefined;
-          const needDots = prev && n - prev > 1;
-          return (
-            <span key={n} className="flex">
-              {needDots && <span className="px-2">…</span>}
-              <Link
-                href={buildQuery({ page: n })}
-                className={
-                  n === page
-                    ? "px-3 py-1 rounded-md border border-zpell bg-zpell text-white"
-                    : "px-3 py-1 rounded-md border hover:bg-gray-50"
-                }
-              >
-                {n}
-              </Link>
-            </span>
-          );
-        })}
-
-        <Link
-          href={buildQuery({ page: Math.min(pageCount, page + 1) })}
-          className={`px-3 py-1 rounded-md border ${
-            page === pageCount ? "pointer-events-none opacity-50" : "hover:bg-gray-50"
-          }`}
-        >
-          Next →
-        </Link>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="card p-6">
+    <div className="grid gap-4">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold">Stores & Tenants :: Store Directory</h1>
+        <h1 className="text-xl font-semibold text-white">Stores & Tenants :: Store Directory</h1>
         <Link
           href={buildQuery({}).replace("/occupants?", "/occupants/new?")}
-          className="btn btn-zpell"
+          className="admin-btn"
         >
           + Sync Venue
         </Link>
@@ -235,9 +168,9 @@ export default async function OccupantsListPage({
 
       {/* Table */}
       <div className="w-full overflow-x-auto mt-3">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm text-white/80">
           <thead>
-            <tr className="text-left">
+            <tr className="text-left text-white/60 border-b border-white/15">
               <th className="p-2">Name</th>
               <th className="p-2">External ID</th> {/* ✅ เพิ่มคอลัมน์ External ID */}
               <th className="p-2">Category</th>
@@ -259,20 +192,20 @@ export default async function OccupantsListPage({
                 : null;
 
               return (
-                <tr key={i.id} className="border-t align-top">
+                <tr key={i.id} className="border-t border-white/10 align-top hover:bg-white/5">
                   <td className="p-2">
                     <div className="flex items-start gap-3">
-                      <div className="h-10 w-10 rounded-md bg-gray-100 overflow-hidden grid place-items-center">
+                      <div className="h-10 w-10 rounded-md bg-white/10 border border-white/10 overflow-hidden grid place-items-center">
                         {img ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={img} alt={i.nameTh} className="h-full w-full object-contain" />
                         ) : (
-                          <span className="text-[10px] text-gray-400">No Image</span>
+                          <span className="text-[10px] text-white/50">No Image</span>
                         )}
                       </div>
                       <div>
                         <div className="font-medium leading-tight">{i.nameTh}</div>
-                        <div className="text-xs text-gray-500">{i.nameEn}</div>
+                        <div className="text-xs text-white/60">{i.nameEn}</div>
                         <div className="mt-1 flex flex-wrap gap-1">
                           {i.isFeatured && <span className="chip chip-emerald">Featured</span>}
                           {i.category && <span className="chip chip-gray">{i.category}</span>}
@@ -291,7 +224,7 @@ export default async function OccupantsListPage({
                     ) : isShop ? (
                       <span className="chip chip-sky">Shop</span>
                     ) : (
-                      <span className="text-gray-400">-</span>
+                      <span className="text-white/50">-</span>
                     )}
                   </td>
 
@@ -299,7 +232,7 @@ export default async function OccupantsListPage({
                     {unitOrKiosk ? (
                       <span className="chip chip-gray">{unitOrKiosk}</span>
                     ) : (
-                      <span className="text-gray-400">-</span>
+                      <span className="text-white/50">-</span>
                     )}
                   </td>
 
@@ -307,13 +240,13 @@ export default async function OccupantsListPage({
                     {i.isMaintenance ? (
                       <span className="chip chip-gray">Maintenance</span>
                     ) : (
-                      <span className="text-gray-500">Normal</span>
+                      <span className="text-white/60">Normal</span>
                     )}
                   </td>
 
                   <td className="p-2">
                     <Link
-                      className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-100"
+                      className="inline-flex items-center justify-center rounded-md p-2 hover:bg-white/10"
                       href={buildQuery({}).replace("/occupants?", `/occupants/${i.id}?`)}
                       title="Edit"
                       aria-label={`Edit ${i.nameTh || i.nameEn}`}
@@ -327,7 +260,7 @@ export default async function OccupantsListPage({
 
             {items.length === 0 && (
               <tr>
-                <td colSpan={7} className="p-4 text-center text-gray-500">
+                <td colSpan={7} className="p-4 text-center text-white/60">
                   ไม่มีรายการใน {tab.label}
                 </td>
               </tr>
@@ -337,7 +270,13 @@ export default async function OccupantsListPage({
       </div>
 
       {/* Bottom pager */}
-      <Pager />
+      <PaginationFooter
+        page={page}
+        totalPages={pageCount}
+        totalItems={total}
+        take={per}
+        makeHref={(p) => buildQuery({ page: p })}
+      />
     </div>
   );
 }

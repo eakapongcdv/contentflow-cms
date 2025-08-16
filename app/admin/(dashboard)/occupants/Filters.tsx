@@ -2,119 +2,123 @@
 
 import * as React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Search } from "lucide-react";
 
 export type Props = {
   q: string;
-  per: number;                                // ✅ เพิ่มให้ตรงกับ page.tsx
+  per: number;
   venue: "venue-1" | "venue-2";
   categories: string[];
   category?: string;
 };
 
-export default function Filters({
-  q,
-  per,
-  venue,
-  categories,
-  category,
-}: Props) {
+export default function Filters({ q, per, venue, categories, category }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
 
-  // state สำหรับช่องค้นหา (ให้พิมพ์แล้วค่อยอัปเดต URL)
-  const [kw, setKw] = React.useState(q);
+  // local state for keyword (type & submit)
+  const [kw, setKw] = React.useState(q ?? "");
+  React.useEffect(() => setKw(q ?? ""), [q]);
 
-  React.useEffect(() => {
-    setKw(q);
-  }, [q]);
+  const perOptions = React.useMemo(() => [10, 20, 50, 100, 200], []);
 
   function buildQuery(next: Partial<{ q: string; per: number; venue: string; cat: string; page: number }>) {
     const u = new URLSearchParams(sp.toString());
-    // keep current values as baseline
+
+    // base values
     u.set("venue", next.venue ?? venue);
     u.set("per", String(next.per ?? per));
-    u.set("page", String(next.page ?? 1));       // เปลี่ยน filter ใด ๆ → กลับไปหน้า 1
+    u.set("page", String(next.page ?? 1)); // any change -> reset to page 1
 
-    // q
+    // keyword
     if (typeof next.q === "string") {
-      if (next.q) u.set("q", next.q);
-      else u.delete("q");
+      const nq = next.q.trim();
+      if (nq) u.set("q", nq); else u.delete("q");
     } else if (q) {
       u.set("q", q);
     }
 
     // category
     const catVal = next.cat ?? category ?? "";
-    if (catVal) u.set("cat", catVal);
-    else u.delete("cat");
+    if (catVal) u.set("cat", catVal); else u.delete("cat");
 
     return `${pathname}?${u.toString()}`;
   }
 
-  function apply(next: Partial<{ q: string; per: number; venue: string; cat: string }>) {
-    router.replace(buildQuery(next));
+  function push(next: Partial<{ q: string; per: number; venue: string; cat: string }>) {
+    router.push(buildQuery(next));
   }
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    apply({ q: kw });
+    push({ q: kw });
+  }
+
+  function clearAll() {
+    const u = new URLSearchParams();
+    u.set("venue", venue);
+    u.set("page", "1");
+    u.set("per", String(per));
+    router.push(`${pathname}?${u.toString()}`);
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-3 md:grid-cols-3">
-      {/* Category */}
-      <label className="grid gap-1">
-        <span className="text-sm admin-subtle">หมวดหมู่</span>
-        <select
-          className="admin-select"
-          value={category ?? ""}
-          onChange={(e) => apply({ cat: e.target.value || "" })}
-        >
-          <option value="">ทุกหมวดหมู่</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-      </label>
+    <form
+      onSubmit={onSubmit}
+      className="admin-card p-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+    >
+      {/* Left: Category + Search */}
+      <div className="flex flex-1 items-center gap-2 min-w-0">
+        {/* Category */}
+        <div className="min-w-[180px]">
+          <label className="block text-xs text-white/60 mb-1">Category</label>
+          <select
+            value={category ?? ""}
+            onChange={(e) => push({ cat: e.target.value || "" })}
+            className="admin-input !pr-8 bg-white/5 border-white/15 text-white/90"
+          >
+            <option value="">All categories</option>
+            {(Array.isArray(categories) ? categories : []).map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      {/* Keyword */}
-      <label className="grid gap-1">
-        <span className="text-sm admin-subtle">ค้นหา</span>
-        <input
-          className="admin-input"
-          value={kw}
-          placeholder="ชื่อร้าน, หมวดหมู่, Unit, Kiosk..."
-          onChange={(e) => setKw(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") onSubmit(e as any);
-          }}
-        />
-      </label>
+        {/* Search */}
+        <div className="flex-1 min-w-0">
+          <label className="block text-xs text-white/60 mb-1">Search</label>
+          <div className="relative">
+            <input
+              value={kw}
+              onChange={(e) => setKw(e.target.value)}
+              placeholder="ชื่อร้าน / EN name / Unit / Kiosk / Category"
+              className="admin-input pl-9 pr-10 w-full bg-white/5 border-white/15 placeholder-white/40"
+              onKeyDown={(e) => { if (e.key === "Enter") onSubmit(e as any); }}
+            />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
+            {kw ? (
+              <button
+                type="button"
+                onClick={clearAll}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded-md bg-white/10 text-white/80 hover:bg-white/15"
+                aria-label="Clear"
+              >
+                Clear
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
 
-      {/* Per page */}
-      <label className="grid gap-1">
-        <span className="text-sm admin-subtle">ต่อหน้า</span>
-        <select
-          className="admin-select"
-          value={per}
-          onChange={(e) => apply({ per: Number(e.target.value) || per })}
-        >
-          {[10, 20, 30, 50, 100, 200].map((n) => (
-            <option key={n} value={n}>
-              {n} / หน้า
-            </option>
-          ))}
-        </select>
-      </label>
+      {/* Right: Page size + Apply */}
+      <div className="flex items-end gap-2">
 
-      {/* ปุ่มค้นหา (optional; กด Enter ก็ได้) */}
-      <div className="md:col-span-3">
-        <button type="submit" className="admin-btn">
-          ค้นหา
-        </button>
+        <div className="pt-5">
+          <button className="admin-btn" type="submit">Apply</button>
+        </div>
       </div>
     </form>
   );

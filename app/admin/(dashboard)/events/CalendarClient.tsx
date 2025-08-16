@@ -380,8 +380,8 @@ export default function CalendarClient({
                 .sort(([a], [b]) => (a < b ? -1 : 1))
                 .flatMap(([d, arr]) =>
                   arr.map((h, i) => (
-                    <li key={`${d}-${i}`} className="h-20 rounded-xl border border-white/10 p-2 flex items-center gap-3 hover:bg-white/5">
-                      <div className="h-full w-28 rounded-md bg-white/10 border border-white/10 overflow-hidden shrink-0 grid place-items-center">
+                    <li key={`${d}-${i}`} className="rounded-xl border border-white/10 p-2 flex items-start gap-3 hover:bg-white/5 min-h-20">
+                      <div className="h-20 w-28 rounded-md bg-white/10 border border-white/10 overflow-hidden shrink-0 grid place-items-center">
                         <div className="text-center leading-tight">
                           <div className="text-xl font-semibold">{new Date(d).getDate()}</div>
                           <div className="text-[10px] text-white/60">
@@ -390,10 +390,10 @@ export default function CalendarClient({
                         </div>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="text-[15px] font-semibold truncate">{h.title}</div>
-                        <div className="text-xs text-white/60">{fmtDDMMMYYYY(new Date(d))}</div>
+                        <div className="text-[15px] font-semibold break-words leading-snug">{h.title}</div>
+                        <div className="text-xs text-white/60 mt-0.5">{fmtDDMMMYYYY(new Date(d))}</div>
                       </div>
-                      <span className="h-8 px-2 inline-grid place-items-center rounded-lg border border-white/15 bg-white/5 text-white/70 text-[11px]">
+                      <span className="h-8 px-2 inline-grid place-items-center rounded-lg border border-white/15 bg-white/5 text-white/70 text-[11px] shrink-0">
                         Holiday
                       </span>
                     </li>
@@ -457,7 +457,7 @@ function DayView({
   const isToday = isSameDay(base, today);
 
   return (
-    <div className="admin-card p-4">
+    <div className={`admin-card p-4 ${holidays.length > 0 ? "bg-rose-500/10 ring-1 ring-rose-400/20" : ""}`}>
       {/* Title + Circle date */}
       <div className="flex items-center justify-between mb-3 px-1">
         <h3 className="text-lg font-semibold">{fmtDDMMMYYYY(base)}</h3>
@@ -472,13 +472,7 @@ function DayView({
       </div>
 
       <div className="grid gap-2">
-        {holidays.length > 0 && (
-          <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-2 text-sm text-emerald-200">
-            {holidays.map((h, i) => (
-              <div key={`${h.title}-${i}`}>• {h.title}</div>
-            ))}
-          </div>
-        )}
+        {/* holiday tint handled on card; no inline alert in Day view */}
 
         {list.length === 0 ? (
           <div className="text-sm text-white/60">No events.</div>
@@ -555,7 +549,7 @@ function WeekView({
       <div className="admin-card">
         <div className="text-center px-4 pt-3 text-sm text-white/70">{fmtMonthYear(base)}</div>
         <WeekdayHeader />
-        <div className="grid grid-cols-7 gap-px bg-white/10 p-2">
+        <div className="grid grid-cols-7 gap-px bg-white/10 p-2 box-border min-w-0">
           {days.map((d) => {
             const k = keyOf(d);
             const list = eventsByDay.get(k) || [];
@@ -563,7 +557,10 @@ function WeekView({
             const isToday = isSameDay(d, today);
 
             return (
-              <div key={k} className="bg-white/5 h-44 rounded p-2 flex flex-col border border-white/15">
+                <div
+                  key={k}
+                  className={`${holidays.length > 0 ? "bg-rose-500/10 ring-1 ring-rose-400/20" : "bg-white/5"} h-44 rounded p-2 flex flex-col border border-white/15 box-border min-w-0`}
+                >
                 <div className="flex items-center justify-between">
                   <span
                     className={`flex items-center justify-center h-8 w-8 md:h-9 md:w-9 aspect-square rounded-full shrink-0 text-[13px] md:text-sm ${
@@ -572,11 +569,7 @@ function WeekView({
                   >
                     {d.getDate()}
                   </span>
-                  {!!holidays.length && (
-                    <span className="text-[11px] text-emerald-300 truncate ml-2" title={holidays[0].title}>
-                      {holidays[0].title}
-                    </span>
-                  )}
+                  {/* holiday tint handled by cell background */}
                 </div>
 
                 <div className="mt-1 grid gap-1 overflow-auto">
@@ -608,11 +601,13 @@ function MonthView({
   events,
   holidayMap,
   today,
+  compact = false,
 }: {
   base: Date;
   events: HydratedEvent[];
   holidayMap: Map<string, Holiday[]>;
   today: Date;
+  compact?: boolean;
 }) {
   const sMonth = startOfMonth(base);
   const eMonth = endOfMonth(base);
@@ -626,6 +621,14 @@ function MonthView({
     cells.push(new Date(sMonth.getFullYear(), sMonth.getMonth(), d));
   while (cells.length % 7 !== 0) cells.push(null);
 
+  // compact style helpers (denser)
+  const cellHeight = compact ? "h-[72px]" : "h-28"; // 72px ~ h-18
+  const headerPad = compact ? "pt-1 text-[11px]" : "pt-3 text-sm";
+  const gridPad = compact ? "p-0.5" : "p-2";
+  const badgeSize = compact ? "h-5 w-5 md:h-6 md:w-6" : "h-8 w-8 md:h-9 md:w-9";
+  const chipText = compact ? "text-[11px]" : "text-[13px]";
+  const chipLimit = compact ? 2 : 3;
+  const dateText = compact ? "text-[10px]" : "text-[13px] md:text-sm";
   const eventsByDay = useMemo(() => {
     const m = new Map<string, HydratedEvent[]>();
     for (const e of events) {
@@ -645,15 +648,15 @@ function MonthView({
   return (
     <div className="admin-card overflow-hidden">
       {/* Month/Year + Sun–Sat header */}
-      <div className="text-center px-4 pt-3 text-sm text-white/70">{fmtMonthYear(base)}</div>
+      <div className={`text-center px-3 ${headerPad} text-white/70`}>{fmtMonthYear(base)}</div>
       <WeekdayHeader />
 
       {/* Month grid */}
-      <div className="grid grid-cols-7 gap-px bg-white/10 p-2">
+      <div className={`grid grid-cols-7 gap-px bg-white/10 ${gridPad} overflow-hidden box-border min-w-0`}>
         {cells.map((d, idx) => {
           if (!d)
             return (
-              <div key={idx} className="bg-white/5 h-28 rounded border border-white/15" />
+              <div key={idx} className={`bg-white/5 ${cellHeight} rounded border border-white/15 box-border min-w-0`} />
             );
           const k = fmtISODate(d);
           const list = eventsByDay.get(k) || [];
@@ -661,37 +664,59 @@ function MonthView({
           const isToday = isSameDay(d, today);
 
           return (
-            <div key={k} className="bg-white/5 h-28 rounded p-2 flex flex-col border border-white/15">
+            <div
+              key={k}
+              className={`${
+                holidays.length > 0 ? "bg-rose-500/10 ring-1 ring-rose-400/20" : "bg-white/5"
+              } ${cellHeight} rounded p-2 flex flex-col border border-white/15`}
+            >
               <div className="flex items-center justify-between">
                 <span
-                  className={`flex items-center justify-center h-8 w-8 md:h-9 md:w-9 aspect-square rounded-full shrink-0 text-[13px] md:text-sm ${
+                  className={`flex items-center justify-center ${badgeSize} aspect-square rounded-full shrink-0 ${dateText} ${
                     isToday ? "border-2 border-emerald-400 text-white" : "border border-white/30 text-white/80"
                   }`}
                 >
                   {d.getDate()}
                 </span>
-                {!!holidays.length && (
-                  <span className="text-[11px] text-emerald-300 truncate ml-2" title={holidays[0].title}>
-                    {holidays[0].title}
-                  </span>
-                )}
+                {/* holiday tint handled by cell background */}
               </div>
 
-              <div className="mt-1 grid gap-1">
-                {list.slice(0, 3).map((e) => (
-                  <Link
-                    key={e.id + k}
-                    href={`/admin/events/${e.id}`}
-                    className="px-2 py-0.5 rounded-md bg-white/10 text-white/90 text-[13px] font-medium truncate hover:bg-white/15"
-                    title={e.nameTh || e.nameEn}
-                  >
-                    {e.nameTh || e.nameEn}
-                  </Link>
-                ))}
-                {list.length > 3 && (
-                  <div className="text-xs text-white/70">+{list.length - 3} more</div>
-                )}
-              </div>
+              {compact ? (
+                <div className="mt-1">
+                  {/* density bar for events */}
+                  <div className="h-1.5 rounded bg-white/10 overflow-hidden">
+                    <div
+                      className="h-full rounded bg-emerald-400/80"
+                      style={{ width: `${Math.min(100, (list.length || 0) * 20)}%` }}
+                      title={`${list.length} event${list.length === 1 ? "" : "s"}`}
+                    />
+                  </div>
+                  {/* small dots representing count (cap at 5) */}
+                  {list.length > 0 && (
+                    <div className="mt-1 flex gap-0.5" aria-hidden>
+                      {Array.from({ length: Math.min(5, list.length) }).map((_, i) => (
+                        <span key={i} className="h-1.5 w-1.5 rounded-full bg-emerald-300/80" />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-1 grid gap-1 min-w-0">
+                  {list.slice(0, chipLimit).map((e) => (
+                    <Link
+                      key={e.id + k}
+                      href={`/admin/events/${e.id}`}
+                      className={`px-2 py-0.5 rounded-md bg-white/10 text-white/90 ${chipText} font-medium truncate hover:bg-white/15`}
+                      title={e.nameTh || e.nameEn}
+                    >
+                      {e.nameTh || e.nameEn}
+                    </Link>
+                  ))}
+                  {list.length > chipLimit && (
+                    <div className="text-xs text-white/70">+{list.length - chipLimit} more</div>
+                  )}
+                </div>
+              )}
             </div>
           );
         })}
@@ -713,10 +738,10 @@ function YearView({
 }) {
   const months = Array.from({ length: 12 }, (_, i) => new Date(base.getFullYear(), i, 1));
   return (
-    <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 min-w-0">
       {months.map((m) => (
-        <div key={`${m.getFullYear()}-${m.getMonth()}`} className="admin-card">
-          <MonthView base={m} events={events} holidayMap={holidayMap} today={today} />
+        <div key={`${m.getFullYear()}-${m.getMonth()}`} className="min-w-0 max-w-full overflow-hidden text-[11px]">
+          <MonthView compact base={m} events={events} holidayMap={holidayMap} today={today} />
         </div>
       ))}
     </div>
