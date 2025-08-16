@@ -1,4 +1,3 @@
-// app/admin/(dashboard)/users/ui/UserForm.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -115,18 +114,33 @@ export default function UserForm({ mode, user }: { mode: "create" | "edit"; user
       {/* Basic */}
       <section className="grid md:grid-cols-2 gap-3">
         <label className="grid gap-1">
-          <span className="text-sm">Name</span>
-          <input className="inp" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
+          <span className="text-sm text-white/70">Name</span>
+          <input
+            className="admin-input bg-white/5 border-white/15 text-white/90 placeholder-white/40 focus:border-cyan-400/50 focus:ring-0"
+            value={form.name}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            placeholder="Jane Doe"
+          />
         </label>
 
         <label className="grid gap-1">
-          <span className="text-sm">Email</span>
-          <input className="inp" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} disabled={mode === "edit"} />
+          <span className="text-sm text-white/70">Email</span>
+          <input
+            className="admin-input bg-white/5 border-white/15 text-white/90 placeholder-white/40 focus:border-cyan-400/50 focus:ring-0 disabled:opacity-70"
+            value={form.email}
+            onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+            placeholder="jane@company.com"
+            disabled={mode === "edit"}
+          />
         </label>
 
         <label className="grid gap-1">
-          <span className="text-sm">Role</span>
-          <select className="inp" value={form.role} onChange={(e) => setForm((f) => ({ ...f, role: e.target.value as any }))}>
+          <span className="text-sm text-white/70">Role</span>
+          <select
+            className="admin-input bg-white/5 border-white/15 text-white/90 focus:border-cyan-400/50 focus:ring-0"
+            value={form.role}
+            onChange={(e) => setForm((f) => ({ ...f, role: e.target.value as any }))}
+          >
             <option value="USER">USER</option>
             <option value="ADMIN">ADMIN</option>
           </select>
@@ -134,20 +148,26 @@ export default function UserForm({ mode, user }: { mode: "create" | "edit"; user
 
         {mode === "create" ? (
           <label className="grid gap-1">
-            <span className="text-sm">Password (optional)</span>
-            <input className="inp" type="password" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} placeholder="Min 6 chars (leave empty to invite without password)" />
+            <span className="text-sm text-white/70">Password (optional)</span>
+            <input
+              className="admin-input bg-white/5 border-white/15 text-white/90 placeholder-white/40 focus:border-cyan-400/50 focus:ring-0"
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+              placeholder="Min 6 chars (leave empty to invite without password)"
+            />
           </label>
         ) : null}
       </section>
 
       {/* Groups (current website) */}
       {mode === "edit" ? (
-        <section className="card p-4 mt-4">
-          <h3 className="text-base font-semibold mb-2">Groups (current website)</h3>
+        <section className="admin-card p-4 mt-4">
+          <h3 className="text-base font-semibold text-white mb-2">Groups (current website)</h3>
           {groups.length ? (
             <div className="grid sm:grid-cols-2 gap-2">
               {groups.map((g) => (
-                <label key={g.id} className="inline-flex items-center gap-2 p-2 rounded-md border">
+                <label key={g.id} className="inline-flex items-center gap-2 p-2 rounded-md border border-white/10 bg-white/5 text-white/90 hover:bg-white/10">
                   <input
                     type="checkbox"
                     checked={form.groupIds.includes(g.id)}
@@ -158,7 +178,7 @@ export default function UserForm({ mode, user }: { mode: "create" | "edit"; user
               ))}
             </div>
           ) : (
-            <div className="text-sm text-gray-500">No groups for this website.</div>
+            <div className="text-sm text-white/60">No groups for this website.</div>
           )}
         </section>
       ) : null}

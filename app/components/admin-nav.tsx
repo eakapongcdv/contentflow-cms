@@ -44,32 +44,33 @@ const NAV: Array<{
       //{ href: "/admin/tags", label: "Tags", icon: Tags },
       { href: "/admin/promotions", label: "Promotions", icon: Megaphone },
       { href: "/admin/events", label: "Events", icon: CalendarDays },
-      { href: "/admin/occupants", label: "Occupants", icon: Landmark },
+      { href: "/admin/occupants", label: "Store Directory", icon: Landmark },
       //{ href: "/admin/brands", label: "Brands", icon: Building2 },
       //{ href: "/admin/features", label: "Features", icon: StarIcon },
       //{ href: "/admin/info-cards", label: "Info Cards", icon: Info },
       //{ href: "/admin/hero-slides", label: "Hero Slides", icon: ImageIcon },
     ],
   },
-  {
+  /*{
     label: "SEO & Website",
     items: [
       { href: "/admin/seo", label: "SEO Meta", icon: Globe2 },
       { href: "/admin/websites", label: "Websites", icon: Globe2 },
     ],
-  },
+  },*/
   {
     label: "Access",
     items: [
       { href: "/admin/users", label: "Users", icon: Users },
-      { href: "/admin/groups", label: "Groups", icon: UserCog },
+      //{ href: "/admin/groups", label: "Groups", icon: UserCog },
       { href: "/admin/access", label: "Access Control", icon: KeySquare },
-      { href: "/admin/audit", label: "Audit / Policies", icon: ShieldCheck },
+      //{ href: "/admin/audit", label: "Audit / Policies", icon: ShieldCheck },
     ],
   },
   {
     label: "Analytics",
     items: [
+      { href: "/admin/search", label: "Site Search", icon: Search, exact: true },
       { href: "/admin/search-logs", label: "Search Logs", icon: Search },
       { href: "/admin/click-logs", label: "Click Logs", icon: MousePointer },
     ],
@@ -107,7 +108,11 @@ function useActiveMap(pathname: string) {
 export default function AdminNav({ websiteId: _websiteId, websiteName: _websiteName, initialRules: _initialRules }: AdminNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const active = useActiveMap(pathname || "/admin");
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  // Use the actual pathname for active-state both on SSR and CSR to keep markup identical
+  const currentPath = pathname || "/admin";
+  const active = useActiveMap(currentPath);
 
   // Close on route change (mobile)
   useEffect(() => { setOpen(false); }, [pathname]);
@@ -125,7 +130,7 @@ export default function AdminNav({ websiteId: _websiteId, websiteName: _websiteN
           <Menu className="h-5 w-5" />
           <span className="text-sm">Menu</span>
         </button>
-        <div className="text-xs md:text-sm text-white/70 truncate max-w-[60%]">{pathname}</div>
+        <div className="text-xs md:text-sm text-white/70 truncate max-w-[60%]" suppressHydrationWarning>{mounted ? pathname : ""}</div>
       </div>
 
       {/* Compact shrink menu (mobile & tablet) */}

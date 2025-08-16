@@ -1,13 +1,13 @@
 // app/admin/(dashboard)/users/page.tsx
 import Link from "next/link";
 import { headers, cookies } from "next/headers";
-import { Button } from "@/app/components/ui/button";
+import { Button, IconButton } from "@/app/components/ui/button";
 import { ButtonGroup } from "@/app/components/ui/button-group";
 import {
   Plus,
   RefreshCw,
   Search as SearchIcon,
-  Pencil,
+  PencilLine,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -74,9 +74,9 @@ export default async function UsersPage({
           <h1 className="text-xl font-semibold">Users</h1>
           <ButtonGroup>
             <Link href="/admin/users/invite">
-              <Button variant="zspell" leftIcon={<Plus className="h-4 w-4" />}>
-                Invite
-              </Button>
+              <IconButton variant="zspell" aria-label="New">
+                <Plus className="h-4 w-4" />
+              </IconButton>
             </Link>
             <Link href={`/admin/users?${qs}`}>
               <Button variant="outlineZspell" rightIcon={<RefreshCw className="h-4 w-4" />}>
@@ -86,7 +86,7 @@ export default async function UsersPage({
           </ButtonGroup>
         </div>
 
-        <div className="card p-4 border-red-200 bg-red-50">
+        <div className="admin-card p-4 border border-red-500/30 bg-red-500/10">
           <div className="text-sm font-semibold text-red-700">
             Failed to load users: {result.error}
           </div>
@@ -119,24 +119,19 @@ export default async function UsersPage({
         <h1 className="text-xl font-semibold">Users</h1>
         <ButtonGroup>
           <Link href="/admin/users/invite">
-            <Button variant="zspell" leftIcon={<Plus className="h-4 w-4" />}>
-              Invite
-            </Button>
-          </Link>
-          <Link href={`/admin/users?${qs}`}>
-            <Button variant="outlineZspell" rightIcon={<RefreshCw className="h-4 w-4" />}>
-              Refresh
-            </Button>
+             <IconButton variant="zspell" aria-label="New">
+              <Plus className="h-4 w-4" />
+            </IconButton>
           </Link>
         </ButtonGroup>
       </div>
 
-      <form action="/admin/users" className="card p-3 grid sm:grid-cols-[1fr_auto] gap-2">
+      <form action="/admin/users" className="admin-card p-3 grid sm:grid-cols-[1fr_auto] gap-2">
         <input
           name="q"
           defaultValue={q}
           placeholder="Search name/email…"
-          className="inp"
+          className="admin-input bg-white/5 border-white/15 text-white/90 placeholder-white/40"
           aria-label="Search users"
         />
         <Button type="submit" variant="outlineZspell" leftIcon={<SearchIcon className="h-4 w-4" />}>
@@ -144,9 +139,9 @@ export default async function UsersPage({
         </Button>
       </form>
 
-      <div className="overflow-x-auto rounded-xl border bg-white">
-        <table className="min-w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600">
+      <div className="overflow-x-auto rounded-xl border border-white/10 bg-white/5">
+        <table className="min-w-full text-sm text-white/90">
+          <thead className="bg-white/5 text-white/70">
             <tr>
               <th className="px-3 py-2 text-left font-medium">Name</th>
               <th className="px-3 py-2 text-left font-medium">Email</th>
@@ -158,13 +153,13 @@ export default async function UsersPage({
           <tbody>
             {data.items.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-3 py-4 text-gray-500">
+                <td colSpan={5} className="px-3 py-4 text-white/60">
                   No users
                 </td>
               </tr>
             ) : (
               data.items.map((u) => (
-                <tr key={u.id} className="border-t hover:bg-gray-50">
+                <tr key={u.id} className="border-t border-white/10 hover:bg-white/5">
                   <td className="px-3 py-2">{u.name || "—"}</td>
                   <td className="px-3 py-2">{u.email}</td>
                   <td className="px-3 py-2">{u.role}</td>
@@ -174,9 +169,9 @@ export default async function UsersPage({
                   <td className="px-3 py-2">
                     <div className="flex justify-end">
                       <Link href={`/admin/users/${u.id}`}>
-                        <Button variant="outlineZspell" leftIcon={<Pencil className="h-4 w-4" />}>
-                          Edit
-                        </Button>
+                        <IconButton variant="outlineZspell" aria-label="Edit">
+                            <PencilLine className="h-4 w-4" />
+                          </IconButton>
                       </Link>
                     </div>
                   </td>

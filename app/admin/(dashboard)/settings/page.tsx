@@ -24,11 +24,6 @@ export default async function SettingsPage() {
               <span className="sr-only">Refresh</span>
             </Button>
           </Link>
-          <Link href="/admin">
-            <Button variant="zspell" aria-label="Back to Dashboard" title="Back to Dashboard" leftIcon={<LayoutDashboard className="h-4 w-4" />}>
-              <span className="sr-only">Back to Dashboard</span>
-            </Button>
-          </Link>
         </ButtonGroup>
       </div>
 

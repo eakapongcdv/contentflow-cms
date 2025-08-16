@@ -9,7 +9,6 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/auth-options";
 import { getEffectiveRulesForUser } from "@/app/lib/perm";
 
 import TopBar from "./TopBar";
-import ThemeApplier from "./ThemeApplier";
 
 export default async function AdminDashboardLayout({
   children,
@@ -43,9 +42,6 @@ export default async function AdminDashboardLayout({
 
   return (
     <WebsiteProvider>
-      {/* ตั้งธีมตามเว็บไซต์ฝั่ง client */}
-      <ThemeApplier />
-
       <div className="mx-auto px-4 py-8">
         <TopBar
           userName={(session?.user?.name as string) || null}

@@ -1,295 +1,279 @@
-// app/admin/(dashboard)/page.tsx
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+"use client";
 
-import { prisma } from "@/app/lib/prisma";
-import { format } from "date-fns";
-import { Suspense } from "react";
-import { TimeSeries, TemplatePie, ContentStacked } from "./_charts"; // ✅ ใช้ named exports เท่านั้น
-import Link from "next/link";
+import { useMemo } from "react";
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import { format, parseISO } from "date-fns";
 
-function k(n: number) {
-  return new Intl.NumberFormat(undefined, { notation: "compact" }).format(n);
+export type SeriesPoint = { day: string; count: number };
+
+/* ------------------------------------------------------------------
+   Shared styles — soft neon gradients + depth (front-page tone)
+------------------------------------------------------------------ */
+const containerStyle: React.CSSProperties = {
+  width: "100%",
+  height: 300,
+  filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.35))",
+};
+
+const gridProps = { strokeDasharray: "3 3", stroke: "currentColor", className: "text-white/10" } as any;
+
+function DayTick({ x, y, payload }: any) {
+  const d = parseISO(payload.value);
+  return (
+    <text x={x} y={y} dy={16} textAnchor="middle" className="fill-white/70 text-[10px]">
+      {format(d, "MM-dd")}
+    </text>
+  );
 }
 
-async function getData() {
-  const now = new Date();
-  const d7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const d14 = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-  const d30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+/** Neon gradient palette (soft, front-page style) */
+const PALETTE = [
+  { id: "gradA", from: "#22d3ee", to: "#a78bfa" }, // cyan → violet
+  { id: "gradB", from: "#34d399", to: "#60a5fa" }, // emerald → sky
+  { id: "gradC", from: "#f472b6", to: "#f59e0b" }, // pink → amber
+];
 
-  const [
-    totalWebsites,
-    activeWebsites,
-    totalArticles,
-    publishedArticles,
-    draftArticles,
-    scheduledArticles,
-    totalPromotions,
-    totalEvents,
-    activeEvents,
-    totalOccupants,
-    totalBrands,
-    totalCategories,
-    totalFeatures,
-    totalHeroSlides,
-    search7d,
-    click7d,
-  ] = await Promise.all([
-    prisma.website.count(),
-    prisma.website.count({ where: { isActive: true } }),
-    prisma.article.count(),
-    prisma.article.count({ where: { status: "PUBLISHED" } }),
-    prisma.article.count({ where: { status: "DRAFT" } }),
-    prisma.article.count({ where: { status: "SCHEDULED" } }),
-    prisma.promotion.count(),
-    prisma.event.count(),
-    prisma.event.count({ where: { startDate: { lte: now }, endDate: { gte: now } } }),
-    prisma.occupant.count(),
-    prisma.brand.count(),
-    prisma.category.count(),
-    prisma.feature.count(),
-    prisma.heroSlide.count(),
-    prisma.searchLog.count({ where: { createdAt: { gte: d7 } } }),
-    prisma.clickLog.count({ where: { createdAt: { gte: d7 } } }),
-  ]);
+/* ------------------------------------------------------------------
+   Helpers for merging time-series
+------------------------------------------------------------------ */
+function useMergedDays(a: SeriesPoint[], b: SeriesPoint[]) {
+  return useMemo(() => {
+    const map = new Map<string, { day: string; A?: number; B?: number }>();
+    for (const p of a) map.set(p.day, { day: p.day, A: p.count, B: 0 });
+    for (const p of b) {
+      const cur = map.get(p.day) || { day: p.day, A: 0, B: 0 };
+      cur.B = p.count;
+      map.set(p.day, cur);
+    }
+    return Array.from(map.values()).sort((x, y) => x.day.localeCompare(y.day));
+  }, [a, b]);
+}
 
-  const searches14 = (await prisma.$queryRaw<any[]>`
-    SELECT date_trunc('day', "createdAt") AS day, COUNT(*)::int AS count
-    FROM "SearchLog"
-    WHERE "createdAt" >= ${d14}
-    GROUP BY 1 ORDER BY 1
-  `).map(r => ({ day: (r.day as Date).toISOString(), count: Number(r.count) }));
+/* ------------------------------------------------------------------
+   Custom tooltip (dark glass)
+------------------------------------------------------------------ */
+function GlassTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-lg border border-white/10 bg-black/50 backdrop-blur px-3 py-2 text-xs text-white shadow-xl">
+      <div className="mb-1 text-white/70">{format(parseISO(label), "yyyy-MM-dd")}</div>
+      {payload.map((p: any, i: number) => (
+        <div key={i} className="flex items-center gap-2">
+          <span className="inline-block h-2 w-2 rounded-full" style={{ background: p.stroke || p.fill }} />
+          <span className="text-white/80">{p.name}:</span>
+          <span className="font-semibold">{p.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
-  const clicks14 = (await prisma.$queryRaw<any[]>`
-    SELECT date_trunc('day', "createdAt") AS day, COUNT(*)::int AS count
-    FROM "ClickLog"
-    WHERE "createdAt" >= ${d14}
-    GROUP BY 1 ORDER BY 1
-  `).map(r => ({ day: (r.day as Date).toISOString(), count: Number(r.count) }));
+/* ------------------------------------------------------------------
+   Chart components (neon/3D)
+------------------------------------------------------------------ */
+export function TimeSeries({
+  seriesA,
+  seriesB,
+  className,
+}: {
+  seriesA: { name: string; data: SeriesPoint[] };
+  seriesB: { name: string; data: SeriesPoint[] };
+  className?: string;
+}) {
+  const data = useMergedDays(seriesA.data, seriesB.data);
+  return (
+    <div className={className} style={containerStyle}>
+      <ResponsiveContainer>
+        <LineChart data={data} margin={{ left: 8, right: 8, top: 8, bottom: 4 }}>
+          <defs>
+            {PALETTE.map((g) => (
+              <linearGradient key={g.id} id={g.id} x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor={g.from} stopOpacity={0.95} />
+                <stop offset="100%" stopColor={g.to} stopOpacity={0.95} />
+              </linearGradient>
+            ))}
+          </defs>
+          <CartesianGrid {...gridProps} />
+          <XAxis dataKey="day" tick={<DayTick />} tickLine={false} axisLine={false} />
+          <YAxis tickLine={false} axisLine={false} />
+          <Tooltip content={<GlassTooltip />} />
+          <Legend />
+          <Line type="monotone" dataKey="A" name={seriesA.name} dot={false} strokeWidth={3} stroke="url(#gradA)" />
+          <Line type="monotone" dataKey="B" name={seriesB.name} dot={false} strokeWidth={3} stroke="url(#gradB)" />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
 
-  const articles30 = (await prisma.$queryRaw<any[]>`
-    SELECT date_trunc('day', COALESCE("publishedAt","updatedAt","createdAt")) AS day, COUNT(*)::int AS count
-    FROM "Article"
-    WHERE ( "publishedAt" IS NOT NULL OR "status"='PUBLISHED' )
-      AND COALESCE("publishedAt","updatedAt","createdAt") >= ${d30}
-    GROUP BY 1 ORDER BY 1
-  `).map(r => ({ day: (r.day as Date).toISOString(), count: Number(r.count) }));
+export function ContentStacked({
+  articles,
+  promotions,
+  events,
+  className,
+}: {
+  articles: SeriesPoint[];
+  promotions: SeriesPoint[];
+  events: SeriesPoint[];
+  className?: string;
+}) {
+  const days = Array.from(new Set([...articles, ...promotions, ...events].map((d) => d.day))).sort();
+  const map = new Map<string, any>();
+  for (const d of days) map.set(d, { day: d, articles: 0, promotions: 0, events: 0 });
+  for (const p of articles) map.get(p.day).articles = p.count;
+  for (const p of promotions) map.get(p.day).promotions = p.count;
+  for (const p of events) map.get(p.day).events = p.count;
+  const data = Array.from(map.values());
 
-  const promotions30 = (await prisma.$queryRaw<any[]>`
-    SELECT date_trunc('day', COALESCE("publishedAt","updatedAt","createdAt")) AS day, COUNT(*)::int AS count
-    FROM "Promotion"
-    WHERE COALESCE("publishedAt","updatedAt","createdAt") >= ${d30}
-    GROUP BY 1 ORDER BY 1
-  `).map(r => ({ day: (r.day as Date).toISOString(), count: Number(r.count) }));
+  return (
+    <div className={className} style={containerStyle}>
+      <ResponsiveContainer>
+        <BarChart data={data} margin={{ left: 8, right: 8, top: 8, bottom: 4 }}>
+          <defs>
+            {PALETTE.map((g) => (
+              <linearGradient key={g.id} id={g.id} x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor={g.from} stopOpacity={0.9} />
+                <stop offset="100%" stopColor={g.to} stopOpacity={0.9} />
+              </linearGradient>
+            ))}
+          </defs>
+          <CartesianGrid {...gridProps} />
+          <XAxis dataKey="day" tick={<DayTick />} tickLine={false} axisLine={false} />
+          <YAxis tickLine={false} axisLine={false} />
+          <Tooltip content={<GlassTooltip />} />
+          <Legend />
+          <Bar dataKey="articles" stackId="x" name="Articles" fill="url(#gradA)" radius={[6,6,0,0]} />
+          <Bar dataKey="promotions" stackId="x" name="Promotions" fill="url(#gradB)" radius={[6,6,0,0]} />
+          <Bar dataKey="events" stackId="x" name="Events" fill="url(#gradC)" radius={[6,6,0,0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
 
-  const events30 = (await prisma.$queryRaw<any[]>`
-    SELECT date_trunc('day', COALESCE("publishedAt","updatedAt","createdAt")) AS day, COUNT(*)::int AS count
-    FROM "Event"
-    WHERE COALESCE("publishedAt","updatedAt","createdAt") >= ${d30}
-    GROUP BY 1 ORDER BY 1
-  `).map(r => ({ day: (r.day as Date).toISOString(), count: Number(r.count) }));
+export function TemplatePie({ data, className }: { data: Array<{ template: string; count: number }>; className?: string }) {
+  const total = data.reduce((s, x) => s + x.count, 0) || 1;
+  const grads = ["gradA", "gradB", "gradC", "gradA", "gradB", "gradC"]; // cycle
+  return (
+    <div className={className} style={containerStyle}>
+      <ResponsiveContainer>
+        <PieChart>
+          <defs>
+            {PALETTE.map((g) => (
+              <linearGradient key={g.id} id={g.id} x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor={g.from} stopOpacity={0.95} />
+                <stop offset="100%" stopColor={g.to} stopOpacity={0.95} />
+              </linearGradient>
+            ))}
+          </defs>
+          <Tooltip content={<GlassTooltip />} />
+          <Pie
+            data={data}
+            dataKey="count"
+            nameKey="template"
+            outerRadius={110}
+            innerRadius={48}
+            paddingAngle={2}
+            strokeWidth={2}
+            stroke="rgba(255,255,255,0.08)"
+            label={({ name, value }) => `${name} (${Math.round((value / total) * 100)}%)`}
+          >
+            {data.map((_, i) => (
+              <Cell key={i} fill={`url(#${grads[i % grads.length]})`} />
+            ))}
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
 
-  const templates = await prisma.$queryRaw<any[]>`
-    SELECT "template"::text AS template, COUNT(*)::int AS count
-    FROM "Website"
-    GROUP BY 1 ORDER BY 2 DESC
-  `;
-
-  const upcomingEvents = await prisma.event.findMany({
-    where: { startDate: { gte: now } },
-    orderBy: { startDate: "asc" },
-    take: 5,
-    select: { id: true, nameEn: true, nameTh: true, startDate: true, endDate: true },
+/* ------------------------------------------------------------------
+   Default export: Dashboard layout (dark glass like front page)
+------------------------------------------------------------------ */
+export default function AdminDashboardPage() {
+  // Mock series for layout demo; replace with your real data loader
+  const today = new Date();
+  const days: string[] = Array.from({ length: 14 }).map((_, i) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - (13 - i));
+    return d.toISOString().slice(0, 10);
   });
-  const upcomingPromotions = await prisma.promotion.findMany({
-    where: { startDate: { gte: now } },
-    orderBy: { startDate: "asc" },
-    take: 5,
-    select: { id: true, nameEn: true, nameTh: true, startDate: true, endDate: true },
-  });
 
-  return {
-    kpis: {
-      totalWebsites, activeWebsites,
-      totalArticles, publishedArticles, draftArticles, scheduledArticles,
-      totalPromotions, totalEvents, activeEvents,
-      totalOccupants, totalBrands, totalCategories, totalFeatures, totalHeroSlides,
-      search7d, click7d,
-    },
-    series: { searches14, clicks14, articles30, promotions30, events30, templates },
-    lists: { upcomingEvents, upcomingPromotions },
-    now,
+  const seriesA = {
+    name: "Articles",
+    data: days.map((day, i) => ({ day, count: 10 + ((i * 7) % 13) })),
   };
-}
+  const seriesB = {
+    name: "Promotions",
+    data: days.map((day, i) => ({ day, count: 5 + ((i * 5) % 11) })),
+  };
 
-// ✅ default export ต้องเป็น React Component
-export default async function AdminDashboardPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
-  const data = await getData();
+  const stacked = {
+    articles: seriesA.data,
+    promotions: seriesB.data,
+    events: days.map((day, i) => ({ day, count: 6 + ((i * 3) % 9) })),
+  };
 
-  // Pagination state (per list)
-  const evPage = Number((Array.isArray(searchParams?.evPage) ? searchParams?.evPage[0] : searchParams?.evPage) ?? 1);
-  const prPage = Number((Array.isArray(searchParams?.prPage) ? searchParams?.prPage[0] : searchParams?.prPage) ?? 1);
-  const PAGE_SIZE = 5;
-
-  // Fetch paginated lists
-  const now = new Date();
-  const [evTotal, prTotal] = await Promise.all([
-    prisma.event.count({ where: { startDate: { gte: now } } }),
-    prisma.promotion.count({ where: { startDate: { gte: now } } }),
-  ]);
-
-  const [evItems, prItems] = await Promise.all([
-    prisma.event.findMany({
-      where: { startDate: { gte: now } },
-      orderBy: { startDate: "asc" },
-      skip: (Math.max(evPage,1) - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-      select: { id: true, nameEn: true, nameTh: true, startDate: true, endDate: true },
-    }),
-    prisma.promotion.findMany({
-      where: { startDate: { gte: now } },
-      orderBy: { startDate: "asc" },
-      skip: (Math.max(prPage,1) - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-      select: { id: true, nameEn: true, nameTh: true, startDate: true, endDate: true },
-    }),
-  ]);
-
-  const evPages = Math.max(1, Math.ceil(evTotal / PAGE_SIZE));
-  const prPages = Math.max(1, Math.ceil(prTotal / PAGE_SIZE));
-
-  function qp(next: Record<string, string | number | undefined>) {
-    const sp = new URLSearchParams(typeof searchParams === "object" && searchParams ? (Object.entries(searchParams).reduce((acc, [k, v]) => {
-      acc[k] = Array.isArray(v) ? v[0] : (v ?? "");
-      return acc;
-    }, {} as Record<string, string>)) : {});
-    Object.entries(next).forEach(([k, v]) => {
-      if (v === undefined || v === null || v === "") sp.delete(k);
-      else sp.set(k, String(v));
-    });
-    const q = sp.toString();
-    return q ? `?${q}` : "";
-  }
+  const templatePie = [
+    { template: "COMPANY_PROFILE", count: 12 },
+    { template: "ECOMMERCE", count: 7 },
+    { template: "MALL", count: 5 },
+    { template: "NEWS_BLOGS", count: 9 },
+    { template: "JOBS_SEARCH", count: 3 },
+  ];
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
-        <p className="text-sm text-white/60">Updated {format(data.now, "yyyy-MM-dd HH:mm")}</p>
+    <main className="">
+      <div className="mx-auto max-w-screen-2xl">
+        {/* Header */}
+        <div className="p-4 mb-4">
+          <h1 className="text-xl md:text-2xl font-semibold tracking-tight text-white">Dashboard</h1>
+          <p className="text-sm text-white/60">Overview of content activity across all websites</p>
+        </div>
+
+        {/* KPIs (placeholder) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+          {[{ label: "Websites", v: 4 }, { label: "Articles", v: 132 }, { label: "Promotions", v: 58 }, { label: "Events", v: 37 }].map((k) => (
+            <div key={k.label} className="admin-card p-4">
+              <div className="text-xs text-white/60">{k.label}</div>
+              <div className="text-2xl font-semibold text-white mt-1">{k.v}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <section className="admin-card p-3">
+            <h2 className="text-sm font-medium text-white/80 mb-2">Articles vs Promotions (14 days)</h2>
+            <TimeSeries seriesA={seriesA} seriesB={seriesB} />
+          </section>
+
+          <section className="admin-card p-3">
+            <h2 className="text-sm font-medium text-white/80 mb-2">Content Created per Day</h2>
+            <ContentStacked articles={stacked.articles} promotions={stacked.promotions} events={stacked.events} />
+          </section>
+
+          <section className="admin-card p-3 lg:col-span-2">
+            <h2 className="text-sm font-medium text-white/80 mb-2">Website Templates</h2>
+            <TemplatePie data={templatePie} />
+          </section>
+        </div>
       </div>
-
-      <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Kpi title="Websites" value={data.kpis.totalWebsites} sub={`${data.kpis.activeWebsites} active`} />
-        <Kpi title="Articles" value={data.kpis.totalArticles} sub={`${data.kpis.publishedArticles} published • ${data.kpis.draftArticles} draft`} />
-        <Kpi title="Promotions" value={data.kpis.totalPromotions} />
-        <Kpi title="Events" value={data.kpis.totalEvents} sub={`${data.kpis.activeEvents} live now`} />
-        <Kpi title="Occupants" value={data.kpis.totalOccupants} />
-        <Kpi title="Brands" value={data.kpis.totalBrands} />
-        <Kpi title="Categories" value={data.kpis.totalCategories} />
-        <Kpi title="Hero/Features" value={data.kpis.totalHeroSlides + data.kpis.totalFeatures} sub={`${data.kpis.totalHeroSlides} hero • ${data.kpis.totalFeatures} features`} />
-        <Kpi title="Searches (7d)" value={data.kpis.search7d} />
-        <Kpi title="Clicks (7d)" value={data.kpis.click7d} />
-      </section>
-
-      <section className="grid lg:grid-cols-5 gap-4">
-        <div className="lg:col-span-3 admin-card p-4">
-          <h2 className="text-base font-medium mb-3">Search vs Click (last 14 days)</h2>
-          <Suspense fallback={<div className="h-48 animate-pulse rounded bg-white/10" />}>
-            <TimeSeries
-              seriesA={{ name: "Searches", data: data.series.searches14 }}
-              seriesB={{ name: "Clicks", data: data.series.clicks14 }}
-            />
-          </Suspense>
-        </div>
-        <div className="lg:col-span-2 admin-card p-4">
-          <h2 className="text-base font-medium mb-3">Websites by Template</h2>
-          <Suspense fallback={<div className="h-48 animate-pulse rounded bg-white/10" />}>
-            <TemplatePie data={data.series.templates} />
-          </Suspense>
-        </div>
-      </section>
-
-      <section className="grid lg:grid-cols-2 gap-4">
-        <div className="admin-card p-4">
-          <h2 className="text-base font-medium mb-3">Content Published (last 30 days)</h2>
-          <Suspense fallback={<div className="h-48 animate-pulse rounded bg-white/10" />}>
-            <ContentStacked
-              articles={data.series.articles30}
-              promotions={data.series.promotions30}
-              events={data.series.events30}
-            />
-          </Suspense>
-        </div>
-
-        <div className="admin-card p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <ListCard title="Upcoming Events" items={evItems.map(e => ({
-            id: e.id, title: e.nameTh || e.nameEn,
-            meta: `${format(e.startDate, "yyyy-MM-dd")} → ${format(e.endDate, "yyyy-MM-dd")}`,
-          }))} />
-          <div className="flex items-center justify-end gap-2 mt-2">
-            <Link href={qp({ evPage: 1 })} aria-label="First page" className="inline-grid place-items-center h-9 w-9 rounded-md border border-white/15 bg-white/5 hover:bg-white/10">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 19l-7-7 7-7"/><path d="M20 19l-7-7 7-7"/></svg>
-            </Link>
-            <Link href={qp({ evPage: Math.max(1, evPage - 1) })} aria-label="Previous page" className="inline-grid place-items-center h-9 w-9 rounded-md border border-white/15 bg-white/5 hover:bg-white/10">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
-            </Link>
-            <span className="text-xs text-white/60 select-none">{evPage} / {evPages}</span>
-            <Link href={qp({ evPage: Math.min(evPages, evPage + 1) })} aria-label="Next page" className="inline-grid place-items-center h-9 w-9 rounded-md border border-white/15 bg-white/5 hover:bg-white/10">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 6l6 6-6 6"/></svg>
-            </Link>
-            <Link href={qp({ evPage: evPages })} aria-label="Last page" className="inline-grid place-items-center h-9 w-9 rounded-md border border-white/15 bg-white/5 hover:bg-white/10">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 5l7 7-7 7"/><path d="M13 5l7 7-7 7"/></svg>
-            </Link>
-          </div>
-          <ListCard title="Upcoming Promotions" items={prItems.map(p => ({
-            id: p.id, title: p.nameTh || p.nameEn,
-            meta: `${format(p.startDate, "yyyy-MM-dd")} → ${format(p.endDate, "yyyy-MM-dd")}`,
-          }))} />
-          <div className="flex items-center justify-end gap-2 mt-2">
-            <Link href={qp({ prPage: 1 })} aria-label="First page" className="inline-grid place-items-center h-9 w-9 rounded-md border border-white/15 bg-white/5 hover:bg-white/10">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 19l-7-7 7-7"/><path d="M20 19l-7-7 7-7"/></svg>
-            </Link>
-            <Link href={qp({ prPage: Math.max(1, prPage - 1) })} aria-label="Previous page" className="inline-grid place-items-center h-9 w-9 rounded-md border border-white/15 bg-white/5 hover:bg-white/10">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
-            </Link>
-            <span className="text-xs text-white/60 select-none">{prPage} / {prPages}</span>
-            <Link href={qp({ prPage: Math.min(prPages, prPage + 1) })} aria-label="Next page" className="inline-grid place-items-center h-9 w-9 rounded-md border border-white/15 bg-white/5 hover:bg-white/10">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 6l6 6-6 6"/></svg>
-            </Link>
-            <Link href={qp({ prPage: prPages })} aria-label="Last page" className="inline-grid place-items-center h-9 w-9 rounded-md border border-white/15 bg-white/5 hover:bg-white/10">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 5l7 7-7 7"/><path d="M13 5l7 7-7 7"/></svg>
-            </Link>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function Kpi({ title, value, sub }: { title: string; value: number; sub?: string }) {
-  return (
-    <div className="admin-card p-4">
-      <div className="text-sm text-white/60">{title}</div>
-      <div className="mt-1 text-2xl font-semibold">{k(value)}</div>
-      {sub ? <div className="text-xs text-white/50 mt-1">{sub}</div> : null}
-    </div>
-  );
-}
-
-function ListCard({ title, items }: { title: string; items: Array<{ id: string; title: string | null; meta?: string }> }) {
-  return (
-    <div>
-      <h3 className="text-sm font-medium mb-2">{title}</h3>
-      <div className="rounded-md border border-white/10 divide-y divide-white/10">
-        {items.length === 0 && <div className="p-3 text-sm text-white/60">No items</div>}
-        {items.map(it => (
-          <div key={it.id} className="p-3">
-            <div className="text-sm">{it.title || "(untitled)"}</div>
-            {it.meta ? <div className="text-xs text-white/50">{it.meta}</div> : null}
-          </div>
-        ))}
-      </div>
-    </div>
+    </main>
   );
 }

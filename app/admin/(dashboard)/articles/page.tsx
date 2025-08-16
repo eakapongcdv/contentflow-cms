@@ -103,7 +103,7 @@ export default async function ArticlesPage({
   const status = typeof searchParams.status === "string" ? searchParams.status : "";
   const categoryId = typeof searchParams.categoryId === "string" ? searchParams.categoryId : "";
   const page = Math.max(1, Number(searchParams.page || 1));
-  const take = Math.min(100, Math.max(1, Number(searchParams.take || 20)));
+  const take = Math.min(100, Math.max(1, Number(searchParams.take || 10)));
 
   const [result, categories] = await Promise.all([
     loadArticles({ q, slug, status, categoryId, page: String(page), take: String(take) }),
@@ -163,11 +163,6 @@ export default async function ArticlesPage({
           <Link href="/admin/articles/new" title="New article">
             <IconButton variant="zspell" aria-label="New">
               <Plus className="h-4 w-4" />
-            </IconButton>
-          </Link>
-          <Link href={makeHref(data.page)} title="Refresh">
-            <IconButton variant="outlineZspell" aria-label="Refresh">
-              <RefreshCw className="h-4 w-4" />
             </IconButton>
           </Link>
         </ButtonGroup>

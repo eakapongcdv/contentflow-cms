@@ -16,12 +16,12 @@ export const dynamic = "force-dynamic";
 const TABS = [
   {
     id: "venue-1",
-    label: "ห้าง Future",
+    label: "Future Park",
     img: "https://futurepark-s3.venue.in.th/future_logo_test_c1c1cf40a8_5835a5bd7c_ebd59985f6.png",
   },
   {
     id: "venue-2",
-    label: "ห้าง Zpell",
+    label: "Zpell",
     img: "https://futurepark-s3.venue.in.th/zpell_logo_test_297e53c8c1_7641566c88_c88cddb972.png",
   },
 ] as const;
@@ -47,7 +47,7 @@ export default async function PromotionsListPage({
 }) {
   const activeTab = getActiveTab(searchParams?.tab);
   const page = Math.max(1, parseInt(searchParams?.page || "1", 10));
-  const per = Math.min(100, Math.max(5, parseInt(searchParams?.per || "20", 10) || 20));
+  const per = Math.min(100, Math.max(5, parseInt(searchParams?.per || "10", 10) || 20));
   const q = (searchParams?.q || "").trim();
 
   const where: any = { venueId: activeTab.id };
@@ -85,8 +85,7 @@ export default async function PromotionsListPage({
       </div>
 
       {/* Tabs */}
-      <div className="admin-card p-2">
-        <div className="flex flex-wrap gap-2">
+       <div className="mt-4 flex items-center gap-2 overflow-x-auto">
           {TABS.map((t) => {
             const active = t.id === activeTab.id;
             return (
@@ -105,7 +104,6 @@ export default async function PromotionsListPage({
               </Link>
             );
           })}
-        </div>
       </div>
 
       {/* Search */}

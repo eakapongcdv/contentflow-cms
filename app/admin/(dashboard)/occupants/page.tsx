@@ -2,8 +2,15 @@
 import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 import Filters from "./Filters";
-import { Pencil } from "lucide-react";
 import { PaginationFooter } from "@/app/components/ui/pagination";
+import { Button, IconButton } from "@/app/components/ui/button";
+import { ButtonGroup } from "@/app/components/ui/button-group";
+import {
+  PencilLine,
+  Plus,
+  RefreshCw,
+  Search as SearchIcon,
+} from "lucide-react";
 
 const TABS = [
   {
@@ -91,10 +98,10 @@ export default async function OccupantsListPage({
 
   const tabLinkClass = (id: string) =>
     [
-      "inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm transition-colors",
+      "inline-flex items-center gap-2 px-3 py-2 rounded-xl border transition-colors",
       id === activeVenue
-        ? "bg-white/10 text-white border-emerald-400/30 ring-1 ring-emerald-400/20"
-        : "bg-white/5 text-white/80 border-white/15 hover:bg-white/10",
+        ? "border-white/20 bg-white/10 text-white"
+        : "border-white/10 hover:bg-white/5 text-white/80",
     ].join(" ");
 
   const buildQuery = (params: {
@@ -135,13 +142,12 @@ export default async function OccupantsListPage({
     <div className="grid gap-4">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-white">Stores & Tenants :: Store Directory</h1>
-        <Link
-          href={buildQuery({}).replace("/occupants?", "/occupants/new?")}
-          className="admin-btn"
-        >
-          + Sync Venue
-        </Link>
+        <h1 className="text-xl font-semibold text-white">Store Directory</h1>
+          <Link href={buildQuery({}).replace("/occupants?", "/occupants/new?")}>
+            <Button variant="outlineZspell" leftIcon={<RefreshCw className="h-4 w-4" />}>
+              Sync Venues
+            </Button>
+          </Link>
       </div>
 
       {/* Tabs */}
@@ -251,7 +257,9 @@ export default async function OccupantsListPage({
                       title="Edit"
                       aria-label={`Edit ${i.nameTh || i.nameEn}`}
                     >
-                      <Pencil className="h-4 w-4" />
+                       <IconButton variant="outlineZspell" aria-label="Edit">
+                        <PencilLine className="h-4 w-4" />
+                      </IconButton>
                     </Link>
                   </td>
                 </tr>

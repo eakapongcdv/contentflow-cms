@@ -564,15 +564,18 @@ export default function AiAgent() {
     setSttSupported(ok);
     try { localStorage.setItem(STT_HINT_KEY, ok ? "1" : "0"); } catch {}
   }, []);
-  const [open, setOpen] = useState<boolean>(() => {
+  // Important: start closed on both SSR and first client render to keep markup identical
+  const [open, setOpen] = useState<boolean>(false);
+  useEffect(() => {
     try {
       const v = localStorage.getItem(OPEN_KEY);
-      if (v === null) return true; // first visit -> open by default
-      return v === "1" || v === "true";
+      const stored = v === null ? true : v === "1" || v === "true";
+      setOpen(stored);
     } catch {
-      return true;
+      // default open on first visit
+      setOpen(true);
     }
-  });
+  }, []);
   const [busy, setBusy] = useState(false);
 
   /** default quick chips (always visible) */
@@ -889,18 +892,10 @@ export default function AiAgent() {
           }}
         />
         <ParticleOrb2D size={10} particles={1500} intensity={1.1} />
-        <span className="sr-only">
+        <span className="sr-only" suppressHydrationWarning>
           {open
-            ? lang === "en"
-              ? "Close chat"
-              : lang === "zh"
-              ? "关闭聊天"
-              : "ปิดแชต AI"
-            : lang === "en"
-            ? "Open chat"
-            : lang === "zh"
-            ? "打开聊天"
-            : "เปิดแชต AI"}
+            ? (lang === "en" ? "Close chat" : lang === "zh" ? "关闭聊天" : "ปิดแชต AI")
+            : (lang === "en" ? "Open chat" : lang === "zh" ? "打开聊天" : "เปิดแชต AI")}
         </span>
       </button>
 

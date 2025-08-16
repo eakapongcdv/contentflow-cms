@@ -11,8 +11,9 @@ import {
   CalendarDays,
   CalendarRange,
   Calendar,
-  Pencil,
+  PencilLine,
 } from "lucide-react";
+import { IconButton } from "@/app/components/ui/button";
 
 /* ---------- Types ---------- */
 type ViewMode = "day" | "week" | "month" | "year";
@@ -359,7 +360,9 @@ export default function CalendarClient({
                     title="Edit"
                     aria-label="Edit event"
                   >
-                    <Pencil className="h-4 w-4" />
+                    <IconButton variant="outlineZspell" aria-label="Edit">
+                      <PencilLine className="h-4 w-4" />
+                    </IconButton>
                   </Link>
                 </li>
               ))}
@@ -509,7 +512,9 @@ function DayView({
                 title="Edit"
                 aria-label="Edit event"
               >
-                <Pencil className="h-4 w-4" />
+                <IconButton variant="outlineZspell" aria-label="Edit">
+                  <PencilLine className="h-4 w-4" />
+                </IconButton>
               </Link>
             </div>
           ))

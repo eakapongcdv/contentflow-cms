@@ -109,7 +109,7 @@ export default function SearchPageClient({
       {/* Hero + Search */}
       <div className="container-narrow">
         <div className="py-5 sm:py-6 text-center">
-          <h1 className="text-2xl md:text-3xl font-semibold mb-4 text-white">{t.title}</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold mb-4">{t.title}</h1>
           <SearchBar defaultQuery={q} />
 
           {/* คำค้นยอดฮิต */}
@@ -117,8 +117,8 @@ export default function SearchPageClient({
             {(trending ?? []).map((tItem) => (
               <a
                 key={tItem.term}
-                href={withLang(`/admin/search?q=${encodeURIComponent(tItem.term)}`)}
-                className="text-sm px-3 py-1 rounded-full border border-white/15 bg-white/10 text-white/80 hover:bg-white/20 hover:text-white"
+                href={withLang(`/?q=${encodeURIComponent(tItem.term)}`)}
+                className="text-sm px-3 py-1 rounded-full bg-gray-100 hover:bg-gray-200"
               >
                 {tItem.term}
               </a>
@@ -128,11 +128,9 @@ export default function SearchPageClient({
           {/* สลับการเรียง */}
           <div className="mt-3 flex items-center justify-center gap-2 text-sm">
             <a
-              href={withLang(`/admin/search?q=${encodeURIComponent(q)}&sort=relevance&per=${per}`)}
-              className={`px-3 py-1 rounded-full border ${
-                sort === "relevance"
-                  ? "border-emerald-400/30 bg-emerald-400/15 text-emerald-200"
-                  : "border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white"
+              href={withLang(`/?q=${encodeURIComponent(q)}&sort=relevance&per=${per}`)}
+              className={`px-3 py-1 rounded-full ${
+                sort === "relevance" ? "bg-black text-white" : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
               {t.relevance}
@@ -142,11 +140,9 @@ export default function SearchPageClient({
             <GeoSortButton q={q} active={sort === "nearby"} hasCoord={hasCoord} />
 
             <a
-              href={withLang(`/admin/search?q=${encodeURIComponent(q)}&sort=popular&per=${per}`)}
-              className={`px-3 py-1 rounded-full border ${
-                sort === "popular"
-                  ? "border-emerald-400/30 bg-emerald-400/15 text-emerald-200"
-                  : "border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white"
+              href={withLang(`/?q=${encodeURIComponent(q)}&sort=popular&per=${per}`)}
+              className={`px-3 py-1 rounded-full ${
+                sort === "popular" ? "bg-black text-white" : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
               {t.popular}
@@ -156,7 +152,7 @@ export default function SearchPageClient({
       </div>
 
       {!hasQuery ? (
-        <div className="container-narrow text-center text-white/60">{t.hint}</div>
+        <div className="container-narrow text-center text-gray-500">{t.hint}</div>
       ) : (
         <div className="container-narrow grid gap-10">
           {/* อีเวนต์ (อ้าง schema ใหม่) */}
@@ -181,26 +177,26 @@ export default function SearchPageClient({
                       : null;
 
                   return (
-                    <article key={e.id} className="admin-card">
-                      <div className="h-32 bg-white/10">
+                    <article key={e.id} className="card">
+                      <div className="h-32 bg-gray-100">
                         {cover ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={cover} alt={title ?? ""} className="w-full h-full object-cover" />
                         ) : null}
                       </div>
                       <div className="p-4">
-                        <div className="text-xs text-white/60">
+                        <div className="text-xs text-gray-500">
                           {dateRange}
                           {timeRange ? ` · ${timeRange}` : ""}
                         </div>
-                        <div className="font-medium text-white">
+                        <div className="font-medium">
                           <Highlight text={title ?? ""} tokens={tokens} />
                         </div>
-                        <div className="font-medium text-white">
+                        <div className="font-medium">
                           <Highlight text={description ?? ""} tokens={tokens} />
                         </div>
                         {e.websiteLink ? (
-                          <div className="text-xs text-white/60 mt-2 truncate">
+                          <div className="text-xs text-gray-500 mt-2 truncate">
                             {t.website}: {e.websiteLink.replace(/^https?:\/\//, "")}
                           </div>
                         ) : null}
@@ -215,8 +211,8 @@ export default function SearchPageClient({
           {/* Occupants */}
           <section>
             <div className="flex items-end justify-between mb-3">
-              <h2 className="text-lg font-semibold text-white">{t.occupants}</h2>
-              <div className="text-xs text-white/60">
+              <h2 className="text-lg font-semibold">{t.occupants}</h2>
+              <div className="text-xs text-gray-500">
                 {t.showing} {total ? `${start + 1}-${Math.min(end, total)} / ${total}` : "0 / 0"} {t.items}
               </div>
             </div>
@@ -245,7 +241,7 @@ export default function SearchPageClient({
                 />
               </>
             ) : (
-              <p className="text-sm text-white/60">{t.noResults(q)}</p>
+              <p className="text-sm text-gray-500">{t.noResults(q)}</p>
             )}
           </section>
 
@@ -255,12 +251,12 @@ export default function SearchPageClient({
               <h2 className="text-lg font-semibold mb-3">{t.categories}</h2>
               <div className="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(220px,1fr))]">
                 {categories.map((c: any) => (
-                  <div key={c.id} className="admin-card overflow-hidden">
-                    <div className="h-24 bg-white/10">
+                  <div key={c.id} className="card overflow-hidden">
+                    <div className="h-24 bg-gray-100">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={c.imageUrl} alt={c.title} className="w-full h-full object-cover" />
                     </div>
-                    <div className="p-3 font-medium text-white">
+                    <div className="p-3 font-medium">
                       <Highlight text={c.title} tokens={tokens} />
                     </div>
                   </div>
@@ -275,7 +271,7 @@ export default function SearchPageClient({
           {!!brands.length && (
             <section>
               <h2 className="text-lg font-semibold mb-3">{t.brands}</h2>
-              <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-8 gap-4 place-items-center rounded-2xl p-4 border border-white/10 bg-white/5">
+              <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-8 gap-4 place-items-center bg-white rounded-2xl p-4 shadow-card">
                 {brands.map((b: any) => (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img key={b.id} src={b.logoUrl} alt={b.name} className="h-8 object-contain" />
@@ -285,7 +281,7 @@ export default function SearchPageClient({
           )}
 
           {/* ไม่พบอะไรเลย */}
-          {!hasAny && <div className="text-white/60">{t.noResults(q)}</div>}
+          {!hasAny && <div className="text-gray-500">{t.noResults(q)}</div>}
         </div>
       )}
     </main>

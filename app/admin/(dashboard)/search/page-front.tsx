@@ -219,31 +219,24 @@ export default async function Home({ searchParams }: { searchParams: Record<stri
   ]);
 
   return (
-    <main className="">
-      <div className="mx-auto max-w-screen-2xl">
-        {/* Client section */}
-        <div className="admin-card p-3 md:p-4">
-          <SearchPageClient
-            q={q}
-            sort={sort}
-            per={per}
-            page={safePage}
-            userLat={hasCoord ? userLat : null}
-            userLng={hasCoord ? userLng : null}
-            hasCoord={hasCoord}
-            tokens={tokens}
-            pageItems={pageItems}
-            total={total}
-            start={start}
-            end={Math.min(end, total)}
-            pageCount={pageCount}
-            categories={categories}
-            events={events}
-            brands={brands}
-            trending={trending}
-          />
-        </div>
-      </div>
-    </main>
+    <SearchPageClient
+      q={q}
+      sort={sort}
+      per={per}
+      page={safePage}
+      userLat={hasCoord ? userLat : null}
+      userLng={hasCoord ? userLng : null}
+      hasCoord={hasCoord}
+      tokens={tokens}
+      pageItems={pageItems}
+      total={total}
+      start={start}
+      end={Math.min(end, total)}
+      pageCount={pageCount}
+      categories={categories}
+      events={events}
+      brands={brands}
+      trending={trending}
+    />
   );
 }
