@@ -3,8 +3,6 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import AiAgent from "./widgets/AiAgent";
-import SiteHeader from "./components/SiteHeader";
-import SiteFooter from "./components/SiteFooter";
 
 /** ---------- Types ---------- **/
 type BillingCycle = "monthly" | "annual";
@@ -51,18 +49,12 @@ function recommendPlan(input: {
 function DarkNeonBg() {
   return (
     <div aria-hidden className="fixed inset-0 -z-10 bg-[#0a0a0f] overflow-hidden">
-      <div
-        className="pointer-events-none absolute -top-24 -left-24 h-[60vmax] w-[60vmax] rounded-full blur-3xl"
-        style={{ background: "radial-gradient(circle at 30% 30%, rgba(0,255,209,.25), transparent 40%)" }}
-      />
-      <div
-        className="pointer-events-none absolute -bottom-24 -right-24 h-[60vmax] w-[60vmax] rounded-full blur-3xl"
-        style={{ background: "radial-gradient(circle at 70% 70%, rgba(255,0,171,.25), transparent 40%)" }}
-      />
-      <div
-        className="pointer-events-none absolute top-1/2 left-1/3 h-[50vmax] w-[50vmax] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[100px]"
-        style={{ background: "conic-gradient(from 90deg, rgba(0,199,255,.18), rgba(255,89,247,.18), rgba(0,255,209,.18))" }}
-      />
+      <div className="pointer-events-none absolute -top-24 -left-24 h-[60vmax] w-[60vmax] rounded-full blur-3xl"
+        style={{ background: "radial-gradient(circle at 30% 30%, rgba(0,255,209,.25), transparent 40%)" }} />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 h-[60vmax] w-[60vmax] rounded-full blur-3xl"
+        style={{ background: "radial-gradient(circle at 70% 70%, rgba(255,0,171,.25), transparent 40%)" }} />
+      <div className="pointer-events-none absolute top-1/2 left-1/3 h-[50vmax] w-[50vmax] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[100px]"
+        style={{ background: "conic-gradient(from 90deg, rgba(0,199,255,.18), rgba(255,89,247,.18), rgba(0,255,209,.18))" }} />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,.08),rgba(10,10,15,0))]" />
       <div className="absolute inset-0 tw-grid-overlay" />
     </div>
@@ -112,7 +104,6 @@ function DemoVideo() {
     }
   }, []);
   if (!url) return null;
-
   const isYouTube = /youtube\.com|youtu\.be/.test(url);
   return (
     <section className="relative pb-6">
@@ -138,7 +129,7 @@ function DemoVideo() {
   );
 }
 
-/* ---------- Feature Highlights (real photos) ---------- */
+/* ---------- Real-photo Feature Highlights (ภาพจริง โทนมืออาชีพ) ---------- */
 const REAL_FEATURES: {
   title: string; desc: string; bullets: string[]; img: string; alt: string;
 }[] = [
@@ -194,12 +185,7 @@ function FeatureHighlightsReal() {
         {REAL_FEATURES.map((f, idx) => (
           <article key={idx} className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-lg">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={f.img}
-              alt={f.alt}
-              className="h-44 md:h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              loading="lazy"
-            />
+            <img src={f.img} alt={f.alt} className="h-44 md:h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
             <div className="p-4">
               <h3 className="text-white font-semibold text-lg">{f.title}</h3>
               <p className="mt-1 text-white/75 text-sm">{f.desc}</p>
@@ -228,33 +214,29 @@ function CloudSupport() {
         title="Cloud Support & Deployment"
         subtitle="รองรับ AWS • Alibaba Cloud • Microsoft Azure รวมถึง Hybrid / Multi-Cloud"
       />
-
       <div className="mx-auto max-w-5xl grid grid-cols-1 sm:grid-cols-3 gap-6">
         <CloudCard label="Amazon Web Services">
           <CloudLogo
-            primary="/aws.svg" // วางไฟล์ไว้ใน public/aws.svg
+            primary="/images/aws.svg"
             fallback="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg"
             alt="AWS"
           />
         </CloudCard>
-
         <CloudCard label="Alibaba Cloud">
           <CloudLogo
-            primary="/alibaba.svg"
+            primary="/images/alibaba.svg"
             fallback="https://upload.wikimedia.org/wikipedia/commons/1/1d/Alibaba_Cloud_logo.svg"
             alt="Alibaba Cloud"
           />
         </CloudCard>
-
         <CloudCard label="Microsoft Azure">
           <CloudLogo
-            primary="/azure.svg"
+            primary="/images/azure.svg"
             fallback="https://upload.wikimedia.org/wikipedia/commons/f/fa/Microsoft_Azure.svg"
             alt="Microsoft Azure"
           />
         </CloudCard>
       </div>
-
       <p className="mt-4 text-center text-white/60 text-sm">
         * เลือก Region/นโยบายเครือข่ายตามที่องค์กรต้องการ พร้อม CI/CD และ IaC (Terraform) ตัวอย่าง
       </p>
@@ -262,7 +244,7 @@ function CloudSupport() {
   );
 }
 
-function CloudCard({ children, label }: { children: React.ReactNode; label: string }) {
+function CloudCard({ children, label }: { children: React.ReactNode; label: string; }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md grid place-items-center">
       <div className="h-16 w-36 grid place-items-center">{children}</div>
@@ -271,38 +253,33 @@ function CloudCard({ children, label }: { children: React.ReactNode; label: stri
   );
 }
 
-function CloudLogo({ primary, fallback, alt }: { primary: string; fallback: string; alt: string }) {
+function CloudLogo({ primary, fallback, alt }: { primary: string; fallback: string; alt: string; }) {
   const [src, setSrc] = useState(primary);
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-      onError={() => setSrc(fallback)}
-      className="max-h-12 w-auto object-contain opacity-90"
-      loading="lazy"
-    />
+    <img src={src} alt={alt} onError={() => setSrc(fallback)} className="max-h-12 w-auto object-contain opacity-90" loading="lazy" />
   );
 }
 
+/* ---------- UPDATED: Security & Compliance (แทน ISO/IEC 29110) ---------- */
 function Compliance() {
   const items = [
     {
-      title: "PDPA Compliance-ready",
-      desc: "แนวปฏิบัติด้านความเป็นส่วนตัว, Data Retention, Data Subject Request (DSR) พร้อมคู่มือ",
+      title: "ISO/IEC 27001 Controls",
+      desc: "แนวทางควบคุมจาก Annex A — Access control, encryption, logging, backup และการประเมินความเสี่ยง",
     },
     {
-      title: "Consent Management",
-      desc: "แบนเนอร์คุกกี้/Consent Log, บันทึกหลักฐานความยินยอม, โหมดไม่ระบุตัวตน",
+      title: "SOC 2 Readiness",
+      desc: "แนวปฏิบัติ Trust Services Criteria: Security, Availability, Confidentiality พร้อม Audit Trails และ RBAC",
     },
     {
-      title: "Security Standards",
-      desc: "แนวทาง ISO/IEC 27001, SOC 2 (process-ready), RBAC, Audit Trails, Hardening & WAF",
+      title: "OWASP ASVS & Secure SDLC",
+      desc: "โฟกัส AppSec: ASVS Checklist, Static/Dynamic Scan, Dependency Audit, Issue Workflow กับ DevSecOps",
     },
   ];
   return (
     <section id="security" className="relative py-12 md:py-16">
-      <SectionHeader title="Security & Compliance" subtitle="PDPA • Consent • Security Standards" />
+      <SectionHeader title="Security & Compliance" subtitle="ISO/IEC 27001 • SOC 2 • OWASP ASVS • PDPA/Consent" />
       <div className="mx-auto max-w-6xl grid gap-6 md:grid-cols-3">
         {items.map((it, i) => (
           <div key={i} className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
@@ -330,7 +307,101 @@ function ShieldIcon({ className }: { className?: string }) {
   );
 }
 
-/** ---------- Pricing Cards ---------- **/
+/* ---------- NEW: Suitable Businesses / Use-Cases ---------- */
+function UseCaseExamples() {
+  const cases = [
+    { title: "Retail & E-Commerce", bullets: ["แคมเปญโปรโมชัน", "แคตตาล็อกสินค้า", "คอนเทนต์รีวิว/UGC"] },
+    { title: "F&B (ร้านอาหาร/แบรนด์)", bullets: ["เมนู/โปรฯ รายสัปดาห์", "Short-form โซเชียล", "KOL/Influencer Kit"] },
+    { title: "Hospitality & Tourism", bullets: ["แพ็กเกจท่องเที่ยว", "บทความ SEO", "Localization EN/中文"] },
+    { title: "Education & EdTech", bullets: ["บทความความรู้", "คอร์ส/กิจกรรม", "อีเมล/ข้อความอัตโนมัติ"] },
+    { title: "Real Estate", bullets: ["หน้าโครงการ", "VR/ภาพประกอบ", "Lead Form + Analytics"] },
+    { title: "Financial Services (Marketing)", bullets: ["แคมเปญความรู้", "Compliance Review", "Omni-channel"] },
+  ];
+  return (
+    <section className="relative py-12 md:py-16">
+      <SectionHeader title="ธุรกิจที่เหมาะกับ ContentFlow AI Suite" subtitle="ตัวอย่างอุตสาหกรรมและเคสการใช้งาน" />
+      <div className="mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-6">
+        {cases.map((c, i) => (
+          <div key={i} className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
+            <h3 className="text-white font-semibold">{c.title}</h3>
+            <ul className="mt-3 space-y-1.5 text-white/80 text-sm">
+              {c.bullets.map((b, j) => (
+                <li key={j} className="flex items-start gap-2">
+                  <span className="mt-1 size-1.5 rounded-full bg-emerald-400/80" />
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ---------- NEW: Customers & Testimonials ---------- */
+function CustomersTestimonials() {
+  const logos = [
+    { src: "/images/customers/acme.svg", alt: "ACME" },
+    { src: "/images/customers/lotus.svg", alt: "Lotus" },
+    { src: "/images/customers/zenmart.svg", alt: "Zenmart" },
+    { src: "/images/customers/finhub.svg", alt: "Finhub" },
+    { src: "/images/customers/skyhotel.svg", alt: "SkyHotel" },
+    { src: "/images/customers/edulab.svg", alt: "Edulab" },
+  ];
+  const quotes = [
+    {
+      name: "Somchai K.",
+      role: "Head of Marketing, Zenmart",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=320&auto=format&fit=crop",
+      text: "เร่งสปีดการทำคอนเทนต์ได้จริง 2-3 เท่า โดยเฉพาะการทำหลายภาษาและรีวิวสินค้า",
+    },
+    {
+      name: "Ploy W.",
+      role: "Digital Lead, SkyHotel Group",
+      avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=320&auto=format&fit=crop",
+      text: "Workflow + Analytics ช่วยให้ทีมเห็นภาพรวมแคมเปญแบบเรียลไทม์ ตัดสินใจไวขึ้น",
+    },
+    {
+      name: "Arthit T.",
+      role: "E-Commerce Director, ACME",
+      avatar: "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=320&auto=format&fit=crop",
+      text: "เชื่อม Shopee/Lazada และโซเชียลหลัก ๆ ได้ดีมาก ลดงานย้ายข้อมูลซ้ำซ้อน",
+    },
+  ];
+  return (
+    <section className="relative py-12 md:py-16">
+      <SectionHeader title="ลูกค้า & เสียงตอบรับ" subtitle="ตัวอย่างแบรนด์ที่ไว้วางใจ และความเห็นจากผู้ใช้" />
+      <div className="mx-auto max-w-6xl">
+        {/* Logos */}
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 place-items-center rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
+          {logos.map((l, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={i} src={l.src} alt={l.alt} className="h-8 object-contain opacity-80" loading="lazy" />
+          ))}
+        </div>
+        {/* Testimonials */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          {quotes.map((q, i) => (
+            <figure key={i} className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
+              <div className="flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={q.avatar} alt={q.name} className="h-10 w-10 rounded-full object-cover" loading="lazy" />
+                <figcaption className="text-sm">
+                  <div className="text-white/90 font-medium">{q.name}</div>
+                  <div className="text-white/60">{q.role}</div>
+                </figcaption>
+              </div>
+              <blockquote className="mt-3 text-white/80 text-sm leading-relaxed">“{q.text}”</blockquote>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** ---------- Pricing Cards (คงเดิม) ---------- */
 function PricingCard({
   name, monthly, billingCycle, annualDiscountBase, couponExtra, couponMode, checkoutHref, features, highlight = false
 }: {
@@ -409,9 +480,12 @@ function PricingAndChooser({
   const [needCompliance, setNeedCompliance] = useState(false);
   const [budget, setBudget] = useState(20000);
 
-  const COUPONS: Record<string, number> = {
-    WELCOME15: 0.15, LAUNCH20: 0.20, EDU20: 0.20
-  };
+  const rec = useMemo(
+    () => recommendPlan({ teamSize, postsPerMonth: posts, needIntegrations, needCompliance, budgetPerMonth: budget }),
+    [teamSize, posts, needIntegrations, needCompliance, budget]
+  );
+
+  const COUPONS: Record<string, number> = { WELCOME15: 0.15, LAUNCH20: 0.20, EDU20: 0.20 };
   const couponExtra = COUPONS[coupon.toUpperCase()] ?? 0;
 
   function applyCoupon() {
@@ -428,7 +502,6 @@ function PricingAndChooser({
         title="ราคาและแพ็กเกจ (THB) • เลือกแพ็กเกจให้เหมาะกับทีมของคุณ"
         subtitle={`รอบบิล • ส่วนลดรายปี (${Math.round(annualDiscount * 100)}%) • คูปอง (${couponMode === "stack" ? "ลดเพิ่มสูงสุด 30%" : "แทนที่ส่วนลดรายปี"})`}
       />
-
       {/* Billing & Coupon */}
       <div className="mx-auto max-w-6xl mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
@@ -459,6 +532,7 @@ function PricingAndChooser({
           </div>
         </div>
       </div>
+      {couponMsg && <div className="mx-auto max-w-6xl -mt-6 mb-6 text-sm text-emerald-200">{couponMsg}</div>}
 
       {/* Pricing Grid */}
       <div className="mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-4 gap-6">
@@ -491,17 +565,56 @@ function PricingAndChooser({
             <li className="flex items-start gap-2"><span className="mt-1 size-1.5 rounded-full bg-emerald-400/80" />Migration & Training</li>
           </ul>
           <a href="mailto:sales@codediva.co.th?subject=ขอใบเสนอราคา%20On-Premise%20ContentFlow%20AI%20Suite"
-             className="mt-6 block w-full text-center rounded-xl px-4 py-2.5 text-sm font-medium bg-white/10 text-white hover:bg-white/20">
+            className="mt-6 block w-full text-center rounded-xl px-4 py-2.5 text-sm font-medium bg-white/10 text-white hover:bg-white/20">
             นัดเดโม / ขอใบเสนอราคา
           </a>
           <div className="mt-3 text-[12px] text-white/50">*ราคายังไม่รวม VAT 7%</div>
+        </div>
+      </div>
+
+      {/* Chooser */}
+      <div className="mx-auto mt-10 max-w-6xl rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
+        <h4 className="text-lg font-semibold text-white">ตัวช่วยเลือกแพ็กเกจ</h4>
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
+          <label className="flex flex-col text-white/80">ขนาดทีม (คน)
+            <input type="number" min={1} className="mt-1 rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-white"
+              value={teamSize} onChange={(e) => setTeamSize(parseInt(e.target.value || "0", 10))} />
+          </label>
+          <label className="flex flex-col text-white/80">โพสต์/เดือน
+            <input type="number" min={0} className="mt-1 rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-white"
+              value={posts} onChange={(e) => setPosts(parseInt(e.target.value || "0", 10))} />
+          </label>
+          <label className="flex items-center gap-2 text-white/80">
+            <input type="checkbox" className="size-4 accent-emerald-400" checked={needIntegrations} onChange={(e) => setNeedIntegrations(e.target.checked)} />
+            ต้องการ Integrations
+          </label>
+          <label className="flex items-center gap-2 text-white/80">
+            <input type="checkbox" className="size-4 accent-emerald-400" checked={needCompliance} onChange={(e) => setNeedCompliance(e.target.checked)} />
+            มีข้อกำกับ/Compliance
+          </label>
+          <label className="flex flex-col text-white/80">งบ/เดือน (THB)
+            <input type="number" min={0} className="mt-1 rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-white"
+              value={budget} onChange={(e) => setBudget(parseInt(e.target.value || "0", 10))} />
+          </label>
+        </div>
+
+        <div className="mt-5 rounded-xl border border-white/10 bg-black/30 p-4 text-white/90">
+          <div className="text-sm">คำแนะนำของระบบ</div>
+          <div className="mt-1 text-lg font-semibold">
+            {recommendPlan({ teamSize, postsPerMonth: posts, needIntegrations, needCompliance, budgetPerMonth: budget }).plan === "essential" && "✅ Essential"}
+            {recommendPlan({ teamSize, postsPerMonth: posts, needIntegrations, needCompliance, budgetPerMonth: budget }).plan === "pro" && "✅ Pro"}
+            {recommendPlan({ teamSize, postsPerMonth: posts, needIntegrations, needCompliance, budgetPerMonth: budget }).plan === "enterprise" && "✅ Enterprise (Cloud/On-Prem)"}
+          </div>
+          <ul className="mt-2 text-sm list-disc pl-5 text-white/70">
+            {recommendPlan({ teamSize, postsPerMonth: posts, needIntegrations, needCompliance, budgetPerMonth: budget }).reasons.map((r, i) => (<li key={i}>{r}</li>))}
+          </ul>
         </div>
       </div>
     </section>
   );
 }
 
-/** ---------- TrustedBy ---------- */
+/** ---------- TrustedBy (คงเดิม) ---------- */
 function TrustedBy({ logos }: { logos: { src: string; alt: string }[] }) {
   const placeholders = [
     { name: "Alibaba Cloud Partner" },
@@ -514,7 +627,7 @@ function TrustedBy({ logos }: { logos: { src: string; alt: string }[] }) {
   const useLogos = logos.filter(l => !!l.src);
 
   return (
-    <section id="trust" className="relative py-10">
+    <section className="relative py-10">
       <div className="mx-auto max-w-6xl">
         <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6">
           <div className="text-center mb-6">
@@ -551,6 +664,97 @@ function TrustedBy({ logos }: { logos: { src: string; alt: string }[] }) {
   );
 }
 
+/** ---------- Footer (คงเดิม) ---------- */
+function SiteFooter() {
+  return (
+    <footer className="mt-0">
+      <div className="mx-auto max-w-7xl px-4 md:px-6">
+        <div className="mx-auto max-w-6xl rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 md:p-8">
+          {/* Grid แนวเดียวกับ content: 4 คอลัมน์บน md+ */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Brand / Intro */}
+            <div>
+              <div className="text-lg font-semibold text-white">ContentFlow AI Suite</div>
+              <p className="mt-2 text-sm text-white/70 leading-relaxed">
+                แพลตฟอร์มจัดการคอนเทนต์พร้อม AI สำหรับธุรกิจไทย — สร้าง เผยแพร่ และวัดผลอย่างมืออาชีพ
+              </p>
+              <p className="mt-3 text-xs text-white/50">
+                รองรับ Cloud / Hybrid • PDPA & Consent • ISO/IEC 27001 • SOC 2 readiness
+              </p>
+            </div>
+
+            {/* Product */}
+            <nav aria-label="Product" className="text-sm">
+              <div className="font-semibold text-white">Product</div>
+              <ul className="mt-3 space-y-2 text-white/75">
+                <li><a className="hover:text-white" href="#features">Features</a></li>
+                <li><a className="hover:text-white" href="#pricing">Pricing</a></li>
+                <li><a className="hover:text-white" href="#cloud">Cloud Support</a></li>
+                <li><a className="hover:text-white" href="#security">Security & Compliance</a></li>
+                <li><a className="hover:text-white" href="/docs">Docs & API</a></li>
+              </ul>
+            </nav>
+
+            {/* Company */}
+            <nav aria-label="Company" className="text-sm">
+              <div className="font-semibold text-white">Company</div>
+              <ul className="mt-3 space-y-2 text-white/75">
+                <li><a className="hover:text-white" href="/about">About us</a></li>
+                <li><a className="hover:text-white" href="/contact">Contact us</a></li>
+                <li><a className="hover:text-white" href="/careers">Careers</a></li>
+                <li><a className="hover:text-white" href="/partners">Partners</a></li>
+              </ul>
+            </nav>
+
+            {/* Newsletter / Social / Contact */}
+            <div className="text-sm">
+              <div className="font-semibold text-white">Stay in the loop</div>
+              <form className="mt-3 flex items-center gap-2" onSubmit={(e) => e.preventDefault()}>
+                <input
+                  type="email" inputMode="email" autoComplete="email" placeholder="อีเมลสำหรับข่าวสาร"
+                  className="flex-1 rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-white placeholder:text-white/40"
+                  aria-label="Email for newsletter" required
+                />
+                <button className="rounded-lg px-3 py-2 bg-cyan-400/90 text-black hover:bg-cyan-300">สมัคร</button>
+              </form>
+              <div className="mt-4 text-white/75 space-y-1.5">
+                <div><span className="text-white/50">Email:</span> <a className="hover:text-white" href="mailto:support@codediva.co.th">support@codediva.co.th</a></div>
+                <div><span className="text-white/50">Mobile:</span> <a className="hover:text-white" href="tel:+66999999999">+66 99 999 9999</a></div>
+              </div>
+              <div className="mt-4 flex items-center gap-3">
+                <a href="https://facebook.com" aria-label="Facebook" className="text-white/70 hover:text-white">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.6V12h2.8V9.7c0-2.8 1.6-4.3 4-4.3 1.2 0 2.4.2 2.4.2v2.6h-1.3c-1.3 0-1.7.8-1.7 1.6V12h3l-.5 2.9h-2.5v7A10 10 0 0 0 22 12z"/></svg>
+                </a>
+                <a href="https://x.com" aria-label="X / Twitter" className="text-white/70 hover:text-white">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M18.9 2H21l-6.5 7.5 7.6 12.5H16l-4.7-7-5.4 7H3l7-8.7L2 2h6.1l4.3 6.4L18.9 2zM16.9 20h1.7L8.1 4H6.3l10.6 16z"/></svg>
+                </a>
+                <a href="https://www.linkedin.com" aria-label="LinkedIn" className="text-white/70 hover:text-white">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.85 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V23h-4V8zM8 8h3.8v2.1h.1C12.7 8.9 14.3 8 16.6 8 21.2 8 22 10.9 22 15.2V23h-4v-6.7c0-1.6 0-3.8-2.3-3.8S12.9 14 12.9 16.2V23h-4V8z"/></svg>
+                </a>
+                <a href="https://youtube.com" aria-label="YouTube" className="text-white/70 hover:text-white">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.4.6A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12c0 1.8.2 3.6.5 5.8a3 3 0 0 0 2.1 2.1C4.4 20.5 12 20.5 12 20.5s7.6 0 9.4-.6a3 3 0 0 0 2.1-2.1c.3-2.2.5-4 .5-5.8 0-1.8-.2-3.6-.5-5.8zM9.6 15.5V8.5l6.2 3.5-6.2 3.5z"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="mt-8 border-t border-white/10 pt-4 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-white/55">
+            <div>© {new Date().getFullYear()} Codediva Co., Ltd. All rights reserved.</div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <a className="hover:text-white" href="/policy">Privacy Policy</a>
+              <a className="hover:text-white" href="/terms">Terms & Conditions</a>
+              <a className="hover:text-white" href="/pdpa">PDPA & Consent</a>
+              <a className="hover:text-white" href="/security">Security</a>
+              <a className="hover:text-white" href="/sitemap">Sitemap</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 /** ---------- Page ---------- **/
 export default function HomePage() {
   const [couponMode, setCouponMode] = useState<CouponMode>("stack");
@@ -571,23 +775,19 @@ export default function HomePage() {
   return (
     <main className="relative min-h-screen text-white">
       <DarkNeonBg />
-      {/* ✅ Header เหมือนหน้า Careers */}
-      <SiteHeader />
-
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <Hero />
         <DemoVideo />
         <FeatureHighlightsReal />
+        <UseCaseExamples />
         <CloudSupport />
         <TrustedBy logos={logos} />
         <Compliance />
+        <CustomersTestimonials />
         <PricingAndChooser couponMode={couponMode} checkoutBase={checkoutBase} />
+        <SiteFooter />
       </div>
-
-      {/* ✅ Footer กลมกลืนกับหน้าแรก */}
-      <SiteFooter />
-
-      {/* ปุ่ม/แชต AI แบบ futuristic */}
+      {/* ปุ่ม/แชต AI แบบ futuristic อยู่ใน AiAgent */}
       <AiAgent />
     </main>
   );
