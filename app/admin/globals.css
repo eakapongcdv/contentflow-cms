@@ -24,11 +24,6 @@
   --brand-cyan:        rgba(34,211,238,.90);
   --brand-cyan-shadow: rgba(34,211,238,.25);
 
-  /* side nav pastel hover */
-  --pastel-green:  rgba(209,250,229,.96); /* emerald-100 ~ #d1fae5 */
-  --pastel-blue:   rgba(224,242,254,.92); /* sky-100     ~ #e0f2fe */
-  --hover-text:    #0a0a0f;
-  --pastel-border: rgba(0,0,0,.10);
 }
 
 /* ================= Background (glow + grid like frontend) ================= */
@@ -122,15 +117,28 @@ input.admin-input:-webkit-autofill:focus{
   transition: background .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
 
-/* Active/current page */
+/* Active/current page — cyan glass (match front) */
 .admin-sidenav a[aria-current="page"],
 .admin-sidenav [data-active="true"],
 .admin-sidenav .is-active{
-  background: rgba(16,185,129,.18);                /* emerald-glass */
-  border-color: rgba(16,185,129,.35);
-  color: #d1fae5;                                   /* emerald-100 */
-  box-shadow: 0 0 0 1px rgba(16,185,129,.25) inset;
+  background: rgba(56,189,248,.18);                /* sky-400 glass */
+  border-color: rgba(56,189,248,.35);
+  color: #cffafe;                                   /* cyan-100 */
+  box-shadow: 0 0 0 1px rgba(56,189,248,.25) inset;
 }
+
+/* Hover/focus — subtle glass */
+.admin-sidenav a:hover:not([data-active="true"]):not([aria-current="page"]),
+.admin-sidenav button:hover:not([data-active="true"]):not([aria-current="page"]),
+.admin-sidenav a:focus-visible:not([data-active="true"]):not([aria-current="page"]),
+.admin-sidenav button:focus-visible:not([data-active="true"]):not([aria-current="page"]) {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.20);
+}
+.admin-sidenav a:hover svg,
+.admin-sidenav button:hover svg,
+.admin-sidenav a:focus-visible svg,
+.admin-sidenav button:focus-visible svg { color: inherit; }
 
 /* Section label */
 .admin-sidenav .section-title{
@@ -149,30 +157,6 @@ input.admin-input:-webkit-autofill:focus{
 }
 .button-ghost:hover{ background: rgba(255,255,255,.10); }
 
-/* ================= Left nav: pastel blue/green hover ================= */
-/* ไม่ทับ active/current */
-.admin-sidenav a:hover:not([data-active="true"]):not([aria-current="page"]),
-.admin-sidenav button:hover:not([data-active="true"]):not([aria-current="page"]),
-.admin-sidenav a:focus-visible:not([data-active="true"]):not([aria-current="page"]),
-.admin-sidenav button:focus-visible:not([data-active="true"]):not([aria-current="page"]) {
-  background: linear-gradient(180deg, var(--pastel-green), var(--pastel-blue));
-  border-color: var(--pastel-border);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,.75) inset,
-    0 0 0 1px rgba(255,255,255,.60) inset;
-  color: var(--hover-text) !important;             /* ตัวอักษรเข้มตัดกับพื้น */
-}
-/* ไอคอน/แบดจ์ตาม currentColor */
-.admin-sidenav a:hover svg,
-.admin-sidenav button:hover svg,
-.admin-sidenav a:focus-visible svg,
-.admin-sidenav button:focus-visible svg { color: var(--hover-text) !important; fill: currentColor; stroke: currentColor; }
-.admin-sidenav a:hover .badge,
-.admin-sidenav button:hover .badge {
-  background: rgba(0,0,0,.08);
-  color: var(--hover-text) !important;
-  border-color: rgba(0,0,0,.12);
-}
 
 /* ===== Admin content: dark theme (match front page) ===== */
 .admin-content{
