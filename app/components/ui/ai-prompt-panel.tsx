@@ -182,38 +182,37 @@ export function AiPromptPanel({
         </div>
       </div>
 
-      {/* Toolbar: voice only (no fullscreen) */}
-      <div className="mt-3 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          {!isRecording ? (
-            <IconButton
-              onClick={startVoice}
-              className="bg-white/5 hover:bg-white/10 border border-white/10 text-white/80"
-              title="Voice input"
-            >
-              <Mic className="h-4 w-4" />
-            </IconButton>
-          ) : (
-            <IconButton
-              onClick={stopVoice}
-              className="bg-red-500/15 hover:bg-red-500/20 border border-red-500/30 text-red-300"
-              title="Stop recording"
-            >
-              <Square className="h-4 w-4" />
-            </IconButton>
-          )}
-        </div>
-        <div className="text-xs text-white/50">Tip: กด Voice เพื่อพูด Prompt แทนการพิมพ์</div>
-      </div>
-
       {/* Textarea */}
       <div className="mt-3">
-        <label className="text-sm font-medium text-white/70">Prompt</label>
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-white/70">Prompt</label>
+          <div className="flex items-center gap-2">
+            <div className="text-xs text-white/50">Tip: กด Voice เพื่อพูด Prompt แทนการพิมพ์</div>
+            {!isRecording ? (
+              <IconButton
+                onClick={startVoice}
+                className="bg-white/5 hover:bg-white/10 border border-white/10 text-white/80"
+                title="Voice input"
+              >
+                <Mic className="h-4 w-4" />
+              </IconButton>
+            ) : (
+              <IconButton
+                onClick={stopVoice}
+                className="bg-red-500/15 hover:bg-red-500/20 border border-red-500/30 text-red-300"
+                title="Stop recording"
+              >
+                <Square className="h-4 w-4" />
+              </IconButton>
+            )}
+            
+          </div>
+        </div>
         <textarea
           ref={areaRef}
           className={cn(
             "mt-1 font-[450] bg-[#0f141d] border border-white/10 text-white placeholder-white/40 rounded-xl w-full",
-            "h-56 md:h-64 lg:h-72"
+            "h-20"
           )}
           placeholder='เช่น: "เขียนบทความหัวข้อ ... โทนเป็นกันเอง มีหัวข้อย่อย bullet, เนื้อหาครอบคลุม keyword เหล่านี้ ... สร้าง TH/EN/CN และ SEO ให้ครบ"'
           value={value}
