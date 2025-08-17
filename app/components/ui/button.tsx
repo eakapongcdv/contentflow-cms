@@ -9,15 +9,18 @@ function cn(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(" ");
 }
 
-type ButtonVariant =
+export type ButtonVariant =
   | "default"
   | "primary"
   | "secondary"
   | "outline"
   | "ghost"
-  | "danger";
+  | "danger"
+  // dark-mode house style (front page tone)
+  | "dark"
+  | "dark-outline";
 
-type ButtonSize = "sm" | "md" | "lg";
+export type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -61,6 +64,10 @@ const variantStyles: Record<ButtonVariant, string> = {
   danger:
     // Red neon
     "bg-red-700 text-white border-red-400 shadow-[0_0_8px_red] hover:shadow-[0_0_20px_red] hover:bg-red-400/20 active:bg-red-400/30",
+  dark:
+    "bg-white/10 text-white border-white/15 hover:bg-white/20",
+  "dark-outline":
+    "bg-transparent text-white border-white/20 hover:bg-white/10",
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -75,53 +82,71 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       rightIcon,
       children,
       disabled,
-      type, // เตรียมรับ type จากภายนอก
+      type,
       ...props
     },
     ref
   ) => {
     const isDisabled = disabled || loading;
 
-    // Render as an IconButton with children as icon(s) only
     return (
-      <IconButton
+      <button
         ref={ref}
         type={type ?? "button"}
-        size={size}
-        variant={variant}
-        className={cn(fullWidth && "w-full", className)}
+        className={cn(base, sizeStyles[size], variantStyles[variant], fullWidth && "w-full", className)}
         disabled={isDisabled}
+        aria-busy={loading || undefined}
         {...props}
       >
         {loading ? (
-          <Loader2 className="animate-spin" aria-hidden />
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
         ) : (
-          children
+          leftIcon && <span className="mr-2 inline-flex">{leftIcon}</span>
         )}
-      </IconButton>
+        {children ? <span className="truncate">{children}</span> : null}
+        {rightIcon && !loading ? <span className="ml-2 inline-flex">{rightIcon}</span> : null}
+      </button>
     );
   }
 );
 Button.displayName = "Button";
 
-/** ปุ่มกลมสำหรับไอคอนล้วน */
-export function IconButton({
-  className,
-  size = "md",
-  variant = "secondary",
-  children,
-  type,
-  ...props
-}: Omit<ButtonProps, "children"> & { children: React.ReactNode }) {
-  const roundSize =
-    size === "sm" ? "h-8 w-8" : size === "lg" ? "h-10 w-10" : "h-9 w-9";
-  return (
-    <button
-      type={type ?? "button"}
-      className={cn(base, roundSize, "p-0", variantStyles[variant], className)}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
+/** Icon-first / compact button. Expands dynamically with text. */
+export interface IconButtonProps
+  extends Omit<ButtonProps, "leftIcon" | "rightIcon"> {}
+
+export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
+  (
+    { className, variant = "dark-outline", size = "md", loading = false, children, fullWidth = false, disabled, type, ...props },
+    ref
+  ) => {
+    const isDisabled = disabled || loading;
+    const hasText = React.Children.toArray(children).some(
+      (child) => typeof child === "string" && child.trim().length > 0
+    );
+
+    return (
+      <button
+        ref={ref}
+        type={type ?? "button"}
+        className={cn(
+          base,
+          sizeStyles[size],
+          variantStyles[variant],
+          // compact paddings are already in sizeStyles; allow dynamic growth with text
+          hasText ? "px-3" : "px-2",
+          fullWidth && "w-full",
+          className
+        )}
+        disabled={isDisabled}
+        aria-busy={loading || undefined}
+        {...props}
+      >
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : children}
+      </button>
+    );
+  }
+);
+IconButton.displayName = "IconButton";
+
+export default Button;

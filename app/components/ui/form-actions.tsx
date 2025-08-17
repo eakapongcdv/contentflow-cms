@@ -2,7 +2,7 @@
 "use client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "./button";
+import { IconButton } from "./button";
 import { Save, Trash2, ArrowLeft } from "lucide-react";
 
 export function FormActions({
@@ -30,38 +30,31 @@ export function FormActions({
   return (
     <div className="flex items-center justify-between">
       {mode === "edit" ? (
-        <Button
-          type="button"
-          variant="outlineZspell"
-          leftIcon={<Trash2 className="h-4 w-4" />}
-          onClick={onDelete}
-        >
-          {deleteText}
-        </Button>
+        <IconButton type="button" variant="dark-outline" onClick={onDelete}>
+          <Trash2 className="h-4 w-4" />
+          <span className="ml-2">{deleteText}</span>
+        </IconButton>
       ) : (
         <span />
       )}
 
       <div className="flex items-center gap-2">
         {showBack && (
-          <Button
-            type="button"
-            variant="ghost"
-            leftIcon={<ArrowLeft className="h-4 w-4" />}
-            onClick={() => router.back()}
-          >
-            {backText}
-          </Button>
+          <IconButton type="button" variant="dark-outline" onClick={() => router.back()}>
+            <ArrowLeft className="h-4 w-4" />
+            <span className="ml-2">{backText}</span>
+          </IconButton>
         )}
-        <Button
+        <IconButton
           type={onSave ? "button" : "submit"}
           onClick={onSave}
-          variant="zspell"
-          leftIcon={<Save className="h-4 w-4" />}
-          loading={!!saving}
+          variant="dark"
+          aria-busy={saving ? true : undefined}
+          disabled={!!saving}
         >
-          {mode === "edit" ? saveTextEdit : saveTextCreate}
-        </Button>
+          <Save className="h-4 w-4" />
+          <span className="ml-2">{mode === "edit" ? saveTextEdit : saveTextCreate}</span>
+        </IconButton>
       </div>
     </div>
   );
