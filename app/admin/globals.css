@@ -203,3 +203,13 @@ input.admin-input:-webkit-autofill:focus{
 .admin-content .admin-table tbody tr:hover{
   background: rgba(255,255,255,.06);
 }
+
+/* ซ่อน header/footer ที่ถูกดึงมาจาก layout หลัก */
+header,
+footer {
+  display: none !important;
+}
+
+input#admin-search {
+  padding-left: 40px;
+}

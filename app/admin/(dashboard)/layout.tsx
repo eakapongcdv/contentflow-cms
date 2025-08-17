@@ -8,7 +8,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth-options";
 import { getEffectiveRulesForUser } from "@/app/lib/perm";
 
-import TopBar from "./TopBar";
+import AdminTopBar from "./AdminTopBar";
 
 export default async function AdminDashboardLayout({
   children,
@@ -43,7 +43,7 @@ export default async function AdminDashboardLayout({
   return (
     <WebsiteProvider>
       <div className="mx-auto px-4 py-8">
-        <TopBar
+        <AdminTopBar
           userName={(session?.user?.name as string) || null}
           userEmail={(session?.user?.email as string) || null}
           userImage={(session?.user?.image as string) || null}

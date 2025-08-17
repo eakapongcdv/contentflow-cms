@@ -253,6 +253,16 @@ export default function TopBar({
       .map((s) => s[0]?.toUpperCase())
       .join("") || "U";
 
+  // --- LangPicker wiring ---
+  const pathname = usePathname();
+  const search = useSearchParams();
+  const toLangPath = (l: string) => {
+    // We rely on cookie change inside LangPicker; keep path & query stable
+    const q = search?.toString();
+    return q ? `${pathname}?${q}` : pathname;
+  };
+  const lang = (locale === "cn" ? "zh" : (locale ?? "th")) as "th" | "en" | "zh";
+
   return (
     <div className="admin-card px-3 py-2 md:px-4 md:py-2 mb-3">
       <div className="flex items-center justify-between gap-3">
@@ -270,17 +280,51 @@ export default function TopBar({
           </div>
         </div>
 
+        {/* Middle: admin site search (center) */}
+        <div className="flex-1 px-2 hidden md:block">
+          <form action="/admin/search" method="GET" className="max-w-xl mx-auto" role="search" aria-label="Admin site search">
+            <label htmlFor="admin-search" className="sr-only">Search</label>
+            <div className="relative">
+              <input
+                id="admin-search"
+                name="q"
+                type="search"
+                placeholder="Search admin…"
+                className="w-full h-9 rounded-full admin-input pl-10 pr-24 bg-white/10 border-white/15 text-white/90 placeholder-white/50"
+              />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 opacity-80" aria-hidden>
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m21 21-3.5-3.5" />
+                </svg>
+              </span>
+              <button
+                type="submit"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 h-7 px-3 rounded-full text-xs md:text-sm bg-cyan-400/10 text-cyan-300 border border-cyan-300/30 hover:bg-cyan-400/15"
+              >
+                Search
+              </button>
+            </div>
+          </form>
+        </div>
+
         {/* Right: language + profile */}
         <div className="flex items-center gap-3">
+          {/* Mobile search entry */}
+          <a
+            href="/admin/search"
+            className="md:hidden inline-flex items-center gap-1 rounded-xl bg-white/10 border border-white/15 px-2 py-1 text-xs text-white/80 hover:text-white hover:bg-white/15"
+            title="Search"
+          >
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m21 21-3.5-3.5" />
+            </svg>
+            <span>Search</span>
+          </a>
+
           {/* Language picker */}
-          {(() => {
-            // Map admin locale (th|en|cn) to picker lang (th|en|zh)
-            const lang = (locale === "cn" ? "zh" : locale) as "th" | "en" | "zh";
-            const pathname = typeof window !== "undefined" ? window.location.pathname : "/admin";
-            const search = typeof window !== "undefined" ? window.location.search : "";
-            const toLangPath = (l: string) => `${pathname}${search}`;
-            return <LangPicker lang={lang} toLangPath={toLangPath} />;
-          })()}
+          <LangPicker lang={lang} toLangPath={toLangPath} />
 
           {/* Profile menu */}
           <div className="relative">

@@ -13,8 +13,6 @@ type ButtonVariant =
   | "default"
   | "primary"
   | "secondary"
-  | "zspell"          // 🔶 แบรนด์ของคุณ
-  | "outlineZspell"   // 🔶 แบรนด์ของคุณ (outline)
   | "outline"
   | "ghost"
   | "danger";
@@ -35,8 +33,8 @@ export interface ButtonProps
 }
 
 const base =
-  "inline-flex items-center justify-center rounded-lg border text-sm font-medium transition-colors select-none " +
-  "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-400 disabled:opacity-50 disabled:pointer-events-none";
+  "inline-flex items-center justify-center rounded-lg border-2 text-sm font-medium transition-colors select-none tracking-wide " +
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-cyan-300/60 disabled:opacity-50 disabled:pointer-events-none";
 
 const sizeStyles: Record<ButtonSize, string> = {
   sm: "h-8 px-3 gap-1",
@@ -46,22 +44,23 @@ const sizeStyles: Record<ButtonSize, string> = {
 
 const variantStyles: Record<ButtonVariant, string> = {
   default:
-    "bg-gray-900 text-white border-transparent hover:bg-gray-800 active:bg-gray-900/90",
+    // Futuristic neon cyan/blue glow
+    "bg-[#0f141d] text-cyan-300 border-cyan-500/60 shadow-[0_0_8px_cyan] hover:bg-cyan-500/20 hover:shadow-[0_0_20px_cyan] active:bg-cyan-500/30",
   primary:
-    "bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 active:bg-emerald-700",
+    // Emerald neon
+    "bg-emerald-700 text-white border-emerald-400 shadow-[0_0_8px_#34d399] hover:shadow-[0_0_20px_#34d399] hover:bg-emerald-400/20 active:bg-emerald-400/30",
   secondary:
-    "bg-white text-gray-900 border-gray-300 hover:bg-gray-50 active:bg-gray-100",
+    // Purple neon
+    "bg-white/5 text-purple-300 border-purple-500/60 shadow-[0_0_8px_purple] hover:shadow-[0_0_20px_purple] hover:bg-purple-500/10 active:bg-purple-500/20",
   outline:
-    "bg-transparent border-gray-300 hover:bg-gray-50 active:bg-gray-100",
+    // Transparent with neon cyan border
+    "bg-transparent text-cyan-300 border-cyan-500/60 shadow-[0_0_8px_cyan] hover:bg-cyan-500/10 hover:shadow-[0_0_20px_cyan] active:bg-cyan-500/20",
   ghost:
-    "bg-transparent text-gray-700 border-transparent hover:bg-gray-100 active:bg-gray-200",
+    // Minimal, text glow on hover
+    "bg-transparent text-white/80 border-transparent hover:text-cyan-300 hover:shadow-[0_0_20px_cyan] active:text-cyan-200",
   danger:
-    "bg-red-600 text-white border-red-600 hover:bg-red-700 active:bg-red-700",
-  /** 🔶 ZPELL brand */
-  zspell:
-    "bg-zpell text-white border-zpell hover:bg-zpell/90 active:bg-zpell/90",
-  outlineZspell:
-    "bg-transparent text-zpell border-zpell hover:bg-zpell/10 active:bg-zpell/15",
+    // Red neon
+    "bg-red-700 text-white border-red-400 shadow-[0_0_8px_red] hover:shadow-[0_0_20px_red] hover:bg-red-400/20 active:bg-red-400/30",
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -83,31 +82,23 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const isDisabled = disabled || loading;
 
+    // Render as an IconButton with children as icon(s) only
     return (
-      <button
+      <IconButton
         ref={ref}
-        type={type ?? "button"}                // ✅ ป้องกัน submit โดยไม่ได้ตั้งใจ
-        className={cn(
-          base,
-          sizeStyles[size],
-          variantStyles[variant],
-          fullWidth && "w-full",
-          className
-        )}
+        type={type ?? "button"}
+        size={size}
+        variant={variant}
+        className={cn(fullWidth && "w-full", className)}
         disabled={isDisabled}
-        aria-busy={loading || undefined}       // ✅ a11y
         {...props}
       >
         {loading ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+          <Loader2 className="animate-spin" aria-hidden />
         ) : (
-          leftIcon && <span className="mr-2 inline-flex">{leftIcon}</span>
+          children
         )}
-        {children ? <span className="truncate">{children}</span> : null}
-        {rightIcon && !loading ? (
-          <span className="ml-2 inline-flex">{rightIcon}</span>
-        ) : null}
-      </button>
+      </IconButton>
     );
   }
 );

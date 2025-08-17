@@ -447,7 +447,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
       <OverlaySpinner open={loadingAI} message="AI is generating content…" />
 
       <form
-        className={`grid gap-6 ${loadingAI ? "pointer-events-none select-none opacity-60" : ""}`}
+        className={`grid gap-3 ${loadingAI ? "pointer-events-none select-none opacity-60" : ""}`}
         aria-busy={loadingAI}
         onSubmit={(e) => {
           e.preventDefault();
@@ -455,26 +455,16 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
         }}
       >
         {/* AI PROMPT PANEL (dark mode card) */}
-        <section className="admin-card p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-semibold">AI Generation</h3>
-              <p className="text-sm text-white/60">ให้ AI สร้างบทความหลายภาษา + SEO และ JSON-LD</p>
-            </div>
-          </div>
-          <div className="mt-3">
-            <AiPromptPanel
-              value={aiPrompt}
-              onChange={setAiPrompt}
-              onClear={() => setAiPrompt("")}
-              onGenerate={onAIGenerate}
-              loading={loadingAI}
-              samples={SAMPLE_PROMPTS}
-              derivedPrompt={derivedPrompt}
-              onUseDerived={() => setAiPrompt(derivedPrompt)}
-            />
-          </div>
-        </section>
+        <AiPromptPanel
+          value={aiPrompt}
+          onChange={setAiPrompt}
+          onClear={() => setAiPrompt("")}
+          onGenerate={onAIGenerate}
+          loading={loadingAI}
+          samples={SAMPLE_PROMPTS}
+          derivedPrompt={derivedPrompt}
+          onUseDerived={() => setAiPrompt(derivedPrompt)}
+        />
 
         {/* BASIC INFO (slug/status) */}
         <section className="admin-card p-4 mt-3">

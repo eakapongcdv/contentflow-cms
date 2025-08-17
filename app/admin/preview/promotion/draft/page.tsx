@@ -18,7 +18,7 @@ export default function PromotionDraftPreviewPage({
 
   return (
     <div className="min-h-[100svh] bg-gradient-to-b from-white to-gray-50">
-      {/* Topbar */}
+      {/* AdminTopBar */}
       <header className="sticky top-0 z-40 border-b bg-white/80 backdrop-blur">
         <div className="container-narrow flex items-center justify-between py-3">
           <div className="flex items-center gap-2">
