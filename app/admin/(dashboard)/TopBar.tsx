@@ -143,7 +143,15 @@ function WebsitePicker({
         title="Select website"
         disabled={loading || (websites?.length ?? 0) === 0}
       >
-        <span className="i-website-icon hidden sm:inline-block h-2.5 w-2.5 rounded-full bg-emerald-400/80 shadow-[0_0_12px_rgba(16,185,129,.6)]" />
+        {/* website icon */}
+        <span className="hidden sm:inline-flex items-center justify-center h-5 w-5 rounded-full bg-cyan-300/15 text-cyan-300 shadow-[0_0_12px_rgba(34,211,238,.35)]">
+          <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <circle cx="12" cy="12" r="9" />
+            <path d="M3 12h18" />
+            <path d="M12 3c3 3.5 3 14 0 18" />
+            <path d="M12 3c-3 3.5-3 14 0 18" />
+          </svg>
+        </span>
         <span className="truncate max-w-[200px]">{current ? current.name : (loading ? "Loading websites…" : "Select a website…")}</span>
         <svg viewBox="0 0 20 20" className="h-3 w-3 opacity-80 ml-auto" fill="currentColor"><path d="M5.5 7.5 10 12l4.5-4.5H5.5Z"/></svg>
       </button>
@@ -173,7 +181,14 @@ function WebsitePicker({
                       w.id === websiteId ? "text-white" : "text-white/80"
                     }`}
                   >
-                    <span className={`h-1.5 w-1.5 rounded-full ${w.id === websiteId ? "bg-cyan-300" : "bg-white/40"}`} />
+                    <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-cyan-300/10 text-cyan-300">
+                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M3 12h18" />
+                        <path d="M12 3c3 3.5 3 14 0 18" />
+                        <path d="M12 3c-3 3.5-3 14 0 18" />
+                      </svg>
+                    </span>
                     <span className="truncate">{w.name}</span>
                     {w.id === websiteId && <span className="ml-auto text-cyan-300">•</span>}
                   </button>
