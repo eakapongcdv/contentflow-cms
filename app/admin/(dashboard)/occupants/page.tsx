@@ -144,7 +144,7 @@ export default async function OccupantsListPage({
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-xl font-semibold text-white">Store Directory</h1>
           <Link href={buildQuery({}).replace("/occupants?", "/occupants/new?")}>
-            <Button variant="outlineZspell" leftIcon={<RefreshCw className="h-4 w-4" />}>
+            <Button variant="dark-outline"  leftIcon={<RefreshCw className="h-4 w-4" />}>
               Sync Venues
             </Button>
           </Link>
@@ -257,7 +257,7 @@ export default async function OccupantsListPage({
                       title="Edit"
                       aria-label={`Edit ${i.nameTh || i.nameEn}`}
                     >
-                       <IconButton variant="outlineZspell" aria-label="Edit">
+                       <IconButton variant="dark-outline"  aria-label="Edit">
                         <PencilLine className="h-4 w-4" />
                       </IconButton>
                     </Link>

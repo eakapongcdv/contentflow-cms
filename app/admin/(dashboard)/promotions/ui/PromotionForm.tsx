@@ -477,7 +477,7 @@ export default function PromotionForm({ mode, id, initial, initialSeo }: Promoti
 
             <Button
               type="button"
-              variant="zspell"
+              variant="dark-outline"
               leftIcon={<Sparkles className="h-4 w-4" />} 
               onClick={onAIGenerate}
               loading={loadingAI}
@@ -655,10 +655,10 @@ export default function PromotionForm({ mode, id, initial, initialSeo }: Promoti
                 <HelpCircle className="h-3.5 w-3.5 mr-1" />
                 Recommended: <b className="ml-1">Offer</b>
               </span>
-              <Button variant="outlineZspell" onClick={onRegenerateJsonLd}>
+              <Button variant="dark-outline"  onClick={onRegenerateJsonLd}>
                 Regenerate
               </Button>
-              <Button variant="outlineZspell" 
+              <Button variant="dark-outline"  
                 onClick={onPreviewDraft} 
                 leftIcon={<Eye className="h-4 w-4" />}>
                 OG Preview (Draft)
@@ -674,7 +674,7 @@ export default function PromotionForm({ mode, id, initial, initialSeo }: Promoti
                 <Button
                   key={t.id}
                   type="button"
-                  variant={active ? "zspell" : "outlineZspell"}
+                  variant="dark-outline"
                   leftIcon={<Icon className="h-4 w-4" />}
                   onClick={() => {
                     setActiveJsonLdType(t.id as JsonLdType);

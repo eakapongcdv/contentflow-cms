@@ -71,7 +71,7 @@ export function PaginationFooter({ page, totalPages, totalItems, take, makeHref,
       <div className="flex items-center gap-1">
         <Link href={makeHref(1)} aria-disabled={page === 1}>
           <IconButton
-            variant="outlineZspell"
+            variant="dark-outline" 
             aria-label="First"
             disabled={page === 1}
             className="rounded-full h-9 w-9 p-0"
@@ -81,7 +81,7 @@ export function PaginationFooter({ page, totalPages, totalItems, take, makeHref,
         </Link>
         <Link href={makeHref(Math.max(1, page - 1))} aria-disabled={page === 1}>
           <IconButton
-            variant="outlineZspell"
+            variant="dark-outline" 
             aria-label="Prev"
             disabled={page === 1}
             className="rounded-full h-9 w-9 p-0"
@@ -98,7 +98,7 @@ export function PaginationFooter({ page, totalPages, totalItems, take, makeHref,
           ) : (
             <Link key={p} href={makeHref(p)}>
               <Button
-                variant={p === page ? "zspell" : "outlineZspell"}
+                variant="dark-outline"
                 size="sm"
                 className="rounded-full h-9 w-9 px-0"
               >
@@ -110,7 +110,7 @@ export function PaginationFooter({ page, totalPages, totalItems, take, makeHref,
 
         <Link href={makeHref(Math.min(totalPages, page + 1))} aria-disabled={page >= totalPages}>
           <IconButton
-            variant="outlineZspell"
+            variant="dark-outline" 
             aria-label="Next"
             disabled={page >= totalPages}
             className="rounded-full h-9 w-9 p-0"
@@ -120,7 +120,7 @@ export function PaginationFooter({ page, totalPages, totalItems, take, makeHref,
         </Link>
         <Link href={makeHref(totalPages)} aria-disabled={page >= totalPages}>
           <IconButton
-            variant="outlineZspell"
+            variant="dark-outline" 
             aria-label="Last"
             disabled={page >= totalPages}
             className="rounded-full h-9 w-9 p-0"

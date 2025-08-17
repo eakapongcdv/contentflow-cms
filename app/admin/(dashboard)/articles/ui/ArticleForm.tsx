@@ -672,7 +672,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
                 Type: <b className="ml-1">Article</b>
               </span>
               <Button
-                variant="outlineZspell"
+                variant="dark-outline" 
                 onClick={() => {
                   const headline =
                     form.i18n.th.title || form.i18n.en.title || form.i18n.cn.title || "Article";
@@ -701,7 +701,7 @@ export default function ArticleForm({ mode, id, initial, initialSeo }: ArticleFo
               >
                 Regenerate
               </Button>
-              <Button variant="outlineZspell" onClick={onPreviewDraft} leftIcon={<Eye className="h-4 w-4" aria-hidden />}>
+              <Button variant="dark-outline"  onClick={onPreviewDraft} leftIcon={<Eye className="h-4 w-4" aria-hidden />}>
                 OG Preview (Draft)
               </Button>
             </div>

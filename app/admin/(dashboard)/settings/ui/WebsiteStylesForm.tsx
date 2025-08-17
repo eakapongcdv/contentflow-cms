@@ -199,16 +199,16 @@ export default function WebsiteStylesForm() {
         </h3>
         <ButtonGroup>
           <Button
-            variant="outlineZspell"
+            variant="dark-outline" 
             onClick={() => setShowPreview((v) => !v)}
             leftIcon={showPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           >
             {showPreview ? "Hide Preview" : "Show Preview"}
           </Button>
-          <Button variant="outlineZspell" onClick={resetToDefaults} leftIcon={<Eraser className="h-4 w-4" />}>
+          <Button variant="dark-outline"  onClick={resetToDefaults} leftIcon={<Eraser className="h-4 w-4" />}>
             Reset to Defaults
           </Button>
-          <Button variant="zspell" onClick={onSave} loading={saving} disabled={loading}>
+          <Button variant="dark-outline" onClick={onSave} loading={saving} disabled={loading}>
             Save Changes
           </Button>
         </ButtonGroup>
@@ -224,14 +224,14 @@ export default function WebsiteStylesForm() {
           <span className="text-sm text-white/70">Mode:</span>
           <ButtonGroup>
             <Button
-              variant={style.mode === "tokens" ? "zspell" : "outlineZspell"}
+              variant="dark-outline"
               onClick={() => setStyle((s) => ({ ...s, mode: "tokens" }))}
               leftIcon={<Palette className="h-4 w-4" />}
             >
               Form (Tokens)
             </Button>
             <Button
-              variant={style.mode === "css" ? "zspell" : "outlineZspell"}
+              variant="dark-outline" 
               onClick={() => setStyle((s) => ({ ...s, mode: "css" }))}
               leftIcon={<Code2 className="h-4 w-4" />}
             >
@@ -341,8 +341,8 @@ export default function WebsiteStylesForm() {
                 .
               </p>
               <div className="mt-3 flex gap-2">
-                <Button variant="zspell">Primary</Button>
-                <Button variant="outlineZspell">Outline</Button>
+                <Button variant="dark-outline">Primary</Button>
+                <Button variant="dark-outline" >Outline</Button>
               </div>
             </div>
 

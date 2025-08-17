@@ -30,7 +30,7 @@ export function MediaPickerCard({
       <div className="mt-2 flex items-center gap-2">
         <Button
           type="button"
-          variant="outlineZspell"
+          variant="dark-outline" 
           onClick={() => {
             const u = prompt("Paste image URL");
             if (u && u.trim()) onChange(u.trim());
@@ -39,7 +39,7 @@ export function MediaPickerCard({
           Replace
         </Button>
         {value ? (
-          <Button type="button" variant="outlineZspell" onClick={() => onChange(null)}>
+          <Button type="button" variant="dark-outline"  onClick={() => onChange(null)}>
             Remove
           </Button>
         ) : null}

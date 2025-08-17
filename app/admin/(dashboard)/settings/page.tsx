@@ -20,7 +20,7 @@ export default async function SettingsPage() {
         <h1 className="text-xl md:text-2xl font-semibold text-white">Settings</h1>
         <ButtonGroup>
           <Link href={`/admin/settings?${query}`}>
-            <Button variant="outlineZspell" aria-label="Refresh" title="Refresh" leftIcon={<RefreshCw className="h-4 w-4" />}>
+            <Button variant="dark-outline"  aria-label="Refresh" title="Refresh" leftIcon={<RefreshCw className="h-4 w-4" />}>
               <span className="sr-only">Refresh</span>
             </Button>
           </Link>

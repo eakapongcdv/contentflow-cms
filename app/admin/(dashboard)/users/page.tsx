@@ -68,12 +68,12 @@ export default async function UsersPage({
           <h1 className="text-xl font-semibold">Users</h1>
           <ButtonGroup>
             <Link href="/admin/users/invite">
-              <IconButton variant="zspell" aria-label="New">
+              <IconButton variant="dark-outline"  aria-label="New">
                 <Plus className="h-4 w-4" />
               </IconButton>
             </Link>
             <Link href={`/admin/users?${qs}`}>
-              <Button variant="outlineZspell" rightIcon={<RefreshCw className="h-4 w-4" />}>
+              <Button variant="dark-outline"  rightIcon={<RefreshCw className="h-4 w-4" />}>
                 Refresh
               </Button>
             </Link>
@@ -113,7 +113,7 @@ export default async function UsersPage({
         <h1 className="text-xl font-semibold">Users</h1>
         <ButtonGroup>
           <Link href="/admin/users/invite">
-             <IconButton variant="zspell" aria-label="New">
+             <IconButton variant="dark-outline"  aria-label="New">
               <Plus className="h-4 w-4" />
             </IconButton>
           </Link>
@@ -130,7 +130,7 @@ export default async function UsersPage({
         />
         <input type="hidden" name="page" value="1" />
         <input type="hidden" name="take" value={String(data.take)} />
-        <Button type="submit" variant="outlineZspell" leftIcon={<SearchIcon className="h-4 w-4" />}>
+        <Button type="submit" variant="dark-outline"  leftIcon={<SearchIcon className="h-4 w-4" />}>
           Search
         </Button>
       </form>
@@ -165,7 +165,7 @@ export default async function UsersPage({
                   <td className="px-3 py-2">
                     <div className="flex justify-end">
                       <Link href={`/admin/users/${u.id}`}>
-                        <IconButton variant="outlineZspell" aria-label="Edit">
+                        <IconButton variant="dark-outline"  aria-label="Edit">
                             <PencilLine className="h-4 w-4" />
                           </IconButton>
                       </Link>

@@ -79,12 +79,12 @@ export default function WebsiteSwitcher({ initialWebsiteId }: { initialWebsiteId
         </select>
       </label>
 
-      <Button type="submit" variant="zspell" loading={saving}>
+      <Button type="submit" variant="dark-outline" loading={saving}>
         Save
       </Button>
       <Button
         type="button"
-        variant="outlineZspell"
+        variant="dark-outline" 
         onClick={() => applySelection(null)}
         disabled={saving}
         title="Clear selected website"

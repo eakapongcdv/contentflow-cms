@@ -161,7 +161,7 @@ export function AiPromptPanel({
         <div className="flex items-center gap-2 md:ml-auto">
           {onClear && (
             <IconButton
-              variant="outlineZspell"
+              variant="dark-outline" 
               onClick={onClear}
               disabled={loading}
               aria-label="Clear"

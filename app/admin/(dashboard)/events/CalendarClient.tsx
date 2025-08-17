@@ -360,7 +360,7 @@ export default function CalendarClient({
                     title="Edit"
                     aria-label="Edit event"
                   >
-                    <IconButton variant="outlineZspell" aria-label="Edit">
+                    <IconButton variant="dark-outline"  aria-label="Edit">
                       <PencilLine className="h-4 w-4" />
                     </IconButton>
                   </Link>
@@ -512,7 +512,7 @@ function DayView({
                 title="Edit"
                 aria-label="Edit event"
               >
-                <IconButton variant="outlineZspell" aria-label="Edit">
+                <IconButton variant="dark-outline"  aria-label="Edit">
                   <PencilLine className="h-4 w-4" />
                 </IconButton>
               </Link>

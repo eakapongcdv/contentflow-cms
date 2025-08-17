@@ -193,10 +193,10 @@ export default function ArticleSeoForm({
       {/* Toolbar */}
       <div className="flex items-center justify-between mb-3">
         <ButtonGroup>
-          <Button type="button" variant="outlineZspell" leftIcon={<Eye className="h-4 w-4" aria-hidden />} onClick={() => window.open(preview.url, "_blank")}>
+          <Button type="button" variant="dark-outline"  leftIcon={<Eye className="h-4 w-4" aria-hidden />} onClick={() => window.open(preview.url, "_blank")}>
             Preview
           </Button>
-          <Button type="button" variant="outlineZspell" leftIcon={<Sparkles className="h-4 w-4" aria-hidden />} onClick={() => alert("Hook AI here")}>
+          <Button type="button" variant="dark-outline"  leftIcon={<Sparkles className="h-4 w-4" aria-hidden />} onClick={() => alert("Hook AI here")}>
             AI Assist
           </Button>
         </ButtonGroup>
@@ -219,7 +219,7 @@ export default function ArticleSeoForm({
             <Button
               key={k}
               type="button"
-              variant={tab === k ? "zspell" : "outlineZspell"}
+              variant="dark-outline"
               onClick={() => setTab(k)}
             >
               {k.toUpperCase()}
@@ -355,7 +355,7 @@ export default function ArticleSeoForm({
               <Code2 className="h-5 w-5 text-zpell" /> Structured Data (JSON-LD)
             </h3>
             <div className="flex items-center gap-2">
-              <Button variant="outlineZspell" leftIcon={<RefreshCw className="h-4 w-4" aria-hidden />} type="button" onClick={regenerateJsonLd}>
+              <Button variant="dark-outline"  leftIcon={<RefreshCw className="h-4 w-4" aria-hidden />} type="button" onClick={regenerateJsonLd}>
                 Regenerate
               </Button>
             </div>

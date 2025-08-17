@@ -122,12 +122,12 @@ export default async function ArticlesPage({
           <h1 className="text-xl font-semibold">Articles</h1>
           <ButtonGroup>
             <Link href="/admin/articles/new" title="New article">
-              <IconButton variant="zspell" aria-label="New">
+              <IconButton variant="dark-outline"  aria-label="New">
                 <Plus className="h-4 w-4" />
               </IconButton>
             </Link>
             <Link href={`/admin/articles?${qs}`} title="Refresh">
-              <IconButton variant="outlineZspell" aria-label="Refresh">
+              <IconButton variant="dark-outline"  aria-label="Refresh">
                 <RefreshCw className="h-4 w-4" />
               </IconButton>
             </Link>
@@ -161,7 +161,7 @@ export default async function ArticlesPage({
         <h1 className="text-xl font-semibold">Articles</h1>
         <ButtonGroup>
           <Link href="/admin/articles/new" title="New article">
-            <IconButton variant="zspell" aria-label="New">
+            <IconButton variant="dark-outline"  aria-label="New">
               <Plus className="h-4 w-4" />
             </IconButton>
           </Link>
@@ -209,7 +209,7 @@ export default async function ArticlesPage({
         <input type="hidden" name="take" value={String(data.take)} />
 
         <div className="flex justify-end">
-          <Button type="submit" variant="outlineZspell" leftIcon={<SearchIcon className="h-4 w-4" />}>
+          <Button type="submit" variant="dark-outline"  leftIcon={<SearchIcon className="h-4 w-4" />}>
             Search
           </Button>
         </div>
@@ -273,7 +273,7 @@ export default async function ArticlesPage({
                   <td className="px-3 py-2">
                     <div className="flex justify-end">
                       <Link href={`/admin/articles/${a.id}`} title="Edit article" className="inline-flex">
-                        <IconButton variant="outlineZspell" aria-label="Edit">
+                        <IconButton variant="dark-outline"  aria-label="Edit">
                           <PencilLine className="h-4 w-4" />
                         </IconButton>
                       </Link>

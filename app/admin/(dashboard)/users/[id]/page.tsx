@@ -72,7 +72,7 @@ export default async function EditUserPage({ params }: { params: { id: string } 
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold text-white">User not found</h1>
           <Link href="/admin/users">
-            <Button variant="outlineZspell" leftIcon={<svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}>Back</Button>
+            <Button variant="dark-outline"  leftIcon={<svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}>Back</Button>
           </Link>
         </div>
         <div className="text-sm text-red-400">User id: {params.id}</div>
@@ -88,7 +88,7 @@ export default async function EditUserPage({ params }: { params: { id: string } 
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-white">Edit User</h1>
         <Link href="/admin/users">
-          <Button variant="outlineZspell" leftIcon={<svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}>Back</Button>
+          <Button variant="dark-outline"  leftIcon={<svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}>Back</Button>
         </Link>
       </div>
 

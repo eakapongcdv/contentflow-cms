@@ -109,7 +109,7 @@ export default async function AdminEventsPage({
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-xl font-semibold">Events</h1>
         <Link href={`/admin/events/new`} title="New article">
-          <IconButton variant="zspell" aria-label="New">
+          <IconButton variant="dark-outline"  aria-label="New">
             <Plus className="h-4 w-4" />
           </IconButton>
         </Link>

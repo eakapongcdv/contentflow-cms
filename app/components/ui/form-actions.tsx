@@ -30,7 +30,7 @@ export function FormActions({
   return (
     <div className="flex items-center justify-between">
       {mode === "edit" ? (
-        <IconButton type="button" variant="dark-outline" onClick={onDelete}>
+        <IconButton variant="dark-outline" onClick={onDelete}>
           <Trash2 className="h-4 w-4" />
           <span className="ml-2">{deleteText}</span>
         </IconButton>
@@ -40,7 +40,7 @@ export function FormActions({
 
       <div className="flex items-center gap-2">
         {showBack && (
-          <IconButton type="button" variant="dark-outline" onClick={() => router.back()}>
+          <IconButton variant="dark-outline" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
             <span className="ml-2">{backText}</span>
           </IconButton>

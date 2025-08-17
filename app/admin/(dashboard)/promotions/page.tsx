@@ -78,7 +78,7 @@ export default async function PromotionsListPage({
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Promotions</h1>
          <Link href={`/admin/promotions/new${qstr({ tab: activeTab.id })}`} title="New article">
-            <IconButton variant="zspell" aria-label="New">
+            <IconButton variant="dark-outline"  aria-label="New">
               <Plus className="h-4 w-4" />
             </IconButton>
           </Link>
@@ -118,7 +118,7 @@ export default async function PromotionsListPage({
           <input type="hidden" name="tab" value={activeTab.id} />
           <input type="hidden" name="per" value={per} />
           <div className="flex justify-end">
-            <Button type="submit" variant="outlineZspell" leftIcon={<SearchIcon className="h-4 w-4" />}>
+            <Button type="submit" variant="dark-outline"  leftIcon={<SearchIcon className="h-4 w-4" />}>
               Search
             </Button>
           </div>
@@ -168,7 +168,7 @@ export default async function PromotionsListPage({
                 <td className="p-2 align-top">
                   <div className="flex justify-end">
                     <Link href={`/admin/promotions/${i.id}${qstr({ tab: activeTab.id, q, page, per })}`} title="Edit article" className="inline-flex">
-                      <IconButton variant="outlineZspell" aria-label="Edit">
+                      <IconButton variant="dark-outline"  aria-label="Edit">
                         <PencilLine className="h-4 w-4" />
                       </IconButton>
                     </Link>

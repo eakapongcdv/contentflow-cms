@@ -208,15 +208,15 @@ export default function WebsiteThemeForm() {
 
         <ButtonGroup>
           {mode === "form" ? (
-            <Button variant="outlineZspell" onClick={switchToJSON} leftIcon={<Code2 className="h-4 w-4" />}>
+            <Button variant="dark-outline"  onClick={switchToJSON} leftIcon={<Code2 className="h-4 w-4" />}>
               JSON View
             </Button>
           ) : (
-            <Button variant="outlineZspell" onClick={switchToForm} leftIcon={<SlidersHorizontal className="h-4 w-4" />}>
+            <Button variant="dark-outline"  onClick={switchToForm} leftIcon={<SlidersHorizontal className="h-4 w-4" />}>
               Form View
             </Button>
           )}
-          <Button variant="zspell" onClick={onSave} loading={saving} disabled={loading}>
+          <Button variant="dark-outline" onClick={onSave} loading={saving} disabled={loading}>
             Save Changes
           </Button>
         </ButtonGroup>
@@ -374,13 +374,13 @@ export default function WebsiteThemeForm() {
               )}
             </div>
             <ButtonGroup>
-              <Button variant="outlineZspell" onClick={copyJson} leftIcon={<Clipboard className="h-4 w-4" />}>
+              <Button variant="dark-outline"  onClick={copyJson} leftIcon={<Clipboard className="h-4 w-4" />}>
                 Copy
               </Button>
-              <Button variant="outlineZspell" onClick={validateJson}>
+              <Button variant="dark-outline"  onClick={validateJson}>
                 Validate
               </Button>
-              <Button variant="outlineZspell" onClick={formatJson}>
+              <Button variant="dark-outline"  onClick={formatJson}>
                 Format
               </Button>
             </ButtonGroup>
