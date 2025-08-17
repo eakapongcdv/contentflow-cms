@@ -63,10 +63,16 @@ export default withAuth(function middleware(req: NextRequest) {
 
   return NextResponse.next();
 }, {
+  secret: process.env.NEXTAUTH_SECRET,
   pages: { signIn: "/admin/login" },
   callbacks: {
     authorized: ({ token, req }) => {
       const p = req.nextUrl.pathname;
+
+      // --- diagnostics: see token presence on Edge runtime ---
+      try {
+        console.log("[MW] path=", p, "token?", !!token);
+      } catch {}
 
       // อนุญาตหน้า login เสมอ ป้องกัน loop
       if (p.startsWith("/admin/login")) return true;
